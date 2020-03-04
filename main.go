@@ -62,6 +62,7 @@ func readProjectDirectory(directory string) {
 			// -walk directories recursively
 			// -filter extensions by .swift
 		} else {
+			continue
 			// fmt.Println(file.Name(), " file is not a swift file")
 		}
 	}
