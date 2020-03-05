@@ -48,8 +48,8 @@ func main() {
 	var projectPath = getDirectoryName()
 	fmt.Println("Directory is=", projectPath)
 	var project = Project{Name: projectPath}
-	project = readProjectDirectory(projectPath, project)
-	fmt.Println("Project is ", project)
+	project = setupConstantFile(projectPath, project)
+	fmt.Println("Project is ", project.ConstantFile)
 }
 
 func getDirectoryName() string {
@@ -58,16 +58,17 @@ func getDirectoryName() string {
 }
 
 //recursively reads a directory and get .swift files
-func readProjectDirectory(path string, project Project) Project {
+func setupConstantFile(path string, project Project) Project {
 	//1. Make sure we have a Constant file
 	var isFound, filePath = searchFileLocation(path, "Constant", false) //search for any files containing Constant
 	var constantFile = File{}
-	if isFound { //if a Constant file exist...
+	if isFound { //if a Constant file originally exist...
 		fileContents := readFile(filePath)
+		constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
 		constantFile.Path = filePath
 		fmt.Println("\n========================= Swift file: ", " contents =========================\n", fileContents)
 	} else { //create a Constants.swift file to the same directory AppDelegate.swift is at
-		constantFile = createConstantFile(path)
+		constantFile = createNewConstantFile(path)
 	}
 	// fmt.Println("\nConstant file's path", constantFile.Path)
 	project.HasConstantFile = true
@@ -76,7 +77,7 @@ func readProjectDirectory(path string, project Project) Project {
 }
 
 //Creates a Constant.swift file on the same directory as the AppDelegate.swift file
-func createConstantFile(path string) (constant File) {
+func createNewConstantFile(path string) (constant File) {
 	var fileNameToSearch = "AppDelegate.swift"
 	constant.Name = "Constants.swift"
 	var isFound, filePath = searchFileLocation(path, fileNameToSearch, true) //get AppDelegate's path
@@ -167,7 +168,7 @@ func writeToFile(fileName, lines string) {
 func trimPathBeforeLastSlash(path string, removeExtension bool) (fileName string) {
 	if index := strings.LastIndex(path, "/"); index != -1 {
 		// fmt.Println(path, " Trimmed =", path[:index])
-		fileName = path[index:]
+		fileName = path[index+1:]
 	}
 	if removeExtension {
 		if index := strings.LastIndex(fileName, "."); index != -1 {
