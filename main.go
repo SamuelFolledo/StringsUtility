@@ -63,109 +63,71 @@ func readProjectDirectory(path string, project Project) Project {
 	if constantFile.Name == "" { //if we still have no Constant.swift file... create one
 		createConstantFile(path)
 	}
-	return project
 
-	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
-	if isError(err) {
-		return project
+	//Start reading Swift files
+	var isFound, filePath = searchFileLocation(path, "Constant", false) //search for the Constant.swift file
+	// handleSwiftFile(filePath)
+	if isFound {
+		fileContents := readFile(filePath)
+		fmt.Println("\n========================= Swift file: ", " contents =========================\n", fileContents)
+	} else {
+		fmt.Println("Didn't find Constants")
 	}
-	for _, file := range files { //loop through each files
-		var fileName = file.Name()
-		if file.IsDir() { //skip if file is directory
-			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
-				continue
-			}
-			// fmt.Println("Going inside directory=", file.Name())
-			// var directory =
-			var prevPath = path
-			path = path + "/" + fileName //update directory path
-			fmt.Println("\n\nNew Directory: ", path)
-			project = readProjectDirectory(path, project) //recursively call this function again
-			path = prevPath
-			// fmt.Println("\n\nGoing Back to Directory: ", directory)
-		}
-		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
-		if fileExtension == ".swift" {                                //READ if file is a .swift file
-			if !project.HasConstantFile { //if project does not have a Constants.swift file yet, check if fileName is a constant file
-				if strings.Contains(fileName, "Constants") { //if fileName contains Constants, it means we already have a Constants.swift file
-					project.HasConstantFile = true
-					fmt.Println("We have a constant file named", fileName, " already")
-					continue
-				}
-			}
-			//Start reading Swift files
-			var filePath = path + "/" + fileName
-			// handleSwiftFile(filePath)
-			fileContents := readFile(filePath)
-			print("\n========================= Swift file: ", fileName, " contents =========================\n", fileContents)
 
-		} else { //if fileName is not a .swift file then skip the file
-			continue
-		}
-	}
 	return project
 }
 
 //Creates a Constant.swift file on the same directory as the AppDelegate.swift file
 func createConstantFile(path string) {
-	var fileNameToSearch = "SecondViewController.swift"
-	var isFound, filePath = searchFileLocation(path, fileNameToSearch)
+	var fileNameToSearch = "AppDelegate.swift"
+	var isFound, filePath = searchFileLocation(path, fileNameToSearch, true) //check if any files
 	if isFound {
-		fmt.Println("Searched", fileNameToSearch, " and found at ", filePath)
+		fmt.Println("xxxxxxSearched", fileNameToSearch, " and found at ", filePath)
 	} else {
 		fmt.Println("Searched and failed to find ", fileNameToSearch)
 	}
 }
 
-//Search a path until it finds fileName we are searching for
-func searchFileLocation(path, fileNameToSearch string) (isFound bool, filePath string) {
+//Search a path until it finds a path that contains a fileName we are searching for. isExactName will determine if fileName must exactly match or must contain only
+func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFound bool, filePath string) {
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
 	}
-	for _, file := range files { //loop through each files
+	for _, file := range files { //loop through each files and directories
 		var fileName = file.Name()
 		if file.IsDir() { //skip if file is directory
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
 			var prevPath = path
-			path = path + "/" + fileName                                   //update directory path by adding /fileName
-			isFound, filePath = searchFileLocation(path, fileNameToSearch) //recursively call this function again
-			if isFound {
+			path = path + "/" + fileName                                                //update directory path by adding /fileName
+			isFound, filePath = searchFileLocation(path, fileNameToSearch, isExactName) //recursively call this function again
+			if isFound {                                                                //if we found it then keep returning
 				return
 			}
-			// if strings.Contains(filePath, fileNameToSearch) {     //if our filePath contains the fileName we are looking for...
-			// 	break
-			// }
-			path = prevPath
+			path = prevPath //if not found, go to next directory, but update our path
 		}
 		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
-		if fileExtension == ".swift" {                                //READ if file is a .swift file
+		if fileExtension == ".swift" {                                //if file is a .swift file
 			filePath = path + "/" + fileName //path of file
-
-			if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
-				fmt.Println("Searched and found ", fileNameToSearch, " at ", filePath)
-				isFound = true
-				return
-				// var fileContent = readFile(filePath)
-				// 	constantFile = File{Path: path, Name: fileName} //turn fileContent to a Code
-				// 	fmt.Println("Constant file:", fileName, " has contents'\n", fileContent)
-				// 	break
+			if isExactName {                 //if we want the exact fileName...
+				if fileName == fileNameToSearch {
+					fmt.Println("Searched and EXACTLY found ", fileNameToSearch, " at ", filePath)
+					isFound = true
+					return
+				}
+			} else { //if we want fileName to only contain
+				if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+					fmt.Println("Searched and found ", fileNameToSearch, " CONTAINS at ", filePath)
+					isFound = true
+					return
+				}
 			}
 			continue
-			//Start reading files
-			// var filePath = directory + "/" + fileName
-		} else { //if fileName is not a .swift file then skip the file
-			continue
 		}
+		continue
 	}
-	// if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
-	// 	fmt.Println("Searched and FOUND ", fileNameToSearch, " at ", filePath)
-	// 	return filePath
-	// }
-	// fmt.Println("Searched and failed to find ", fileNameToSearch)
-	// return "" //Failed to find the file
 	return
 }
 
@@ -177,7 +139,7 @@ func searchPathForConstantFile(path string) (constantFile File) {
 	}
 	for _, file := range files { //loop through each files
 		var fileName = file.Name()
-		fmt.Println("file=", fileName)
+		// fmt.Println("file=", fileName)
 		if file.IsDir() { //skip if file is directory
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
@@ -350,14 +312,13 @@ func readFile(fileName string) (content string) { //method that will read a file
 		return
 	}
 	// fmt.Print("READING ", fileName, " = \n", string(fileContents))
-	for index, fileContent := range fileContents {
-		// fmt.Println(index, " === ", string(fileContent))
-		if string(fileContent) == "\n" {
-			fmt.Println("Found newLine at", index, "\n")
-		}
-		fmt.Println("Char= ", string(fileContent))
-	}
-	fmt.Println("DONEEE")
+	// for index, fileContent := range fileContents {
+	// 	// fmt.Println(index, " === ", string(fileContent))
+	// 	if string(fileContent) == "\n" {
+	// 		fmt.Println("Found newLine at", index, "\n")
+	// 	}
+	// 	fmt.Println("Char= ", string(fileContent))
+	// }
 	content = string(fileContents)
 	return
 }
