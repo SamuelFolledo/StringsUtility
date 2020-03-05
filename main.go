@@ -48,22 +48,26 @@ func readProjectDirectory(directory string) {
 		return
 	}
 	for _, file := range files { //loop through each files
+		var fileName = file.Name()
 		if file.IsDir() { //skip if file is directory
-			if file.Name() == "Pods" || file.Name() == ".git" { //ignore Pods and .git directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
-			fmt.Println("Going inside directory=", file.Name())
-			readProjectDirectory(directory + "/" + file.Name()) //call this function again
+			// fmt.Println("Going inside directory=", file.Name())
+			readProjectDirectory(directory + "/" + fileName) //call this function again
 		}
-
-		if filepath.Ext(strings.TrimSpace(file.Name())) == ".swift" { //gets the file extension from file name
-			print("File: ", file.Name(), "\n")
+		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+		if fileExtension == ".swift" {                                //READ if file is a .swift file
+			if strings.Contains(fileName, "Constants") { //if we already have a Constants.swift file
+				fmt.Println("We have a constant file named", fileName, " already")
+				continue
+			}
+			print("File: ", fileName, "\n")
 			// textFileToHtml(file.Name())
 			// -walk directories recursively
 			// -filter extensions by .swift
-		} else {
+		} else { //if fileName is not a .swift file then skip the file
 			continue
-			// fmt.Println(file.Name(), " file is not a swift file")
 		}
 	}
 }
