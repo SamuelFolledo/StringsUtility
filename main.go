@@ -13,15 +13,26 @@ import ( //format
 	// "oset/http"
 )
 
-type FileLines struct {
-	Title   string //capital means public, small means private
-	Message string
-	Done    bool
+type Directories struct {
+	Name  string
+	Files []Files
 }
 
-type Article struct {
-	Author   string
-	NewsList []FileLines
+type Files struct {
+	Name  string //file name
+	Codes []Code
+}
+
+type Code struct {
+	LineNumber string   //total number of lines
+	Line       string   //line content
+	Content    []string //all contents
+}
+
+type Project struct {
+	Name            string
+	Directories     []Directories
+	HasConstantFile bool
 }
 
 // note, that variables are pointers
