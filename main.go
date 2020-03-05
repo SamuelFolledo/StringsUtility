@@ -50,7 +50,7 @@ func main() {
 	fmt.Println("Directory is=", projectPath)
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
-	fmt.Println("Project is ", project.ConstantFile)
+	fmt.Println("Project is ", project.ConstantFile, "\n\n\n\n\n")
 	project = searchForStrings(projectPath, project)
 }
 
@@ -62,47 +62,50 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 	}
 	for _, file := range files { //loop through each files and directories
 		var fileName = file.Name()
-		fmt.Println("Visting...", fileName)
+		// fmt.Println("\nVisting...", fileName, "isDir=", file.IsDir())
 		if file.IsDir() { //skip if file is directory
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
 			var prevPath = path
-			path = path + "/" + fileName                     //update directory path by adding /fileName
-			currentProject = searchForStrings(path, project) //recursively call this function again
-			path = prevPath                                  //if not found, go to next directory, but update our path
-		}
-		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
-		if fileExtension == ".swift" {                                //if we find a Swift file... look for strings
-			path = path + "/" + fileName
-			var fileContents = readFile(path)
-			lines := stringLineToArray(fileContents) //turn lines of strings to array of strings
-			for lineIndex, line := range lines {     //loop through each lines
-				var startIndex = strings.Index(line, "\"") //gets first index of "
-				var endIndex = -1
-				if startIndex == -1 { //if line has no "
-					continue
-				}
-				quotedWord := line[startIndex:] //+1 to not include the first "
-				//if " exist...
-				for i := 1; i < len(quotedWord)-1; i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
-					if string(quotedWord[i]) == "\"" { //if char is next quote
-						endIndex = i
-						break
+			// print("\nCurrent path =", path, "\tUpcoming file is ", fileName)
+			// print("\nTrimmed path =", path, "\tUpcoming file is ", fileName)
+			path = path + "/" + fileName //update directory path by adding /fileName
+			// print("\nNew path =", path, "\n")
+			project = searchForStrings(path, project) //recursively call this function again
+			path = prevPath
+		} else {
+			var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+			if fileExtension == ".swift" {                                //if we find a Swift file... look for strings
+				path = path + "/" + fileName
+				var fileContents = readFile(path)
+				lines := stringLineToArray(fileContents) //turn lines of strings to array of strings
+				for lineIndex, line := range lines {     //loop through each lines
+					var startIndex = strings.Index(line, "\"") //gets first index of "
+					var endIndex = -1
+					if startIndex == -1 { //if line has no "
+						continue
 					}
-				}
-				// fmt.Println("\n Line=", line, "\n", startIndex, " and ", endIndex)
-				if endIndex == -1 { //check if we did get an endIndex
-					continue
-				}
-				var doubleQuotedWord = quotedWord[:endIndex+1]
-				fmt.Println("\n\nLine:", lineIndex, " =", doubleQuotedWord)
-				// constantWord = ""
+					quotedWord := line[startIndex:] //+1 to not include the first "
+					//if " exist...
+					for i := 1; i < len(quotedWord)-1; i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
+						if string(quotedWord[i]) == "\"" { //if char is next quote
+							endIndex = i
+							break
+						}
+					}
+					// fmt.Println("\n Line=", line, "\n", startIndex, " and ", endIndex)
+					if endIndex == -1 { //check if we did get an endIndex
+						continue
+					}
+					var doubleQuotedWord = quotedWord[:endIndex+1]
+					fmt.Println("\n\nLine:", lineIndex, " =", doubleQuotedWord)
+					// constantWord = ""
 
-			}
-			continue
+				}
+				path = trimPathAfterLastSlash(path)
+			} //if not .swift file
 		}
-		continue
 	}
 	return
 }
