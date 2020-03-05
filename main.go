@@ -61,27 +61,34 @@ func getDirectoryName() string {
 func readProjectDirectory(path string, project Project) Project {
 	//1. Make sure we have a Constant file
 	var isFound, filePath = searchFileLocation(path, "Constant", false) //search for any files containing Constant
-	if isFound {                                                        //if a Constant file exist...
+	var constantFile = File{}
+	if isFound { //if a Constant file exist...
 		fileContents := readFile(filePath)
+		constantFile.Path = filePath
 		fmt.Println("\n========================= Swift file: ", " contents =========================\n", fileContents)
 	} else { //create a Constants.swift file to the same directory AppDelegate.swift is at
-		createConstantFile(path)
+		constantFile = createConstantFile(path)
 	}
+	// fmt.Println("\nConstant file's path", constantFile.Path)
 	project.HasConstantFile = true
-
+	project.ConstantFile = constantFile
 	return project
 }
 
 //Creates a Constant.swift file on the same directory as the AppDelegate.swift file
-func createConstantFile(path string) {
+func createConstantFile(path string) (constant File) {
 	var fileNameToSearch = "AppDelegate.swift"
-	var isFound, filePath = searchFileLocation(path, fileNameToSearch, true) //check if any files
+	constant.Name = "Constants.swift"
+	var isFound, filePath = searchFileLocation(path, fileNameToSearch, true) //get AppDelegate's path
 	if isFound {                                                             //if AppDelegate is found, create our Constants.swift in this directory
-		var trimmedPath = trimPathAfterLastSlash(filePath)                                                               //remove AppDelegate.swift from the path which will be used to write our Constant file into
-		writeToFile(trimmedPath+"/Constants.swift", "//Thank you for using Samuel Folledo's Go Utility\n\nimport UIKit") //NOTE: writing to xcode project doesn't automatically add the Constant.swift file to the project
+		var trimmedPath = trimPathAfterLastSlash(filePath)
+		// print(filePath, " trimmed is=", trimmedPath)
+		constant.Path = trimmedPath + constant.Name                                                                     //remove AppDelegate.swift from the path which will be used to write our Constant file into
+		writeToFile(trimmedPath+"Constants.swift", "//Thank you for using Samuel Folledo's Go Utility\n\nimport UIKit") //NOTE: writing to xcode project doesn't automatically add the Constant.swift file to the project
 	} else {
 		fmt.Println("Error: Failed to find ", fileNameToSearch)
 	}
+	return
 }
 
 func handleSwiftFile(filePath string) {
@@ -156,11 +163,26 @@ func writeToFile(fileName, lines string) {
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
+//Removes all strings before the last "/"
+func trimPathBeforeLastSlash(path string, removeExtension bool) (fileName string) {
+	if index := strings.LastIndex(path, "/"); index != -1 {
+		// fmt.Println(path, " Trimmed =", path[:index])
+		fileName = path[index:]
+	}
+	if removeExtension {
+		if index := strings.LastIndex(fileName, "."); index != -1 {
+			// fmt.Println(path, " Trimmed =", path[:index])
+			fileName = path[:index] //remove all strings after the last .
+		}
+	}
+	return fileName
+}
+
 //Removes all strings after the last "/"
 func trimPathAfterLastSlash(path string) string {
 	if index := strings.LastIndex(path, "/"); index != -1 {
 		// fmt.Println(path, " Trimmed =", path[:index])
-		return path[:index]
+		return path[:index] + "/"
 	}
 	fmt.Println("Failed to trim strings after last '/'")
 	return path
