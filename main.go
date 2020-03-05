@@ -99,15 +99,20 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 						continue
 					}
 					var doubleQuotedWord = quotedWord[:endIndex+1]
-					fmt.Println("\n\nLine:", lineIndex, " =", doubleQuotedWord)
-					// constantWord = ""
-
+					var variableName = capitalizedWord(doubleQuotedWord)
+					var newFileLines = strings.Replace(fileContents, doubleQuotedWord, variableName, -1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally
+					writeToFile(path, newFileLines)
 				}
 				path = trimPathAfterLastSlash(path)
 			} //if not .swift file
 		}
 	}
 	return
+}
+
+//turns word to kWORD
+func capitalizedWord(word string) string {
+	return "k" + strings.ToUpper(word)
 }
 
 //recursively reads a directory and get .swift files
