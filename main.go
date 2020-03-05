@@ -6,7 +6,6 @@ import ( //format
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path/filepath" //to use filepath.Ext(*fileFlag) to trim file extension
 	"strings"
 	//"reflect" //package has TypeOf() which returns the Type of an object
@@ -14,26 +13,29 @@ import ( //format
 	// "oset/http"
 )
 
-type Directories struct {
+type Directory struct {
+	Path  string
 	Name  string
-	Files []Files
+	Files []File
 }
 
-type Files struct {
+type File struct {
+	Path  string
 	Name  string //file name
 	Codes []Code
 }
 
 type Code struct {
-	LineNumber string   //total number of lines
-	Line       string   //line content
-	Content    []string //all contents
+	LineNumber  string //total number of lines
+	LineContent string //line content
+	// Content    []string //all contents
 }
 
 type Project struct {
 	Name            string
-	Directories     []Directories
+	Directories     []Directory
 	HasConstantFile bool
+	ConstantFile    File
 }
 
 // note, that variables are pointers
@@ -43,10 +45,10 @@ var dirFlag = flag.String("dir", "", "Name of directory")
 func main() {
 	// saveFileFlag()
 	// directoryFlag()
-	var projectDir = getDirectoryName()
-	fmt.Println("Directory is=", projectDir)
-	var project = Project{Name: projectDir}
-	project = readProjectDirectory(projectDir, project)
+	var projectPath = getDirectoryName()
+	fmt.Println("Directory is=", projectPath)
+	var project = Project{Name: projectPath}
+	project = readProjectDirectory(projectPath, project)
 	fmt.Println("Project is ", project)
 }
 
@@ -56,8 +58,14 @@ func getDirectoryName() string {
 }
 
 //recursively reads a directory and get .swift files
-func readProjectDirectory(directory string, project Project) Project {
-	files, err := ioutil.ReadDir(directory) //ReadDir returns a slice of FileInfo structs
+func readProjectDirectory(path string, project Project) Project {
+	var constantFile = checkForConstantFile(path)
+	print("EYO OUR CONSTANT FILE=== ", constantFile.Name, "===\n")
+	// project.HasConstantFile = hasConstantFile
+	// if !hasConstantFile { //if we dont have a Constant file, }
+	return project
+
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return project
 	}
@@ -68,11 +76,12 @@ func readProjectDirectory(directory string, project Project) Project {
 				continue
 			}
 			// fmt.Println("Going inside directory=", file.Name())
-			var prevDirectory = directory
-			directory = directory + "/" + fileName //update directory path
-			fmt.Println("\n\nNew Directory: ", directory)
-			project = readProjectDirectory(directory, project) //recursivle call this function again
-			directory = prevDirectory
+			// var directory =
+			var prevPath = path
+			path = path + "/" + fileName //update directory path
+			fmt.Println("\n\nNew Directory: ", path)
+			project = readProjectDirectory(path, project) //recursively call this function again
+			path = prevPath
 			// fmt.Println("\n\nGoing Back to Directory: ", directory)
 		}
 		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
@@ -84,11 +93,11 @@ func readProjectDirectory(directory string, project Project) Project {
 					continue
 				}
 			}
-			//Start reading files
-			var filePath = directory + "/" + fileName
-			contents := readFile(filePath)
-			print("\n========================= Swift file: ", fileName, " contents =========================\n", contents)
-			// handleSwiftFile(file)
+			//Start reading Swift files
+			var filePath = path + "/" + fileName
+			// handleSwiftFile(filePath)
+			fileContents := readFile(filePath)
+			print("\n========================= Swift file: ", fileName, " contents =========================\n", fileContents)
 
 		} else { //if fileName is not a .swift file then skip the file
 			continue
@@ -97,8 +106,52 @@ func readProjectDirectory(directory string, project Project) Project {
 	return project
 }
 
-func handleSwiftFile(file os.FileInfo, directory string) {
-	readFile(file.Name())
+//Function that recursively searches for a Constant.swift file in our project directory. Create one if found None
+func checkForConstantFile(path string) (constantFile File) {
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
+	if isError(err) {
+		return
+	}
+	for _, file := range files { //loop through each files
+		var fileName = file.Name()
+		fmt.Println("file=", fileName)
+		if file.IsDir() { //skip if file is directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
+				continue
+			}
+			var prevPath = path
+			path = path + "/" + fileName              //update directory path by adding /fileName
+			constantFile = checkForConstantFile(path) //recursively call this function again
+			if constantFile.Name != "" {
+				break
+			} //break for loop if we have constant file
+			path = prevPath
+		}
+		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+		if fileExtension == ".swift" {                                //READ if file is a .swift file
+			var filePath = path + "/" + fileName         //path of file
+			if strings.Contains(fileName, "Constants") { //if fileName contains "Constants", it means we already have a Constants.swift file
+				// hasConstantFile = true
+				fmt.Println("READING...", filePath)
+				var fileContent = readFile(filePath)
+				constantFile = File{Path: path, Name: fileName} //turn fileContent to a Code
+				fmt.Println("Constant file:", fileName, " has contents'\n", fileContent)
+				break
+			}
+			continue
+			//Start reading files
+			// var filePath = directory + "/" + fileName
+		} else { //if fileName is not a .swift file then skip the file
+			continue
+		}
+	}
+	return
+}
+
+func handleSwiftFile(filePath string) {
+	fileContents := readFile(filePath)
+	print("\n========================= Swift file: ", " contents =========================\n", fileContents)
+
 }
 
 //function that reads a text file from a directory and writes an html version of it using a GO template
@@ -235,6 +288,14 @@ func readFile(fileName string) (content string) { //method that will read a file
 		return
 	}
 	// fmt.Print("READING ", fileName, " = \n", string(fileContents))
+	for index, fileContent := range fileContents {
+		// fmt.Println(index, " === ", string(fileContent))
+		if string(fileContent) == "\n" {
+			fmt.Println("Found newLine at", index, "\n")
+		}
+		fmt.Println("Char= ", string(fileContent))
+	}
+	fmt.Println("DONEEE")
 	content = string(fileContents)
 	return
 }
