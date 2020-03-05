@@ -59,10 +59,10 @@ func getDirectoryName() string {
 
 //recursively reads a directory and get .swift files
 func readProjectDirectory(path string, project Project) Project {
-	var constantFile = checkForConstantFile(path)
-	print("EYO OUR CONSTANT FILE=== ", constantFile.Name, "===\n")
-	// project.HasConstantFile = hasConstantFile
-	// if !hasConstantFile { //if we dont have a Constant file, }
+	var constantFile = searchPathForConstantFile(path)
+	if constantFile.Name == "" { //if we still have no Constant.swift file... create one
+		createConstantFile(path)
+	}
 	return project
 
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
@@ -106,8 +106,71 @@ func readProjectDirectory(path string, project Project) Project {
 	return project
 }
 
+//Creates a Constant.swift file on the same directory as the AppDelegate.swift file
+func createConstantFile(path string) {
+	var fileNameToSearch = "SecondViewController.swift"
+	var isFound, filePath = searchFileLocation(path, fileNameToSearch)
+	if isFound {
+		fmt.Println("Searched", fileNameToSearch, " and found at ", filePath)
+	} else {
+		fmt.Println("Searched and failed to find ", fileNameToSearch)
+	}
+}
+
+//Search a path until it finds fileName we are searching for
+func searchFileLocation(path, fileNameToSearch string) (isFound bool, filePath string) {
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
+	if isError(err) {
+		return
+	}
+	for _, file := range files { //loop through each files
+		var fileName = file.Name()
+		if file.IsDir() { //skip if file is directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
+				continue
+			}
+			var prevPath = path
+			path = path + "/" + fileName                                   //update directory path by adding /fileName
+			isFound, filePath = searchFileLocation(path, fileNameToSearch) //recursively call this function again
+			if isFound {
+				return
+			}
+			// if strings.Contains(filePath, fileNameToSearch) {     //if our filePath contains the fileName we are looking for...
+			// 	break
+			// }
+			path = prevPath
+		}
+		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+		if fileExtension == ".swift" {                                //READ if file is a .swift file
+			filePath = path + "/" + fileName //path of file
+
+			if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+				fmt.Println("Searched and found ", fileNameToSearch, " at ", filePath)
+				isFound = true
+				return
+				// var fileContent = readFile(filePath)
+				// 	constantFile = File{Path: path, Name: fileName} //turn fileContent to a Code
+				// 	fmt.Println("Constant file:", fileName, " has contents'\n", fileContent)
+				// 	break
+			}
+			continue
+			//Start reading files
+			// var filePath = directory + "/" + fileName
+		} else { //if fileName is not a .swift file then skip the file
+			continue
+		}
+	}
+	// if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+	// 	fmt.Println("Searched and FOUND ", fileNameToSearch, " at ", filePath)
+	// 	return filePath
+	// }
+	// fmt.Println("Searched and failed to find ", fileNameToSearch)
+	// return "" //Failed to find the file
+	return
+}
+
 //Function that recursively searches for a Constant.swift file in our project directory. Create one if found None
-func checkForConstantFile(path string) (constantFile File) {
+func searchPathForConstantFile(path string) (constantFile File) {
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
@@ -120,8 +183,8 @@ func checkForConstantFile(path string) (constantFile File) {
 				continue
 			}
 			var prevPath = path
-			path = path + "/" + fileName              //update directory path by adding /fileName
-			constantFile = checkForConstantFile(path) //recursively call this function again
+			path = path + "/" + fileName                   //update directory path by adding /fileName
+			constantFile = searchPathForConstantFile(path) //recursively call this function again
 			if constantFile.Name != "" {
 				break
 			} //break for loop if we have constant file
@@ -131,7 +194,6 @@ func checkForConstantFile(path string) (constantFile File) {
 		if fileExtension == ".swift" {                                //READ if file is a .swift file
 			var filePath = path + "/" + fileName         //path of file
 			if strings.Contains(fileName, "Constants") { //if fileName contains "Constants", it means we already have a Constants.swift file
-				// hasConstantFile = true
 				fmt.Println("READING...", filePath)
 				var fileContent = readFile(filePath)
 				constantFile = File{Path: path, Name: fileName} //turn fileContent to a Code
