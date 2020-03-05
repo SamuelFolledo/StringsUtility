@@ -20,13 +20,14 @@ type Directory struct {
 }
 
 type File struct {
-	Path  string
-	Name  string //file name
-	Codes []Code
+	Path     string
+	Name     string //file name
+	Codes    []Code
+	Contents []string
 }
 
 type Code struct {
-	LineNumber  string //total number of lines
+	LineNumber  int    //total number of lines
 	LineContent string //line content
 	// Content    []string //all contents
 }
@@ -50,11 +51,59 @@ func main() {
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	fmt.Println("Project is ", project.ConstantFile)
+	project = searchForStrings(projectPath, project)
 }
 
-func getDirectoryName() string {
-	flag.Parse()    //parse flags
-	return *dirFlag //after flag.Parse(), *fileFlag is now user's --file= input
+//Loop through each files and look for each strings in each lines
+func searchForStrings(path string, project Project) (currentProject Project) {
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
+	if isError(err) {
+		return
+	}
+	for _, file := range files { //loop through each files and directories
+		var fileName = file.Name()
+		if file.IsDir() { //skip if file is directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
+				continue
+			}
+			var prevPath = path
+			path = path + "/" + fileName                     //update directory path by adding /fileName
+			currentProject = searchForStrings(path, project) //recursively call this function again
+			path = prevPath                                  //if not found, go to next directory, but update our path
+		}
+		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+		if fileExtension == ".swift" {                                //if we find a Swift file... look for strings
+			path = path + "/" + fileName
+			var fileContents = readFile(path)
+			lines := stringLineToArray(fileContents) //turn lines of strings to array of strings
+			for lineIndex, line := range lines {     //loop through each lines
+				var startIndex = strings.Index(line, "\"") //gets first index of "
+				var endIndex = -1
+				if startIndex == -1 { //if line has no "
+					continue
+				}
+				quotedWord := line[startIndex:] //+1 to not include the first "
+				//if " exist...
+				for i := 1; i < len(quotedWord)-1; i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
+					if string(quotedWord[i]) == "\"" { //if char is next quote
+						endIndex = i
+						break
+					}
+				}
+				// fmt.Println("\n Line=", line, "\n", startIndex, " and ", endIndex)
+				if endIndex == -1 { //check if we did get an endIndex
+					continue
+				}
+				var doubleQuotedWord = quotedWord[:endIndex+1]
+				fmt.Println("\n\nLine:", lineIndex, " =", doubleQuotedWord)
+				// constantWord = ""
+
+			}
+			continue
+		}
+		continue
+	}
+	return
 }
 
 //recursively reads a directory and get .swift files
@@ -64,6 +113,12 @@ func setupConstantFile(path string, project Project) Project {
 	var constantFile = File{}
 	if isFound { //if a Constant file originally exist...
 		fileContents := readFile(filePath)
+		contentDic := stringLineToArray(fileContents) //turn lines of strings to array of strings
+		for index, content := range contentDic {
+			code := Code{LineNumber: index, LineContent: content}
+			fmt.Println("\nLine:", index, "=", content)
+			constantFile.Codes = append(constantFile.Codes, code) //append all codes line by line
+		}
 		constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
 		constantFile.Path = filePath
 		fmt.Println("\n========================= Swift file: ", " contents =========================\n", fileContents)
@@ -232,6 +287,12 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 	return
 }
 
+//get the directory flag name
+func getDirectoryName() string {
+	flag.Parse()    //parse flags
+	return *dirFlag //after flag.Parse(), *fileFlag is now user's --file= input
+}
+
 func readFile(fileName string) (content string) { //method that will read a file and return lines or error
 	fileContents, err := ioutil.ReadFile(fileName)
 	if isError(err) {
@@ -255,4 +316,12 @@ func isError(err error) bool { //error helper
 		panic(err)
 	}
 	return (err != nil)
+}
+
+func stringLineToArray(str string) (results []string) {
+	// - strings.Fields function to split a string into substrings removing any space characters, including newlines.
+	// - strings.Split function to split a string into its comma separated values
+	results = strings.Split(str, "\n") //split strings by line
+	// print("REULTS ARE", results)
+	return
 }
