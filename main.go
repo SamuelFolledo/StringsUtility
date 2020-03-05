@@ -6,6 +6,7 @@ import ( //format
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath" //to use filepath.Ext(*fileFlag) to trim file extension
 	"strings"
 	//"reflect" //package has TypeOf() which returns the Type of an object
@@ -44,7 +45,9 @@ func main() {
 	// directoryFlag()
 	var projectDir = getDirectoryName()
 	fmt.Println("Directory is=", projectDir)
-	readProjectDirectory(projectDir)
+	var project = Project{Name: projectDir}
+	project = readProjectDirectory(projectDir, project)
+	fmt.Println("Project is ", project)
 }
 
 func getDirectoryName() string {
@@ -53,10 +56,10 @@ func getDirectoryName() string {
 }
 
 //recursively reads a directory and get .swift files
-func readProjectDirectory(directory string) {
+func readProjectDirectory(directory string, project Project) Project {
 	files, err := ioutil.ReadDir(directory) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
-		return
+		return project
 	}
 	for _, file := range files { //loop through each files
 		var fileName = file.Name()
@@ -65,15 +68,27 @@ func readProjectDirectory(directory string) {
 				continue
 			}
 			// fmt.Println("Going inside directory=", file.Name())
-			readProjectDirectory(directory + "/" + fileName) //call this function again
+			var prevDirectory = directory
+			directory = directory + "/" + fileName //update directory path
+			fmt.Println("\n\nNew Directory: ", directory)
+			project = readProjectDirectory(directory, project) //recursivle call this function again
+			directory = prevDirectory
+			// fmt.Println("\n\nGoing Back to Directory: ", directory)
 		}
 		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
 		if fileExtension == ".swift" {                                //READ if file is a .swift file
-			if strings.Contains(fileName, "Constants") { //if we already have a Constants.swift file
-				fmt.Println("We have a constant file named", fileName, " already")
-				continue
+			if !project.HasConstantFile { //if project does not have a Constants.swift file yet, check if fileName is a constant file
+				if strings.Contains(fileName, "Constants") { //if fileName contains Constants, it means we already have a Constants.swift file
+					project.HasConstantFile = true
+					fmt.Println("We have a constant file named", fileName, " already")
+					continue
+				}
 			}
-			print("File: ", fileName, "\n")
+			// print("File: ", fileName, "\n")
+			contents := readFile(directory + "/" + fileName)
+			print("\n=============== Swift file ", fileName, " contents ===============\n", contents)
+			// handleSwiftFile(file)
+
 			// textFileToHtml(file.Name())
 			// -walk directories recursively
 			// -filter extensions by .swift
@@ -81,6 +96,11 @@ func readProjectDirectory(directory string) {
 			continue
 		}
 	}
+	return project
+}
+
+func handleSwiftFile(file os.FileInfo, directory string) {
+	readFile(file.Name())
 }
 
 //function that reads a text file from a directory and writes an html version of it using a GO template
@@ -211,15 +231,15 @@ func readProjectDirectory(directory string) {
 // 	print("Successful at writing file")
 // }
 
-// func readFile(fileName string) (content string) { //method that will read a file and return lines or error
-// 	fileContents, err := ioutil.ReadFile(fileName)
-// 	if isError(err) {
-// 		return
-// 	}
-// 	// fmt.Print("READ FILE = \n", string(fileContents))
-// 	content = string(fileContents)
-// 	return
-// }
+func readFile(fileName string) (content string) { //method that will read a file and return lines or error
+	fileContents, err := ioutil.ReadFile(fileName)
+	if isError(err) {
+		return
+	}
+	// fmt.Print("READING ", fileName, " = \n", string(fileContents))
+	content = string(fileContents)
+	return
+}
 
 func isError(err error) bool { //error helper
 	if err != nil {
