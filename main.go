@@ -84,14 +84,12 @@ func readProjectDirectory(directory string, project Project) Project {
 					continue
 				}
 			}
-			// print("File: ", fileName, "\n")
-			contents := readFile(directory + "/" + fileName)
-			print("\n=============== Swift file ", fileName, " contents ===============\n", contents)
+			//Start reading files
+			var filePath = directory + "/" + fileName
+			contents := readFile(filePath)
+			print("\n========================= Swift file: ", fileName, " contents =========================\n", contents)
 			// handleSwiftFile(file)
 
-			// textFileToHtml(file.Name())
-			// -walk directories recursively
-			// -filter extensions by .swift
 		} else { //if fileName is not a .swift file then skip the file
 			continue
 		}
