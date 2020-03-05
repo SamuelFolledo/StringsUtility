@@ -65,7 +65,6 @@ func readProjectDirectory(path string, project Project) Project {
 		fileContents := readFile(filePath)
 		fmt.Println("\n========================= Swift file: ", " contents =========================\n", fileContents)
 	} else { //create a Constants.swift file to the same directory AppDelegate.swift is at
-		// fmt.Println("Didn't find Constant")
 		createConstantFile(path)
 	}
 	project.HasConstantFile = true
@@ -78,9 +77,8 @@ func createConstantFile(path string) {
 	var fileNameToSearch = "AppDelegate.swift"
 	var isFound, filePath = searchFileLocation(path, fileNameToSearch, true) //check if any files
 	if isFound {                                                             //if AppDelegate is found, create our Constants.swift in this directory
-		fmt.Println("xxxxxxSearched", fileNameToSearch, " and found at ", filePath)
-		var trimmedPath = trimPathAfterLastSlash(filePath)
-		fmt.Println("Constant's path will be at ", trimmedPath)
+		var trimmedPath = trimPathAfterLastSlash(filePath)                                                               //remove AppDelegate.swift from the path which will be used to write our Constant file into
+		writeToFile(trimmedPath+"/Constants.swift", "//Thank you for using Samuel Folledo's Go Utility\n\nimport UIKit") //NOTE: writing to xcode project doesn't automatically add the Constant.swift file to the project
 	} else {
 		fmt.Println("Error: Failed to find ", fileNameToSearch)
 	}
@@ -89,62 +87,15 @@ func createConstantFile(path string) {
 func handleSwiftFile(filePath string) {
 	fileContents := readFile(filePath)
 	print("\n========================= Swift file: ", " contents =========================\n", fileContents)
-
 }
 
-//function that reads a text file from a directory and writes an html version of it using a GO template
-// func textFileToHtml(fileName string) {
-// 	//1) Get the text of the file passed, and HTML file name
-// 	var fileContents = readFile(("./texts/" + fileName))                       //get the contents of the file
-// 	var trimmedFileName = strings.TrimSuffix(fileName, filepath.Ext(fileName)) //trims the fileName's extension
-// 	var htmlFileName = "./html/" + trimmedFileName + ".html"                   //create the directory and name of the html file
-// 	//2) Get the struct data we will store
-// 	var news = []FileLines{
-// 		FileLines{Title: fileName, Message: fileContents, Done: false},
-// 	}
-// 	var articles = Article{Author: "Samuel", NewsList: news} //contain news to articles variable
-// 	//3) Create the HTML file, parse and execute the template with our data
-// 	var htmlFile = createFile(htmlFileName)
-// 	var t = template.Must(template.New("template.tmpl").ParseFiles(paths...))
-// 	var err = t.Execute(htmlFile, articles)
-// 	if isError(err) {
-// 		return
-// 	}
-// }
-
-// // function used to input filename to generate a new HTML file. Example: `latest-post.txt` flag will generate a `latest-post.html`
-// func saveFileFlag() {
-// 	flag.Parse()                                                          //parse flags
-// 	fmt.Println("File flag =", *fileFlag)                                 //after flag.Parse(), *fileFlag is now user's --file= input
-// 	var fileName = strings.TrimSuffix(*fileFlag, filepath.Ext(*fileFlag)) //trims the file's extension
-// 	var htmlFileName = "html/" + fileName + ".html"                       //takes a fileName with no extension and add a .html at the end
-// 	//create what we will be storing to html file
-// 	var line = populateLine()
-// 	var news = []FileLines{
-// 		FileLines{Title: "Title 1", Message: line, Done: true},
-// 		FileLines{Title: "Title 2", Message: "MESSAGEE 2", Done: false},
-// 		FileLines{Title: "Title 3", Message: "MESSAGEEE 3", Done: false},
-// 	}
-// 	var articles = Article{Author: "Kobe", NewsList: news}        //contain news to articles variable
-// 	readTmplAndWriteHtml(articles, "template.tmpl", htmlFileName) //create and save an html file from whatever user named the .txt file
-// }
-
-// func readTmplAndWriteHtml(parsedData Article, tmplName, htmlName string) {
-// 	var t = template.Must(template.New(tmplName).ParseFiles(paths...)) //1) parse files //template loader //1h25m is how it is actually read
-// 	var htmlFile = createFile(htmlName)                                //2) Create html file we will be saving to
-// 	var err = t.Execute(htmlFile, parsedData)                          //3) execute //1h26m Stdout prints it in the terminal
-// 	if isError(err) {
-// 		return
-// 	}
-// }
-
-// func writeToFile(fileName, lines string) {
-// 	bytesToWrite := []byte(lines)                         //data written
-// 	err := ioutil.WriteFile(fileName, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
-// 	if isError(err) {
-// 		return
-// 	}
-// }
+func writeToFile(fileName, lines string) {
+	bytesToWrite := []byte(lines)                         //data written
+	err := ioutil.WriteFile(fileName, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
+	if isError(err) {
+		return
+	}
+}
 
 // //function that takes a fileName and extension and returns the file created
 // func createFile(fileName string) (returnedFile *os.File) {
@@ -203,29 +154,12 @@ func handleSwiftFile(filePath string) {
 // 	return
 // }
 
-// func readDirectory(directory string) []os.FileInfo { //method that takes a directory and returns a list of files and directories
-// 	files, err := ioutil.ReadDir(directory) //ReadDir returns a slice of FileInfo structs
-// 	if isError(err) {
-// 		return nil
-// 	}
-// 	return files
-// }
-
-// func writeFile(fileName, data string) {
-// 	bytesToWrite := []byte("hello\ngo\n")                       //data written
-// 	err := ioutil.WriteFile("new-file.txt", bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
-// 	if isError(err) {
-// 		return
-// 	}
-// 	print("Successful at writing file")
-// }
-
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
 //Removes all strings after the last "/"
 func trimPathAfterLastSlash(path string) string {
 	if index := strings.LastIndex(path, "/"); index != -1 {
-		fmt.Println(path, " Trimmed =", path[:index])
+		// fmt.Println(path, " Trimmed =", path[:index])
 		return path[:index]
 	}
 	fmt.Println("Failed to trim strings after last '/'")
