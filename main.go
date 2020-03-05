@@ -62,6 +62,7 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 	}
 	for _, file := range files { //loop through each files and directories
 		var fileName = file.Name()
+		fmt.Println("Visting...", fileName)
 		if file.IsDir() { //skip if file is directory
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
