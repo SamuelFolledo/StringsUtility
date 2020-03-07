@@ -1,8 +1,6 @@
 package main
 
-import ( //format
-	// "html/template" //allows us to do templating
-
+import (
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -10,9 +8,6 @@ import ( //format
 	"path/filepath" //to use filepath.Ext(*fileFlag) to trim file extension
 	"regexp"
 	"strings"
-	//"reflect" //package has TypeOf() which returns the Type of an object
-	// "text/template"
-	// "oset/http"
 )
 
 type Directory struct {
@@ -101,10 +96,8 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 					replaceFile(path, newFileLines)                                        //write fileContents to our file
 					project = updateConstantsFile(doubleQuotedWord, variableName, project) //lastly, write it to our Constant file
 				}
-				// fmt.Println("\n\nPath BEFORE trimming", path)
 				path = trimPathAfterLastSlash(path)
-				// fmt.Println("\n\nPath AFTER trimming", path)
-			} //if not .swift file
+			} //not .swift file
 		}
 	}
 	return
@@ -130,20 +123,12 @@ func setupConstantFile(path string, project Project) Project {
 	var isFound, filePath = searchFileLocation(path, "Constant", false) //search for any files containing Constant
 	var constantFile = File{}
 	if isFound { //if a Constant file originally exist...
-		// fileContents := readFile(filePath)
-		// contentDic := stringLineToArray(fileContents) //turn lines of strings to array of strings
-		// for index, content := range contentDic {
-		// 	code := Code{LineNumber: index, LineContent: content}
-		// 	// fmt.Println("\nLine:", index, "=", content)
-		// 	constantFile.Codes = append(constantFile.Codes, code) //append all codes line by line
-		// }
 		constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
 		constantFile.Path = filePath
 		// fmt.Println("\n========================= Swift file: ", " contents =========================\n", fileContents)
 	} else { //create a Constants.swift file to the same directory AppDelegate.swift is at
 		constantFile = createNewConstantFile(path)
 	}
-	// fmt.Println("\nConstant file's path", constantFile.Path)
 	project.HasConstantFile = true
 	project.ConstantFile = constantFile
 	kCONSTANTFILEPATH = constantFile.Path
@@ -174,8 +159,10 @@ func handleSwiftFile(filePath string) {
 //replaces everything inside a file
 //Note: Read first if you dont want to remove everything
 func replaceFile(filePath, lines string) {
-	err := ioutil.WriteFile(filePath, []byte(lines), 0)
+	bytesToWrite := []byte(lines)                         //data written
+	err := ioutil.WriteFile(filePath, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
 	if isError(err) {
+		fmt.Println("Error Writing to file:", filePath, "====", err)
 		return
 	}
 }
@@ -191,70 +178,7 @@ func writeToFile(fileName, line string) {
 	if _, err = f.WriteString(line); err != nil {
 		panic(err)
 	}
-	// bytesToWrite := []byte(lines)                         //data written
-	// err := ioutil.WriteFile(fileName, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
-	// if isError(err) {
-	// 	fmt.Println("Error Writing to file:", fileName, "====", err)
-	// 	return
-	// }
 }
-
-// //function that takes a fileName and extension and returns the file created
-// func createFile(fileName string) (returnedFile *os.File) {
-// 	// check if file exists
-// 	var _, err = os.Stat(fileName)
-// 	if os.IsNotExist(err) == false { //if file exist, then delete file first
-// 		print(fileName, " exist\n")
-// 		deleteFile(fileName)
-// 	}
-// 	//create file
-// 	var file, errr = os.Create(fileName)
-// 	if isError(errr) {
-// 		return
-// 	}
-// 	returnedFile = file
-// 	fmt.Println("File Created Successfully", fileName)
-// 	return
-// }
-
-// func deleteFile(fileName string) {
-// 	var err = os.Remove(fileName)
-// 	if isError(err) {
-// 		return
-// 	}
-// 	fmt.Println("File Deleted")
-// }
-
-// func populateLine() (line string) {
-// 	directory := "/Users/macbookpro15/Desktop/MakeSite"
-// 	fileName := "texts/sample.txt" //file we will be searching for
-// 	file := findFile(fileName, directory)
-// 	line = ""
-// 	if file != nil {
-// 		line = readFile(fileName)
-// 	}
-// 	return
-// }
-
-// func findFile(fileName, directory string) (fileResult os.FileInfo) { //func that finds a filename from a directory and returns the file found. //[]os.FileInfo is a slice of interfaces
-// 	files, err := ioutil.ReadDir(directory) //ReadDir returns a slice of FileInfo structs
-// 	if isError(err) {
-// 		return
-// 	}
-// 	for _, file := range files { //loop through each files
-// 		// print("File: ", file.Name(), " is ")
-// 		if file.IsDir() { //skip if file is directory
-// 			continue
-// 		}
-// 		// fmt.Print(file.IsDir(), " = ", file.Name(), "\n")
-// 		if file.Name() == fileName {
-// 			// println("\n\nFound", fileName)
-// 			fileResult = file
-// 			return
-// 		}
-// 	}
-// 	return
-// }
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
