@@ -91,9 +91,9 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 					var doubleQuotedWord = quotedWord[:endIndex+1]
 					var variableName = capitalizedWord(doubleQuotedWord)
 					print("\n\nChanged: ", path, "'s ", doubleQuotedWord, " with ", variableName, "\n")
-					var newFileLines = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally
-					print("\nNew File LINES = ", newFileLines)
-					replaceFile(path, newFileLines)                                        //write fileContents to our file
+					fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally
+					print("\nNew File LINES = ", fileContents)
+					writeToFile(path, fileContents)                                        //write fileContents to our file
 					project = updateConstantsFile(doubleQuotedWord, variableName, project) //lastly, write it to our Constant file
 				}
 				path = trimPathAfterLastSlash(path)
@@ -107,7 +107,7 @@ func updateConstantsFile(quotedWord, variableName string, project Project) Proje
 	// var fileContents = readFile(project.ConstantFile.Path)
 	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
 	var updatedFileContents = constantVariable
-	replaceFile(kCONSTANTFILEPATH, updatedFileContents)
+	writeToFile(kCONSTANTFILEPATH, updatedFileContents)
 	return project
 }
 
@@ -157,7 +157,7 @@ func handleSwiftFile(filePath string) {
 }
 
 //replaces everything inside a file
-//Note: Read first if you dont want to remove everything
+//Note: Read first if you dont want to remove everything before writing
 func replaceFile(filePath, lines string) {
 	bytesToWrite := []byte(lines)                         //data written
 	err := ioutil.WriteFile(filePath, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
