@@ -1,4 +1,20 @@
 # Strings Utility
+
+<p>
+  <a>
+    <a href="https://goreportcard.com/badge/github.com/SamuelFolledo/StringsUtility" />
+    <img alt="commits" src="https://goreportcard.com/badge/github.com/SamuelFolledo/StringsUtility" target="_blank" />
+    <a href="https://github.com/SamuelFolledo/StringsUtility/commits/master">
+    <img alt="commits" src="https://img.shields.io/github/commit-activity/w/SamuelFolledo/StringsUtility?color=green" target="_blank" />
+  </a> 
+  <a href="#" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
+  <a href="https://github.com/imthaghost/gitmoji-changelog">
+    <img src="https://img.shields.io/badge/changelog-gitmoji-brightgreen.svg" alt="gitmoji-changelog">
+  </a>
+</p>
+
 A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and replace all strings in all ```.swift``` files to a constant variable scoped globally and writing them into a ```Constants``` file.
 
 ## Why Use?
@@ -6,10 +22,17 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 - Have strings autocompleted
 - Easily manage all your strings in one file
 
-
 ## Upcoming Features
 - Localizable.strings generator
 - Translate strings using [Google Cloud Translator](https://cloud.google.com/translate/docs)
+
+## How to Use?
+- clone the repo
+```git clone https://github.com/SamuelFolledo/StringsUtility```
+- cd into the repo
+```cd GoUtility```
+- run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
+```go run main.go --dir=PATH_To_YOUR_PROJECT``` 
 
 ## Demo
 <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/stringsUtilityDemo.gif" width="896" height="521">
@@ -17,6 +40,6 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 ### Links
 - [MakeSchool's](makeschool.com)'s [BEW2.5: Patterns & Practices in Strongly Typed Languages](https://make-school-courses.github.io/BEW-2.5-Strongly-Typed-Languages/#/) - the only university that teaches Go
 - [MakeUtility Requirements](https://github.com/Make-School-Courses/BEW-2.5-Strongly-Typed-Languages/blob/master/Project/MakeUtility.md)
-- [Medium article about the painful/boring steps to localize your iOS app](https://github.com/Make-School-Courses/BEW-2.5-Strongly-Typed-Languages/blob/master/Project/MakeUtility.md)
+- [How to localized your iOS app](https://github.com/Make-School-Courses/BEW-2.5-Strongly-Typed-Languages/blob/master/Project/MakeUtility.md)
 
 Lincense under [MIT License](LICENSE)
