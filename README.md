@@ -12,7 +12,7 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 - Translate strings using [Google Cloud Translator](https://cloud.google.com/translate/docs)
 
 ## Demo
-<img src="https://github.com/SamuelFolledo/MOB1.2/blob/master/MobileClasswork/static/gif/finalDemo.gif" width="548" height="960">
+<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/stringsUtilityDemo.gif" width="896" height="521">
 
 ### Links
 - 
