@@ -1,4 +1,4 @@
-module github.com/SamuelFolledo/AppDevUtility
+module github.com/SamuelFolledo/StringsUtility
 
 go 1.13
 
