@@ -6,6 +6,7 @@ import ( //format
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath" //to use filepath.Ext(*fileFlag) to trim file extension
 	"regexp"
 	"strings"
@@ -43,10 +44,9 @@ type Project struct {
 // note, that variables are pointers
 var fileFlag = flag.String("file", "", "Name of file")
 var dirFlag = flag.String("dir", "", "Name of directory")
+var kCONSTANTFILEPATH string
 
 func main() {
-	// saveFileFlag()
-	// directoryFlag()
 	var projectPath = getDirectoryName()
 	fmt.Println("Directory is=", projectPath)
 	var project = Project{Name: projectPath}
@@ -68,14 +68,7 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 				continue
 			}
 			var prevPath = path
-			print("\n\nPREV PATH =", prevPath)
-			// if string(path[len(path)-1]) == "/" { //if last char was "/"
-			// 	path = path + fileName
-			// } else {
-			// 	path = path + "/" + fileName //update directory path by adding /fileName
-			// }
-			path = path + "/" + fileName //update directory path by adding /fileName
-			// print("\nNew path =", path, "\n")
+			path = path + "/" + fileName              //update directory path by adding /fileName
 			project = searchForStrings(path, project) //recursively call this function again
 			path = prevPath
 		} else { //if file...
@@ -90,24 +83,23 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 					if startIndex == -1 { //if line has no "
 						continue
 					}
-					quotedWord := line[startIndex:] //+1 to not include the first "
-					//if " exist...
+					quotedWord := line[startIndex:]          //+1 to not include the first "
 					for i := 1; i < len(quotedWord)-1; i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
-						if string(quotedWord[i]) == "\"" { //if char is next quote
+						if string(quotedWord[i]) == "\"" { //if char is second "
 							endIndex = i
-							break //DONT BREAK IN THE FUTURE
+							break //DONT BREAK IN THE FUTURE and implement a way to check strings after this line instead of moving to next line
 						}
 					}
-					// fmt.Println("\n Line=", line, "\n", startIndex, " and ", endIndex)
 					if endIndex == -1 { //check if we did get an endIndex
 						continue
 					}
 					var doubleQuotedWord = quotedWord[:endIndex+1]
 					var variableName = capitalizedWord(doubleQuotedWord)
 					print("\n\nChanged: ", path, "'s ", doubleQuotedWord, " with ", variableName, "\n")
-					var newFileLines = strings.Replace(fileContents, doubleQuotedWord, variableName, -1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally
-					writeToFile(path, newFileLines)                                                      //write fileContents to our file
-					project = updateConstantsFile(doubleQuotedWord, variableName, project)               //lastly, write it to our Constant file
+					var newFileLines = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally
+					print("\nNew File LINES = ", newFileLines)
+					replaceFile(path, newFileLines)                                        //write fileContents to our file
+					project = updateConstantsFile(doubleQuotedWord, variableName, project) //lastly, write it to our Constant file
 				}
 				// fmt.Println("\n\nPath BEFORE trimming", path)
 				path = trimPathAfterLastSlash(path)
@@ -119,16 +111,10 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 }
 
 func updateConstantsFile(quotedWord, variableName string, project Project) Project {
-	print("1")
-	print("ConstnatFile Path = ", project.ConstantFile.Path)
-	var fileContents = readFile(project.ConstantFile.Path)
-	print("2")
-	var constantVariable = "public let " + variableName + ": String = " + quotedWord
-	print("3")
-	var updatedFileContents = fileContents + "\n" + constantVariable
-	print("4")
-	writeToFile(project.ConstantFile.Path, updatedFileContents)
-	print("5")
+	// var fileContents = readFile(project.ConstantFile.Path)
+	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
+	var updatedFileContents = constantVariable
+	replaceFile(kCONSTANTFILEPATH, updatedFileContents)
 	return project
 }
 
@@ -144,15 +130,14 @@ func setupConstantFile(path string, project Project) Project {
 	var isFound, filePath = searchFileLocation(path, "Constant", false) //search for any files containing Constant
 	var constantFile = File{}
 	if isFound { //if a Constant file originally exist...
-		fileContents := readFile(filePath)
-		contentDic := stringLineToArray(fileContents) //turn lines of strings to array of strings
-		for index, content := range contentDic {
-			code := Code{LineNumber: index, LineContent: content}
-			// fmt.Println("\nLine:", index, "=", content)
-			constantFile.Codes = append(constantFile.Codes, code) //append all codes line by line
-		}
+		// fileContents := readFile(filePath)
+		// contentDic := stringLineToArray(fileContents) //turn lines of strings to array of strings
+		// for index, content := range contentDic {
+		// 	code := Code{LineNumber: index, LineContent: content}
+		// 	// fmt.Println("\nLine:", index, "=", content)
+		// 	constantFile.Codes = append(constantFile.Codes, code) //append all codes line by line
+		// }
 		constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
-		print("Constant's File Path will be =", filePath)
 		constantFile.Path = filePath
 		// fmt.Println("\n========================= Swift file: ", " contents =========================\n", fileContents)
 	} else { //create a Constants.swift file to the same directory AppDelegate.swift is at
@@ -161,7 +146,7 @@ func setupConstantFile(path string, project Project) Project {
 	// fmt.Println("\nConstant file's path", constantFile.Path)
 	project.HasConstantFile = true
 	project.ConstantFile = constantFile
-	// print("Project's Constant File Path ====", project.ConstantFile.Path)
+	kCONSTANTFILEPATH = constantFile.Path
 	return project
 }
 
@@ -173,8 +158,8 @@ func createNewConstantFile(path string) (constant File) {
 	if isFound {                                                             //if AppDelegate is found, create our Constants.swift in this directory
 		var trimmedPath = trimPathAfterLastSlash(filePath)
 		// print(filePath, " trimmed is=", trimmedPath)
-		constant.Path = trimmedPath + "/" + constant.Name                                                               //remove AppDelegate.swift from the path which will be used to write our Constant file into
-		writeToFile(trimmedPath+"Constants.swift", "//Thank you for using Samuel Folledo's Go Utility\n\nimport UIKit") //NOTE: writing to xcode project doesn't automatically add the Constant.swift file to the project
+		constant.Path = trimmedPath + "/" + constant.Name                                               //remove AppDelegate.swift from the path which will be used to write our Constant file into
+		writeToFile(constant.Path, "//Thank you for using Samuel Folledo's Go Utility\n\nimport UIKit") //NOTE: writing to xcode project doesn't automatically add the Constant.swift file to the project
 	} else {
 		fmt.Println("Error: Failed to find ", fileNameToSearch)
 	}
@@ -186,13 +171,32 @@ func handleSwiftFile(filePath string) {
 	print("\n========================= Swift file: ", " contents =========================\n", fileContents)
 }
 
-func writeToFile(fileName, lines string) {
-	bytesToWrite := []byte(lines)                         //data written
-	err := ioutil.WriteFile(fileName, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
+//replaces everything inside a file
+//Note: Read first if you dont want to remove everything
+func replaceFile(filePath, lines string) {
+	err := ioutil.WriteFile(filePath, []byte(lines), 0)
 	if isError(err) {
-		fmt.Println("Error Writing to file:", fileName, "====", err)
 		return
 	}
+}
+
+//append a string to a file at the end
+//Usage - add constant variable to Constants.swift file
+func writeToFile(fileName, line string) {
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	if _, err = f.WriteString(line); err != nil {
+		panic(err)
+	}
+	// bytesToWrite := []byte(lines)                         //data written
+	// err := ioutil.WriteFile(fileName, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
+	// if isError(err) {
+	// 	fmt.Println("Error Writing to file:", fileName, "====", err)
+	// 	return
+	// }
 }
 
 // //function that takes a fileName and extension and returns the file created
@@ -359,6 +363,7 @@ func stringLineToArray(str string) (results []string) {
 	// - strings.Split function to split a string into its comma separated values
 	results = strings.Split(str, "\n") //split strings by line
 	// print("REULTS ARE", results)
+	// output := strings.Join(lines, "\n") //puts array to string
 	return
 }
 
