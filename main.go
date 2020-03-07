@@ -40,6 +40,7 @@ type Project struct {
 var fileFlag = flag.String("file", "", "Name of file")
 var dirFlag = flag.String("dir", "", "Name of directory")
 var kCONSTANTFILEPATH string
+var kCONSTANTFILENAME string
 
 func main() {
 	var projectPath = getDirectoryName()
@@ -67,19 +68,20 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 			project = searchForStrings(path, project) //recursively call this function again
 			path = prevPath
 		} else { //if file...
-			var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
-			if fileExtension == ".swift" {                                //if we find a Swift file... look for strings
+			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
+			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file... look for strings
+				print("Constant File Name ======", project.ConstantFile.Name)
 				path = path + "/" + fileName
 				var fileContents = readFile(path)
 				lines := stringLineToArray(fileContents) //turn lines of strings to array of strings
-				for _, line := range lines {             //loop through each lines
+				for lineIndex, line := range lines {     //loop through each lines
 					var startIndex = strings.Index(line, "\"") //gets first index of "
 					var endIndex = -1
 					if startIndex == -1 { //if line has no "
 						continue
 					}
-					quotedWord := line[startIndex:]          //+1 to not include the first "
-					for i := 1; i < len(quotedWord)-1; i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
+					quotedWord := line[startIndex:]        //+1 to not include the first "
+					for i := 1; i < len(quotedWord); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
 						if string(quotedWord[i]) == "\"" { //if char is second "
 							endIndex = i
 							break //DONT BREAK IN THE FUTURE and implement a way to check strings after this line instead of moving to next line
@@ -90,12 +92,12 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 					}
 					var doubleQuotedWord = quotedWord[:endIndex+1]
 					var variableName = capitalizedWord(doubleQuotedWord)
-					print("\n\nChanged: ", path, "'s ", doubleQuotedWord, " with ", variableName, "\n")
-					fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally
-					print("\nNew File LINES = ", fileContents)
-					writeToFile(path, fileContents)                                        //write fileContents to our file
+					print("\n\nChanged: ", path, ", line: ", lineIndex, doubleQuotedWord, " with ", variableName, "\n")
+					fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+					// print("\n======================New File LINES = ", fileContents)
 					project = updateConstantsFile(doubleQuotedWord, variableName, project) //lastly, write it to our Constant file
 				}
+				replaceFile(path, fileContents) //write fileContents to our file
 				path = trimPathAfterLastSlash(path)
 			} //not .swift file
 		}
@@ -132,6 +134,7 @@ func setupConstantFile(path string, project Project) Project {
 	project.HasConstantFile = true
 	project.ConstantFile = constantFile
 	kCONSTANTFILEPATH = constantFile.Path
+	kCONSTANTFILENAME = constantFile.Name
 	return project
 }
 
