@@ -110,13 +110,7 @@ func updateConstantsFile(quotedWord, variableName string, project Project) Proje
 	return project
 }
 
-//turns word to kWORD
-func capitalizedWord(word string) string {
-	var processedWord = removeAllSymbols(word)
-	return "k" + strings.ToUpper(processedWord)
-}
-
-//recursively reads a directory and get .swift files
+//search for Constant file, if it doesn't exist, create a new one
 func setupConstantFile(path string, project Project) Project {
 	//1. Make sure we have a Constant file
 	var isFound, filePath = searchFileLocation(path, "Constant", false) //search for any files containing Constant
@@ -130,7 +124,7 @@ func setupConstantFile(path string, project Project) Project {
 	}
 	project.HasConstantFile = true
 	project.ConstantFile = constantFile
-	kCONSTANTFILEPATH = constantFile.Path
+	kCONSTANTFILEPATH = constantFile.Path //keep the reference to the path's file and name
 	kCONSTANTFILENAME = constantFile.Name
 	return project
 }
@@ -149,62 +143,6 @@ func createNewConstantFile(path string) (constant File) {
 		fmt.Println("Error: Failed to find ", fileNameToSearch)
 	}
 	return
-}
-
-func handleSwiftFile(filePath string) {
-	fileContents := readFile(filePath)
-	print("\n========================= Swift file: ", " contents =========================\n", fileContents)
-}
-
-//replaces everything inside a file
-//Note: Read first if you dont want to remove everything before writing
-func replaceFile(filePath, lines string) {
-	bytesToWrite := []byte(lines)                         //data written
-	err := ioutil.WriteFile(filePath, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
-	if isError(err) {
-		fmt.Println("Error Writing to file:", filePath, "====", err)
-		return
-	}
-}
-
-//append a string to a file at the end
-//Usage - add constant variable to Constants.swift file
-func writeToFile(fileName, line string) {
-	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0600)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	if _, err = f.WriteString(line); err != nil {
-		panic(err)
-	}
-}
-
-//////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
-
-//Removes all strings before the last "/"
-func trimPathBeforeLastSlash(path string, removeExtension bool) (fileName string) {
-	if index := strings.LastIndex(path, "/"); index != -1 {
-		// fmt.Println(path, " Trimmed =", path[:index])
-		fileName = path[index+1:]
-	}
-	if removeExtension {
-		if index := strings.LastIndex(fileName, "."); index != -1 {
-			// fmt.Println(path, " Trimmed =", path[:index])
-			fileName = path[:index] //remove all strings after the last .
-		}
-	}
-	return fileName
-}
-
-//Removes all strings after the last "/"
-func trimPathAfterLastSlash(path string) string {
-	if index := strings.LastIndex(path, "/"); index != -1 {
-		// fmt.Println(path, " Trimmed =", path[:index])
-		return path[:index]
-	}
-	fmt.Println("Failed to trim strings after last '/'")
-	return path
 }
 
 //Search a path until it finds a path that contains a fileName we are searching for. isExactName will determine if fileName must exactly match or must contain only
@@ -243,11 +181,66 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 					return
 				}
 			}
-			continue
 		}
-		continue
 	}
 	return
+}
+
+//////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
+
+//replaces everything inside a file
+//Note: Read first if you dont want to remove everything before writing
+func replaceFile(filePath, lines string) {
+	bytesToWrite := []byte(lines)                         //data written
+	err := ioutil.WriteFile(filePath, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
+	if isError(err) {
+		fmt.Println("Error Writing to file:", filePath, "====", err)
+		return
+	}
+}
+
+//append a string to a file at the end
+//Usage - add constant variable to Constants.swift file
+func writeToFile(fileName, line string) {
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	if _, err = f.WriteString(line); err != nil {
+		panic(err)
+	}
+}
+
+//turns word to kWORD
+func capitalizedWord(word string) string {
+	var processedWord = removeAllSymbols(word)
+	return "k" + strings.ToUpper(processedWord)
+}
+
+//Removes all strings before the last "/"
+func trimPathBeforeLastSlash(path string, removeExtension bool) (fileName string) {
+	if index := strings.LastIndex(path, "/"); index != -1 {
+		// fmt.Println(path, " Trimmed =", path[:index])
+		fileName = path[index+1:]
+	}
+	if removeExtension {
+		if index := strings.LastIndex(fileName, "."); index != -1 {
+			// fmt.Println(path, " Trimmed =", path[:index])
+			fileName = path[:index] //remove all strings after the last .
+		}
+	}
+	return fileName
+}
+
+//Removes all strings after the last "/"
+func trimPathAfterLastSlash(path string) string {
+	if index := strings.LastIndex(path, "/"); index != -1 {
+		// fmt.Println(path, " Trimmed =", path[:index])
+		return path[:index]
+	}
+	fmt.Println("Failed to trim strings after last '/'")
+	return path
 }
 
 //get the directory flag name
@@ -256,20 +249,13 @@ func getDirectoryName() string {
 	return *dirFlag //after flag.Parse(), *fileFlag is now user's --file= input
 }
 
+//reads file given a path
 func readFile(fileName string) (content string) { //method that will read a file and return lines or error
 	fileContents, err := ioutil.ReadFile(fileName)
 	if isError(err) {
 		print("Error reading ", fileName, "====", err)
 		return
 	}
-	// fmt.Print("READING ", fileName, " = \n", string(fileContents))
-	// for index, fileContent := range fileContents {
-	// 	// fmt.Println(index, " === ", string(fileContent))
-	// 	if string(fileContent) == "\n" {
-	// 		fmt.Println("Found newLine at", index, "\n")
-	// 	}
-	// 	fmt.Println("Char= ", string(fileContent))
-	// }
 	content = string(fileContents)
 	return
 }
@@ -282,11 +268,11 @@ func isError(err error) bool { //error helper
 	return (err != nil)
 }
 
+//turns strings to array of lines
 func stringLineToArray(str string) (results []string) {
 	// - strings.Fields function to split a string into substrings removing any space characters, including newlines.
 	// - strings.Split function to split a string into its comma separated values
 	results = strings.Split(str, "\n") //split strings by line
-	// print("REULTS ARE", results)
 	// output := strings.Join(lines, "\n") //puts array to string
 	return
 }
