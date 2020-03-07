@@ -70,7 +70,6 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 		} else { //if file...
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
 			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file... look for strings
-				print("Constant File Name ======", project.ConstantFile.Name)
 				path = path + "/" + fileName
 				var fileContents = readFile(path)
 				lines := stringLineToArray(fileContents) //turn lines of strings to array of strings
@@ -94,8 +93,7 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 					var variableName = capitalizedWord(doubleQuotedWord)
 					print("\n\nChanged: ", path, ", line: ", lineIndex, doubleQuotedWord, " with ", variableName, "\n")
 					fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-					// print("\n======================New File LINES = ", fileContents)
-					project = updateConstantsFile(doubleQuotedWord, variableName, project) //lastly, write it to our Constant file
+					project = updateConstantsFile(doubleQuotedWord, variableName, project)          //lastly, write it to our Constant file
 				}
 				replaceFile(path, fileContents) //write fileContents to our file
 				path = trimPathAfterLastSlash(path)
@@ -106,7 +104,6 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 }
 
 func updateConstantsFile(quotedWord, variableName string, project Project) Project {
-	// var fileContents = readFile(project.ConstantFile.Path)
 	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
 	var updatedFileContents = constantVariable
 	writeToFile(kCONSTANTFILEPATH, updatedFileContents)
