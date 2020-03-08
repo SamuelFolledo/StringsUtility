@@ -28,11 +28,17 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 
 ## How to Use?
 - clone the repo
-```git clone https://github.com/SamuelFolledo/StringsUtility```
+  ```
+  git clone https://github.com/SamuelFolledo/StringsUtility
+  ```
 - cd into the repo
-```cd GoUtility```
+  ```
+  cd GoUtility
+  ```
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
-```go run main.go --dir=PATH_To_YOUR_PROJECT``` 
+  ```
+  go run main.go --dir=PATH_To_YOUR_PROJECT
+  ``` 
 
 ## Demo
 <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/stringsUtilityDemo.gif" width="896" height="521">
