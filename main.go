@@ -69,7 +69,7 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
 			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file that's not the constants file... look for strings
 				path = path + "/" + fileName
-				currentProject = handleSwiftFile(path)
+				currentProject = handleSwiftFile(path, project)
 				path = trimPathAfterLastSlash(path) //reset path by removing the / + fileName
 			} //not .swift file
 		}
@@ -78,7 +78,7 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 }
 
 //looks for strings in a .swift file and updates the .swift file and Constants file accordingly
-func handleSwiftFile(path string) (project Project) {
+func handleSwiftFile(path string, project Project) (currentProject Project) {
 	var fileContents = readFile(path)        //get the contents of
 	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
 	for lineIndex, line := range lines {     //loop through each lines
@@ -96,7 +96,7 @@ func handleSwiftFile(path string) (project Project) {
 				var variableName = capitalizedWord(doubleQuotedWord)
 				print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
 				fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-				project = updateConstantsFile(doubleQuotedWord, variableName, project)          //lastly, write it to our Constant file
+				currentProject = updateConstantsFile(doubleQuotedWord, variableName, project)   //lastly, write it to our Constant file
 			}
 		}
 	}
@@ -104,10 +104,12 @@ func handleSwiftFile(path string) (project Project) {
 	return
 }
 
-//writes constants file with Swift code
+//writes constant variable to our Constants file it doesn't exist yet
 func updateConstantsFile(quotedWord, variableName string, project Project) Project {
 	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
-	writeToFile(kCONSTANTFILEPATH, constantVariable)
+	if constantFileContents := readFile(kCONSTANTFILEPATH); strings.Contains(constantFileContents, constantVariable) { //if constant variable doesn't exist in our Constants file, write it
+		writeToFile(kCONSTANTFILEPATH, constantVariable)
+	}
 	return project
 }
 
