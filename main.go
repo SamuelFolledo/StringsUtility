@@ -58,55 +58,56 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 	}
 	for _, file := range files { //loop through each files and directories
 		var fileName = file.Name()
-		// fmt.Println("\nVisting...", fileName, "isDir=", file.IsDir())
-		if file.IsDir() { //skip if file is directory
+		if file.IsDir() { //if directory...
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
-			var prevPath = path
-			path = path + "/" + fileName              //update directory path by adding /fileName
-			project = searchForStrings(path, project) //recursively call this function again
-			path = prevPath
+			path = path + "/" + fileName                     //update directory path by adding /fileName
+			currentProject = searchForStrings(path, project) //recursively call this function again
+			path = trimPathAfterLastSlash(path)              //reset path by removing the / + fileName
 		} else { //if file...
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
-			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file... look for strings
+			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file that's not the constants file... look for strings
 				path = path + "/" + fileName
-				var fileContents = readFile(path)
-				lines := stringLineToArray(fileContents) //turn lines of strings to array of strings
-				for lineIndex, line := range lines {     //loop through each lines
-					var startIndex = strings.Index(line, "\"") //gets first index of "
-					var endIndex = -1
-					if startIndex == -1 { //if line has no "
-						continue
-					}
-					quotedWord := line[startIndex:]        //+1 to not include the first "
-					for i := 1; i < len(quotedWord); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
-						if string(quotedWord[i]) == "\"" { //if char is second "
-							endIndex = i
-							break //DONT BREAK IN THE FUTURE and implement a way to check strings after this line instead of moving to next line
-						}
-					}
-					if endIndex == -1 { //check if we did get an endIndex
-						continue
-					}
-					var doubleQuotedWord = quotedWord[:endIndex+1]
-					var variableName = capitalizedWord(doubleQuotedWord)
-					print("\n\nChanged: ", path, ", line: ", lineIndex, doubleQuotedWord, " with ", variableName, "\n")
-					fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-					project = updateConstantsFile(doubleQuotedWord, variableName, project)          //lastly, write it to our Constant file
-				}
-				replaceFile(path, fileContents) //write fileContents to our file
-				path = trimPathAfterLastSlash(path)
+				currentProject = handleSwiftFile(path)
+				path = trimPathAfterLastSlash(path) //reset path by removing the / + fileName
 			} //not .swift file
 		}
 	}
 	return
 }
 
+//looks for strings in a .swift file and updates the .swift file and Constants file accordingly
+func handleSwiftFile(path string) (project Project) {
+	var fileContents = readFile(path)        //get the contents of
+	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
+	for lineIndex, line := range lines {     //loop through each lines
+		if startIndex := strings.Index(line, "\""); startIndex != -1 { //gets first index of line that has ", else go to next line
+			var endIndex = -1
+			quotedWord := line[startIndex:]        //remove all strings before first "
+			for i := 1; i < len(quotedWord); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
+				if string(quotedWord[i]) == "\"" { //if char is second "
+					endIndex = i
+					break //DONT BREAK IN THE FUTURE and implement a way to check strings after this line instead of moving to next line
+				}
+			}
+			if endIndex != -1 { //if we found the next "... update our .swift file and Constants file
+				var doubleQuotedWord = quotedWord[:endIndex+1]
+				var variableName = capitalizedWord(doubleQuotedWord)
+				print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
+				fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+				project = updateConstantsFile(doubleQuotedWord, variableName, project)          //lastly, write it to our Constant file
+			}
+		}
+	}
+	replaceFile(path, fileContents) //update our .swift file with fileContents
+	return
+}
+
+//writes constants file with Swift code
 func updateConstantsFile(quotedWord, variableName string, project Project) Project {
 	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
-	var updatedFileContents = constantVariable
-	writeToFile(kCONSTANTFILEPATH, updatedFileContents)
+	writeToFile(kCONSTANTFILEPATH, constantVariable)
 	return project
 }
 
@@ -233,11 +234,11 @@ func trimPathBeforeLastSlash(path string, removeExtension bool) (fileName string
 	return fileName
 }
 
-//Removes all strings after the last "/"
+//Updates path by removing all strings after the last "/".
 func trimPathAfterLastSlash(path string) string {
 	if index := strings.LastIndex(path, "/"); index != -1 {
 		// fmt.Println(path, " Trimmed =", path[:index])
-		return path[:index]
+		return path[:index] //remove including the last /
 	}
 	fmt.Println("Failed to trim strings after last '/'")
 	return path
