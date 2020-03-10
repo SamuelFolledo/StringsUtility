@@ -107,7 +107,7 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 //writes constant variable to our Constants file it doesn't exist yet
 func updateConstantsFile(quotedWord, variableName string, project Project) Project {
 	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
-	if constantFileContents := readFile(kCONSTANTFILEPATH); strings.Contains(constantFileContents, constantVariable) { //if constant variable doesn't exist in our Constants file, write it
+	if constantFileContents := readFile(kCONSTANTFILEPATH); strings.Contains(constantFileContents, variableName) { //if constant variable doesn't exist in our Constants file, write it
 		writeToFile(kCONSTANTFILEPATH, constantVariable)
 	}
 	return project
@@ -121,12 +121,9 @@ func setupConstantFile(path string, project Project) Project {
 	if isFound { //if a Constant file originally exist...
 		constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
 		constantFile.Path = filePath
-		// fmt.Println("\n========================= Swift file: ", " contents =========================\n", fileContents)
 	} else { //create a Constants.swift file to the same directory AppDelegate.swift is at
 		constantFile = createNewConstantFile(path)
 	}
-	project.HasConstantFile = true
-	project.ConstantFile = constantFile
 	kCONSTANTFILEPATH = constantFile.Path //keep the reference to the path's file and name
 	kCONSTANTFILENAME = constantFile.Name
 	return project
