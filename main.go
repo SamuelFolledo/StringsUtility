@@ -104,6 +104,12 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	return
 }
 
+//takes a line with strings and returns an array of strings
+func getStringsFromLine(line string) (stringsArray []string) {
+
+	return
+}
+
 //writes constant variable to our Constants file it doesn't exist yet
 func updateConstantsFile(quotedWord, variableName string, project Project) Project {
 	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
