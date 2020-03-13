@@ -83,7 +83,8 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {             //loop through each lines
 		if strings.Index(line, "\"") != -1 {
-			stringsArray := getStringsFromLine(line)
+			contents, stringsArray := getStringsFromLine(fileContents, line)
+			fileContents = contents
 			fmt.Println("Array of strings =", stringsArray)
 			// if startIndex := strings.Index(line, "\""); startIndex != -1 { //gets first index of line that has ", else go to next line
 			// var endIndex = -1
@@ -108,7 +109,7 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 }
 
 //takes a line with strings and returns an array of strings
-func getStringsFromLine(line string) (stringsArray []string) {
+func getStringsFromLine(fileContents, line string) (contents string, stringsArray []string) {
 	if startIndex := strings.Index(line, "\""); startIndex != -1 { //if line has "
 		var endIndex = -1
 		quotedWord := line[startIndex:]        //remove all strings before first "
@@ -118,18 +119,18 @@ func getStringsFromLine(line string) (stringsArray []string) {
 				endIndex = i
 				var doubleQuotedWord = quotedWord[:endIndex+1]
 				var variableName = capitalizedWord(doubleQuotedWord)
-				print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
-				fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-				currentProject = updateConstantsFile(doubleQuotedWord, variableName, project)   //lastly, write it to our Constant file
+				// print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
+				contents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+				updateConstantsFile(doubleQuotedWord, variableName)                         //lastly, write it to our Constant file
 			case "\n": //if new line... return
 				return
 			default: //any other characters will be ignored
 				break
 			}
-			if string(quotedWord[i]) == "\"" { //if char is second "
-				endIndex = i
-				break //DONT BREAK IN THE FUTURE and implement a way to check strings after this line instead of moving to next line
-			}
+			// if string(quotedWord[i]) == "\"" { //if char is second "
+			// 	endIndex = i
+			// 	break //DONT BREAK IN THE FUTURE and implement a way to check strings after this line instead of moving to next line
+			// }
 		}
 		// if endIndex != -1 { //if we found the next "... update our .swift file and Constants file
 		// 	var doubleQuotedWord = quotedWord[:endIndex+1]
@@ -144,12 +145,11 @@ func getStringsFromLine(line string) (stringsArray []string) {
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
-func updateConstantsFile(quotedWord, variableName string, project Project) Project {
+func updateConstantsFile(quotedWord, variableName string) {
 	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
 	if constantFileContents := readFile(kCONSTANTFILEPATH); strings.Contains(constantFileContents, variableName) { //if constant variable doesn't exist in our Constants file, write it
 		writeToFile(kCONSTANTFILEPATH, constantVariable)
 	}
-	return project
 }
 
 //search for Constant file, if it doesn't exist, create a new one
