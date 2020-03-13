@@ -84,6 +84,9 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	for _, line := range lines {             //loop through each lines
 		if strings.Index(line, "\"") != -1 {
 			contents, stringsArray := getStringsFromLine(fileContents, line)
+			// for _, constantVariable := range stringsArray {
+			// 	variableName,
+			// }
 			fileContents = contents
 			fmt.Println("Array of strings =", stringsArray)
 			// if startIndex := strings.Index(line, "\""); startIndex != -1 { //gets first index of line that has ", else go to next line
@@ -122,6 +125,7 @@ func getStringsFromLine(fileContents, line string) (contents string, stringsArra
 				// print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
 				contents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
 				updateConstantsFile(doubleQuotedWord, variableName)                         //lastly, write it to our Constant file
+				stringsArray = append(stringsArray, variableName+"="+doubleQuotedWord)      //append the word
 			case "\n": //if new line... return
 				return
 			default: //any other characters will be ignored
@@ -140,14 +144,13 @@ func getStringsFromLine(fileContents, line string) (contents string, stringsArra
 		// 	currentProject = updateConstantsFile(doubleQuotedWord, variableName, project)   //lastly, write it to our Constant file
 		// }
 	}
-
 	return
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
 func updateConstantsFile(quotedWord, variableName string) {
 	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
-	if constantFileContents := readFile(kCONSTANTFILEPATH); strings.Contains(constantFileContents, variableName) { //if constant variable doesn't exist in our Constants file, write it
+	if constantFileContents := readFile(kCONSTANTFILEPATH); !strings.Contains(constantFileContents, variableName) { //if constant variable doesn't exist in our Constants file, write it
 		writeToFile(kCONSTANTFILEPATH, constantVariable)
 	}
 }
@@ -305,6 +308,13 @@ func isError(err error) bool { //error helper
 		panic(err)
 	}
 	return (err != nil)
+}
+
+func splitVariableAndString(str string) (variable, quotedWord string) {
+	var strArray = strings.Split(str, "=")
+	variable = strArray[0]
+	quotedWord = strArray[1]
+	return
 }
 
 //turns strings to array of lines
