@@ -83,11 +83,11 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {             //loop through each lines
 		if strings.Index(line, "\"") != -1 {
-			contents, stringsArray := getStringsFromLine(fileContents, line)
+			updatedFileContents, stringsArray := getStringsFromLine(fileContents, line)
 			// for _, constantVariable := range stringsArray {
 			// 	variableName,
 			// }
-			fileContents = contents
+			fileContents = updatedFileContents
 			fmt.Println("Array of strings =", stringsArray)
 			// if startIndex := strings.Index(line, "\""); startIndex != -1 { //gets first index of line that has ", else go to next line
 			// var endIndex = -1
@@ -113,19 +113,30 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 
 //takes a line with strings and returns an array of strings
 func getStringsFromLine(fileContents, line string) (contents string, stringsArray []string) {
+	var isFound bool
 	if startIndex := strings.Index(line, "\""); startIndex != -1 { //if line has "
+		isFound = true
 		var endIndex = -1
 		quotedWord := line[startIndex:]        //remove all strings before first "
 		for i := 1; i < len(quotedWord); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
+			currentWord := quotedWord
 			switch string(quotedWord[i]) {
 			case "\"": //if we find the next "... update
-				endIndex = i
-				var doubleQuotedWord = quotedWord[:endIndex+1]
-				var variableName = capitalizedWord(doubleQuotedWord)
-				// print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
-				contents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-				updateConstantsFile(doubleQuotedWord, variableName)                         //lastly, write it to our Constant file
-				stringsArray = append(stringsArray, variableName+"="+doubleQuotedWord)      //append the word
+				if isFound { //if second "
+					isFound = false //
+					endIndex = i
+					var doubleQuotedWord = currentWord[:endIndex+1]
+					var variableName = capitalizedWord(doubleQuotedWord)
+					// print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
+					contents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+					updateConstantsFile(doubleQuotedWord, variableName)                         //lastly, write it to our Constant file
+					stringsArray = append(stringsArray, variableName+"="+doubleQuotedWord)      //append the word
+				} else { //first " look for the second one
+					isFound = true
+					currentWord = line[i:]
+					print("Found first \"")
+					continue
+				}
 			case "\n": //if new line... return
 				return
 			default: //any other characters will be ignored
