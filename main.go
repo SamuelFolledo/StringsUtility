@@ -123,7 +123,7 @@ func getStringsFromLine(fileContents, line string) (contents string, stringsArra
 			switch string(quotedWord[i]) {
 			case "\"": //if we find the next "... update
 				if isFound { //if second "
-					isFound = false //
+					isFound = false
 					endIndex = i
 					var doubleQuotedWord = currentWord[:endIndex+1]
 					var variableName = capitalizedWord(doubleQuotedWord)
@@ -134,7 +134,7 @@ func getStringsFromLine(fileContents, line string) (contents string, stringsArra
 				} else { //first " look for the second one
 					isFound = true
 					currentWord = line[i:]
-					print("Found first \"")
+					print("\n\nFound first \"\n")
 					continue
 				}
 			case "\n": //if new line... return
@@ -142,18 +142,7 @@ func getStringsFromLine(fileContents, line string) (contents string, stringsArra
 			default: //any other characters will be ignored
 				break
 			}
-			// if string(quotedWord[i]) == "\"" { //if char is second "
-			// 	endIndex = i
-			// 	break //DONT BREAK IN THE FUTURE and implement a way to check strings after this line instead of moving to next line
-			// }
 		}
-		// if endIndex != -1 { //if we found the next "... update our .swift file and Constants file
-		// 	var doubleQuotedWord = quotedWord[:endIndex+1]
-		// 	var variableName = capitalizedWord(doubleQuotedWord)
-		// 	print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
-		// 	fileContents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-		// 	currentProject = updateConstantsFile(doubleQuotedWord, variableName, project)   //lastly, write it to our Constant file
-		// }
 	}
 	return
 }
