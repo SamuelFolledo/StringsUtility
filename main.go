@@ -129,8 +129,10 @@ func getStringsFromLine(fileContents, line string) (contents string, stringsArra
 					var variableName = capitalizedWord(doubleQuotedWord)
 					// print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
 					contents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-					updateConstantsFile(doubleQuotedWord, variableName)                         //lastly, write it to our Constant file
-					stringsArray = append(stringsArray, variableName+"="+doubleQuotedWord)      //append the word
+					//MARK: File contents with multiple strings in one line turns dic["userId"]["username"] to dic[kUSERIDUSERNAME]
+					print("\nCONTENTS ==== ", contents, "\n")
+					updateConstantsFile(doubleQuotedWord, variableName)                    //lastly, write it to our Constant file
+					stringsArray = append(stringsArray, variableName+"="+doubleQuotedWord) //append the word
 				} else { //first " look for the second one
 					isFound = true
 					currentWord = line[i:]
