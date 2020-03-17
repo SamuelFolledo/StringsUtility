@@ -29,6 +29,7 @@ Constant file will look like the following:
     public let kUSERID: String = "userId"
 
 **Write a paragraph summary of the current status of your project, what you hope to achieve during the intensive, how and why**
+
 A project I started less 2 weeks ago, on March 5, 2020 which takes a project directory, recursively looks for all strings from all .swift files and put it in a Constants.swift file.
 
 
