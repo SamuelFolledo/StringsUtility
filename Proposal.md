@@ -4,13 +4,17 @@ Strings are easily mistyped, hard to track at times, and are a pain overall. Esp
 ## Solution
 A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and replace all strings in all ```.swift``` files to a constant variable scoped globally and writing them into a ```Constants``` file. 
 
-    //ViewController.swift
+```
+//ViewController.swift
 
-    dictionary["userId"] = user.id //will turn to "userId" to kUSERID
+dictionary["userId"] = user.id //will turn to "userId" to kUSERID
+```
 
 Constant file will look like the following:
 
-    //Constants.swift
+```
+//Constants.swift
 
-    public let kUSERID: String = "userId"
+public let kUSERID: String = "userId"
+```
 
