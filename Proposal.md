@@ -7,7 +7,7 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
     ```
     dictionary["userId"] = user.id //will turn to "userId" to kUSERID
     ```
-
+-----
     ```
     //Constants.swift
 
