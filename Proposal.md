@@ -84,6 +84,8 @@ A project I started less 2 weeks ago, on March 5, 2020 which takes a project dir
 - [X] I have completed all the necessary parts of this proposal
 - [X] I linked my proposal in the Spring Intensive Tracker
 
+[Structure of a Proposal](https://github.com/Make-School-Courses/INT-1.3-AND-INT-2.3-Spring-Intensive/blob/master/Proposals/junior-proposal.md)
+
 ### Sign off
 
 **Student Name:**                
