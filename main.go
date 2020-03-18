@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -54,9 +55,30 @@ func main() {
 	fmt.Println("Directory is=", projectPath)
 	var isTranslate = getShouldTranslate()
 	fmt.Println("Translating=", isTranslate)
+
+	// argsWithProg := os.Args
+	// argsWithoutProg := os.Args[1:]
+	// arg := os.Args[3]
+	// fmt.Println("Number of arguments: ", len(argsWithoutProg))
+	// fmt.Println("1", argsWithProg)
+	// fmt.Println("2", argsWithoutProg)
+	// fmt.Println("3", arg)
+
+	x := askForInput("insert X value here: ")
+	y := askForInput("insert Y value here: ")
+	fmt.Print("(x,y) = (", x, ",", y, ")\n")
+
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	project = searchProjectForStrings(projectPath, project)
+}
+
+//given a question, ask and wait for user's CLI input
+func askForInput(question string) string {
+	fmt.Print(question)
+	input := bufio.NewScanner(os.Stdin)
+	input.Scan()
+	return input.Text()
 }
 
 //Loop through each files and look for each strings in each lines
