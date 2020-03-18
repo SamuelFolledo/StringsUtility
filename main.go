@@ -53,24 +53,11 @@ var kCONSTANTDASHES string = "--------------------------------------------------
 func main() {
 	var projectPath = getDirectoryName()
 	fmt.Println("Project directory is: ", projectPath)
-
-	shouldTranslate := askForInput("\n" + kCONSTANTDASHES + "\nWould you also like to translate your strings found in Constant file?\nType yes or no: ")
-	shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
-	for {                                              //infinite loop to handle user inputs that are not expected
-		if shouldTranslate == "yes" || shouldTranslate == "no" || shouldTranslate == "y" || shouldTranslate == "n" { //break if user input expected inputs
-			break
-		}
-		shouldTranslate = askForInput("\n" + kCONSTANTDASHES + "\nUser input error: Please type yes or no only\nWould you also like to translate your strings found in Constant file? (yes/no): ")
-		shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
-	}
-	var willTranslate bool
-	if shouldTranslate == "yes" || shouldTranslate == "y" {
-		willTranslate = true
-	}
+	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?\nType yes or no: ")
 	if willTranslate {
-		fmt.Println("\nTranslating...")
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
 	} else {
-		fmt.Println("\nWill not translate")
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate")
 	}
 
 	var project = Project{Name: projectPath}
@@ -240,8 +227,24 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
+func askBooleanQuestion(question string) bool {
+	shouldTranslate := askQuestionToUser("\n" + kCONSTANTDASHES + "\n" + question)
+	shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
+	for {                                              //infinite loop to handle user inputs that are not expected
+		if shouldTranslate == "yes" || shouldTranslate == "no" || shouldTranslate == "y" || shouldTranslate == "n" { //break if user input expected inputs
+			break
+		}
+		shouldTranslate = askQuestionToUser("\n" + kCONSTANTDASHES + "\n\nUser input error: Please type yes or no only" + question)
+		shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
+	}
+	if shouldTranslate == "yes" || shouldTranslate == "y" {
+		return true
+	}
+	return false
+}
+
 //given a question, ask and wait for user's CLI input
-func askForInput(question string) string {
+func askQuestionToUser(question string) string {
 	fmt.Print(question)
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()
