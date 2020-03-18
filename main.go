@@ -110,7 +110,7 @@ func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 		var constantVariable ConstantVariable
 		for i := 0; i < len(line); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
 			switch string(line[i]) {
-			case "\"": //if we find the second "... update
+			case "\"": //if character is "
 				if foundFirstQuote { //if second "
 					foundFirstQuote = false
 					endIndex = i
@@ -121,6 +121,10 @@ func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 				} else { //if first "... look for the second one
 					startIndex = i
 					foundFirstQuote = true
+				}
+			case "\\": //if character is \
+				if foundFirstQuote { //if string has concatenation is currently not supported
+					return
 				}
 			case "\n": //if next line... return
 				return
