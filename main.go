@@ -119,31 +119,38 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 
 //takes a line with strings and returns an array of strings
 func getStringsFromLine(fileContents, line string) (contents string, constantArray []ConstantVariable) {
-	var isFound bool
+	var foundFirstQuote bool //initialize as false
+	contents = fileContents
 	if startIndex := strings.Index(line, "\""); startIndex != -1 { //if line has "
-		isFound = true
+		foundFirstQuote = true //found
 		var endIndex = -1
 		quotedWord := line[startIndex:] //remove all strings before first "
 		var constantVariable ConstantVariable
 		for i := 1; i < len(quotedWord); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
 			currentWord := quotedWord
+			print("\n-----", i, " = ", string(quotedWord[i]))
 			switch string(quotedWord[i]) {
 			case "\"": //if we find the next "... update
-				if isFound { //if second "
-					isFound = false
-					endIndex = i
-					constantVariable.Value = currentWord[:endIndex+1]
+				if foundFirstQuote { //if second "
+					foundFirstQuote = false
+					// i += 1 //increment it to include the "
+					print("\nEYOOO\n")
+					endIndex = i + 1
+					constantVariable.Value = currentWord[:endIndex]
 					constantVariable.Name = capitalizedWord(constantVariable.Value)
 					// var doubleQuotedWord = currentWord[:endIndex+1]
 					// var variableName = capitalizedWord(doubleQuotedWord)
 					// print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
-					contents = strings.Replace(fileContents, constantVariable.Value, constantVariable.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-					//MARK: File contents with multiple strings in one line turns dic["userId"]["username"] to dic[kUSERIDUSERNAME]
-					print("\nCONTENTS ==== ", contents, "\n")
-					updateConstantsFile(constantVariable.Value, constantVariable.Name) //lastly, write it to our Constant file
-					constantArray = append(constantArray, constantVariable)            //append the word
-				} else { //first " look for the second one
-					isFound = true
+					// contents = strings.Replace(fileContents, constantVariable.Value, constantVariable.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+					// //MARK: File contents with multiple strings in one line turns dic["userId"]["username"] to dic[kUSERIDUSERNAME]
+					// print("\nCONTENTS ==== ", contents, "\n")
+					// updateConstantsFile(constantVariable.Value, constantVariable.Name) //lastly, write it to our Constant file
+					constantArray = append(constantArray, constantVariable) //append the word
+					constantVariable = ConstantVariable{}                   //reset it
+					currentWord = line[endIndex:]
+					print("\n\nQUOTED WORD =", quotedWord)
+				} else { //found first "... now look for the second one
+					foundFirstQuote = true
 					currentWord = line[i:]
 					print("\n\nFound first \"\n")
 					continue
@@ -153,6 +160,14 @@ func getStringsFromLine(fileContents, line string) (contents string, constantArr
 			default: //any other characters will be ignored
 				break
 			}
+		}
+	}
+	if len(constantArray) != 0 {
+		for _, constant := range constantArray {
+			print("\nCONSTANT ARRAY WE GOT ", constant.Value, "\n")
+			// contents = strings.Replace(fileContents, constantVariable.Value, constantVariable.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+			// print("\nCONTENTS ==== ", contents, "\n")
+			// updateConstantsFile(constantVariable.Value, constantVariable.Name) //lastly, write it to our Constant file
 		}
 	}
 	return
