@@ -303,12 +303,6 @@ func getDirectoryName() string {
 	return *dirFlag //after flag.Parse(), *fileFlag is now user's --file= input
 }
 
-//get the directory flag name
-func getShouldTranslate() bool {
-	flag.Parse()            //parse flags
-	return *shouldTranslate //after flag.Parse(), *fileFlag is now user's --file= input
-}
-
 //reads file given a path
 func readFile(fileName string) (content string) { //method that will read a file and return lines or error
 	fileContents, err := ioutil.ReadFile(fileName)
