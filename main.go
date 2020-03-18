@@ -46,23 +46,12 @@ type Project struct {
 // note, that variables are pointers
 var fileFlag = flag.String("file", "", "Name of file")
 var dirFlag = flag.String("dir", "", "Name of directory")
-var shouldTranslate = flag.Bool("shouldTranslate", false, "True if strings should be translated. Remember to setup the Google Cloud Translator in order to use this or there might be unexpected bugs")
 var kCONSTANTFILEPATH string
 var kCONSTANTFILENAME string
 
 func main() {
 	var projectPath = getDirectoryName()
 	fmt.Println("Directory is=", projectPath)
-	var isTranslate = getShouldTranslate()
-	fmt.Println("Translating=", isTranslate)
-
-	// argsWithProg := os.Args
-	// argsWithoutProg := os.Args[1:]
-	// arg := os.Args[3]
-	// fmt.Println("Number of arguments: ", len(argsWithoutProg))
-	// fmt.Println("1", argsWithProg)
-	// fmt.Println("2", argsWithoutProg)
-	// fmt.Println("3", arg)
 
 	x := askForInput("insert X value here: ")
 	y := askForInput("insert Y value here: ")
@@ -71,14 +60,6 @@ func main() {
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	project = searchProjectForStrings(projectPath, project)
-}
-
-//given a question, ask and wait for user's CLI input
-func askForInput(question string) string {
-	fmt.Print(question)
-	input := bufio.NewScanner(os.Stdin)
-	input.Scan()
-	return input.Text()
 }
 
 //Loop through each files and look for each strings in each lines
@@ -243,6 +224,14 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
+//given a question, ask and wait for user's CLI input
+func askForInput(question string) string {
+	fmt.Print(question)
+	input := bufio.NewScanner(os.Stdin)
+	input.Scan()
+	return input.Text()
+}
+
 //create a ConstantVariable from a string
 func stringToConstantVariable(str string) ConstantVariable {
 	var name = capitalizedWord(str)
@@ -355,7 +344,7 @@ func stringLineToArray(str string) (results []string) {
 	return
 }
 
-//removes all symbols in a word
+//removes all non alphabets or numeric in a word
 func removeAllSymbols(word string) string {
 	// Make a Regex to say we only want letters and numbers
 	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
