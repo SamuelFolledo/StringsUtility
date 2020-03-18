@@ -53,11 +53,11 @@ func main() {
 	fmt.Println("Directory is=", projectPath)
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
-	project = searchForStrings(projectPath, project)
+	project = searchProjectForStrings(projectPath, project)
 }
 
 //Loop through each files and look for each strings in each lines
-func searchForStrings(path string, project Project) (currentProject Project) {
+func searchProjectForStrings(path string, project Project) (currentProject Project) {
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
@@ -68,9 +68,9 @@ func searchForStrings(path string, project Project) (currentProject Project) {
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
-			path = path + "/" + fileName                     //update directory path by adding /fileName
-			currentProject = searchForStrings(path, project) //recursively call this function again
-			path = trimPathAfterLastSlash(path)              //reset path by removing the / + fileName
+			path = path + "/" + fileName                            //update directory path by adding /fileName
+			currentProject = searchProjectForStrings(path, project) //recursively call this function again
+			path = trimPathAfterLastSlash(path)                     //reset path by removing the / + fileName
 		} else { //if file...
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
 			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file that's not the constants file... look for strings
@@ -88,11 +88,11 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	var fileContents = readFile(path)        //get the contents of
 	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {             //loop through each lines
-		var constantArray = getStringsFromLine2(line)
+		var constantArray = getStringsFromLine(line)
 		if len(constantArray) != 0 { //if a constant exist
 			for _, constant := range constantArray {
 				fileContents = strings.Replace(fileContents, constant.Value, constant.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-				print("\nCONTENTS ==== ", fileContents, "\n")
+				// print("\nCONTENTS ==== ", fileContents, "\n")
 				updateConstantsFile(constant) //lastly, write it to our Constant file
 			}
 		}
@@ -102,7 +102,7 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 }
 
 //takes a line with strings and returns an array of ConstantVariable
-func getStringsFromLine2(line string) (constantArray []ConstantVariable) {
+func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 	var foundFirstQuote bool                     //initialize as false
 	if i := strings.Index(line, "\""); i != -1 { //if line has "
 		var startIndex = -1
@@ -122,77 +122,11 @@ func getStringsFromLine2(line string) (constantArray []ConstantVariable) {
 					startIndex = i
 					foundFirstQuote = true
 				}
-			case "\n": //if new line... return
+			case "\n": //if next line... return
 				return
 			default: //any other characters will be ignored
 				break
 			}
-		}
-	}
-	return
-}
-
-//create a ConstantVariable from a string
-func stringToConstantVariable(str string) ConstantVariable {
-	var name = capitalizedWord(str)
-	return ConstantVariable{
-		Name:     name,
-		Value:    str,
-		Variable: "public let " + name + ": String = " + str,
-	}
-}
-
-//takes a line with strings and returns an array of strings
-func getStringsFromLine(fileContents, line string) (contents string, constantArray []ConstantVariable) {
-	var foundFirstQuote bool //initialize as false
-	contents = fileContents
-	if startIndex := strings.Index(line, "\""); startIndex != -1 { //if line has "
-		foundFirstQuote = true //found
-		var endIndex = -1
-		quotedWord := line[startIndex:] //remove all strings before first "
-		var constantVariable ConstantVariable
-		for i := 1; i < len(quotedWord); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
-			currentWord := quotedWord
-			print("\n-----", i, " = ", string(quotedWord[i]))
-			switch string(quotedWord[i]) {
-			case "\"": //if we find the next "... update
-				if foundFirstQuote { //if second "
-					foundFirstQuote = false
-					// i += 1 //increment it to include the "
-					print("\nEYOOO\n")
-					endIndex = i + 1
-					constantVariable.Value = currentWord[:endIndex]
-					constantVariable.Name = capitalizedWord(constantVariable.Value)
-					// var doubleQuotedWord = currentWord[:endIndex+1]
-					// var variableName = capitalizedWord(doubleQuotedWord)
-					// print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
-					// contents = strings.Replace(fileContents, constantVariable.Value, constantVariable.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-					// //MARK: File contents with multiple strings in one line turns dic["userId"]["username"] to dic[kUSERIDUSERNAME]
-					// print("\nCONTENTS ==== ", contents, "\n")
-					// updateConstantsFile(constantVariable.Value, constantVariable.Name) //lastly, write it to our Constant file
-					constantArray = append(constantArray, constantVariable) //append the word
-					constantVariable = ConstantVariable{}                   //reset it
-					currentWord = line[endIndex:]
-					print("\n\nQUOTED WORD =", quotedWord)
-				} else { //found first "... now look for the second one
-					foundFirstQuote = true
-					currentWord = line[i:]
-					print("\n\nFound first \"\n")
-					continue
-				}
-			case "\n": //if new line... return
-				return
-			default: //any other characters will be ignored
-				break
-			}
-		}
-	}
-	if len(constantArray) != 0 {
-		for _, constant := range constantArray {
-			print("\nCONSTANT ARRAY WE GOT ", constant.Value, "\n")
-			// contents = strings.Replace(fileContents, constantVariable.Value, constantVariable.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-			// print("\nCONTENTS ==== ", contents, "\n")
-			// updateConstantsFile(constantVariable.Value, constantVariable.Name) //lastly, write it to our Constant file
 		}
 	}
 	return
@@ -279,6 +213,16 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 }
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
+
+//create a ConstantVariable from a string
+func stringToConstantVariable(str string) ConstantVariable {
+	var name = capitalizedWord(str)
+	return ConstantVariable{
+		Name:     name,
+		Value:    str,
+		Variable: "public let " + name + ": String = " + str,
+	}
+}
 
 //replaces everything inside a file
 //Note: Read first if you dont want to remove everything before writing
