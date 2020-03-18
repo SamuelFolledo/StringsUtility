@@ -48,14 +48,30 @@ var fileFlag = flag.String("file", "", "Name of file")
 var dirFlag = flag.String("dir", "", "Name of directory")
 var kCONSTANTFILEPATH string
 var kCONSTANTFILENAME string
+var kCONSTANTDASHES string = "----------------------------------------------------------------------------------------------------------------"
 
 func main() {
 	var projectPath = getDirectoryName()
-	fmt.Println("Directory is=", projectPath)
+	fmt.Println("Project directory is: ", projectPath)
 
-	x := askForInput("insert X value here: ")
-	y := askForInput("insert Y value here: ")
-	fmt.Print("(x,y) = (", x, ",", y, ")\n")
+	shouldTranslate := askForInput("\n" + kCONSTANTDASHES + "\nWould you also like to translate your strings found in Constant file?\nType yes or no: ")
+	shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
+	for {                                              //infinite loop to handle user inputs that are not expected
+		if shouldTranslate == "yes" || shouldTranslate == "no" || shouldTranslate == "y" || shouldTranslate == "n" { //break if user input expected inputs
+			break
+		}
+		shouldTranslate = askForInput("\n" + kCONSTANTDASHES + "\nUser input error: Please type yes or no only\nWould you also like to translate your strings found in Constant file? (yes/no): ")
+		shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
+	}
+	var willTranslate bool
+	if shouldTranslate == "yes" || shouldTranslate == "y" {
+		willTranslate = true
+	}
+	if willTranslate {
+		fmt.Println("\nTranslating...")
+	} else {
+		fmt.Println("\nWill not translate")
+	}
 
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
