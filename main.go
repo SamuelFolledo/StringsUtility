@@ -29,6 +29,12 @@ type Code struct {
 	// Content    []string //all contents
 }
 
+type ConstantVariable struct {
+	Name     string
+	Value    string
+	Variable string
+}
+
 type Project struct {
 	Name            string
 	Directories     []Directory
@@ -83,12 +89,12 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {             //loop through each lines
 		if strings.Index(line, "\"") != -1 {
-			updatedFileContents, stringsArray := getStringsFromLine(fileContents, line)
+			updatedFileContents, constantArray := getStringsFromLine(fileContents, line)
 			// for _, constantVariable := range stringsArray {
 			// 	variableName,
 			// }
 			fileContents = updatedFileContents
-			fmt.Println("Array of strings =", stringsArray)
+			fmt.Println("Array of strings =", constantArray)
 			// if startIndex := strings.Index(line, "\""); startIndex != -1 { //gets first index of line that has ", else go to next line
 			// var endIndex = -1
 			// quotedWord := line[startIndex:]        //remove all strings before first "
@@ -112,12 +118,13 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 }
 
 //takes a line with strings and returns an array of strings
-func getStringsFromLine(fileContents, line string) (contents string, stringsArray []string) {
+func getStringsFromLine(fileContents, line string) (contents string, constantArray []ConstantVariable) {
 	var isFound bool
 	if startIndex := strings.Index(line, "\""); startIndex != -1 { //if line has "
 		isFound = true
 		var endIndex = -1
-		quotedWord := line[startIndex:]        //remove all strings before first "
+		quotedWord := line[startIndex:] //remove all strings before first "
+		var constantVariable ConstantVariable
 		for i := 1; i < len(quotedWord); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
 			currentWord := quotedWord
 			switch string(quotedWord[i]) {
@@ -125,14 +132,16 @@ func getStringsFromLine(fileContents, line string) (contents string, stringsArra
 				if isFound { //if second "
 					isFound = false
 					endIndex = i
-					var doubleQuotedWord = currentWord[:endIndex+1]
-					var variableName = capitalizedWord(doubleQuotedWord)
+					constantVariable.Value = currentWord[:endIndex+1]
+					constantVariable.Name = capitalizedWord(constantVariable.Value)
+					// var doubleQuotedWord = currentWord[:endIndex+1]
+					// var variableName = capitalizedWord(doubleQuotedWord)
 					// print("\n\nChanged: ", path, ", line: ", lineIndex, " ", doubleQuotedWord, " to ", variableName, "\n")
-					contents = strings.Replace(fileContents, doubleQuotedWord, variableName, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+					contents = strings.Replace(fileContents, constantVariable.Value, constantVariable.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
 					//MARK: File contents with multiple strings in one line turns dic["userId"]["username"] to dic[kUSERIDUSERNAME]
 					print("\nCONTENTS ==== ", contents, "\n")
-					updateConstantsFile(doubleQuotedWord, variableName)                    //lastly, write it to our Constant file
-					stringsArray = append(stringsArray, variableName+"="+doubleQuotedWord) //append the word
+					updateConstantsFile(constantVariable.Value, constantVariable.Name) //lastly, write it to our Constant file
+					constantArray = append(constantArray, constantVariable)            //append the word
 				} else { //first " look for the second one
 					isFound = true
 					currentWord = line[i:]
