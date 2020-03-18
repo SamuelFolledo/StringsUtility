@@ -89,12 +89,13 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {             //loop through each lines
 		if strings.Index(line, "\"") != -1 {
-			updatedFileContents, constantArray := getStringsFromLine(fileContents, line)
+			// updatedFileContents, constantArray := getStringsFromLine(fileContents, line)
+			print("\nTrialinggg...\n", getStringsFromLine2(line))
 			// for _, constantVariable := range stringsArray {
 			// 	variableName,
 			// }
-			fileContents = updatedFileContents
-			fmt.Println("Array of strings =", constantArray)
+			// fileContents = updatedFileContents
+			// fmt.Println("Array of strings =", constantArray)
 			// if startIndex := strings.Index(line, "\""); startIndex != -1 { //gets first index of line that has ", else go to next line
 			// var endIndex = -1
 			// quotedWord := line[startIndex:]        //remove all strings before first "
@@ -115,6 +116,63 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	}
 	replaceFile(path, fileContents) //update our .swift file with fileContents
 	return
+}
+
+func getStringsFromLine2(line string) (constantArray []ConstantVariable) {
+	var foundFirstQuote bool                     //initialize as false
+	if i := strings.Index(line, "\""); i != -1 { //if line has "
+		var startIndex = -1
+		var endIndex = -1
+		// quotedWord := line[startIndex:] //remove all strings before first "
+		var constantVariable ConstantVariable
+		for i := 0; i < len(line); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
+			// currentWord := quotedWord
+			// print("\n-----", i, " = ", string(quotedWord[i]))
+			switch string(line[i]) {
+			case "\"": //if we find the second "... update
+				if foundFirstQuote { //if second "
+					foundFirstQuote = false
+					// print("\nEYOOO\n")
+					endIndex = i
+					var lineString = line[startIndex : endIndex+1] //line's string is in line's index from startIndex to endIndex+1
+					constantVariable = stringToConstantVariable(lineString)
+					// constantVariable.Value = line[startIndex : endIndex+1] //string is startIndex to endIndex+1
+					// constantVariable.Name = capitalizedWord(constantVariable.Value)
+					constantArray = append(constantArray, constantVariable) //append the word
+					constantVariable = ConstantVariable{}                   //reset it
+					// currentWord = line[endIndex:]
+					// print("\n\nQUOTED WORD =", quotedWord)
+				} else { //if first "... look for the second one
+					startIndex = i
+					foundFirstQuote = true
+					// currentWord = line[i:]
+					// print("\n\nFound first \"\n")
+				}
+			case "\n": //if new line... return
+				return
+			default: //any other characters will be ignored
+				break
+			}
+		}
+	}
+	if len(constantArray) != 0 {
+		for _, constant := range constantArray {
+			print("\nCONSTANT ARRAY WE GOT ", constant.Value, "\n")
+			// contents = strings.Replace(fileContents, constantVariable.Value, constantVariable.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+			// print("\nCONTENTS ==== ", contents, "\n")
+			// updateConstantsFile(constantVariable.Value, constantVariable.Name) //lastly, write it to our Constant file
+		}
+	}
+	return
+}
+
+func stringToConstantVariable(str string) ConstantVariable {
+	var name = capitalizedWord(str)
+	return ConstantVariable{
+		Name:     name,
+		Value:    str,
+		Variable: "public let " + name + ": String = " + str,
+	}
 }
 
 //takes a line with strings and returns an array of strings
