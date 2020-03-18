@@ -45,12 +45,15 @@ type Project struct {
 // note, that variables are pointers
 var fileFlag = flag.String("file", "", "Name of file")
 var dirFlag = flag.String("dir", "", "Name of directory")
+var shouldTranslate = flag.Bool("shouldTranslate", false, "True if strings should be translated. Remember to setup the Google Cloud Translator in order to use this or there might be unexpected bugs")
 var kCONSTANTFILEPATH string
 var kCONSTANTFILENAME string
 
 func main() {
 	var projectPath = getDirectoryName()
 	fmt.Println("Directory is=", projectPath)
+	var isTranslate = getShouldTranslate()
+	fmt.Println("Translating=", isTranslate)
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	project = searchProjectForStrings(projectPath, project)
@@ -287,6 +290,12 @@ func trimPathAfterLastSlash(path string) string {
 func getDirectoryName() string {
 	flag.Parse()    //parse flags
 	return *dirFlag //after flag.Parse(), *fileFlag is now user's --file= input
+}
+
+//get the directory flag name
+func getShouldTranslate() bool {
+	flag.Parse()            //parse flags
+	return *shouldTranslate //after flag.Parse(), *fileFlag is now user's --file= input
 }
 
 //reads file given a path
