@@ -48,7 +48,7 @@ var fileFlag = flag.String("file", "", "Name of file")
 var dirFlag = flag.String("dir", "", "Name of directory")
 var kCONSTANTFILEPATH string
 var kCONSTANTFILENAME string
-var kCONSTANTDASHES string = "----------------------------------------------------------------------------------------------------------------"
+var kCONSTANTDASHES string = "----------------------------------------------------------"
 
 func main() {
 	var projectPath = getDirectoryName()
@@ -57,7 +57,7 @@ func main() {
 	if willTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
 	} else {
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate")
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
 	}
 
 	var project = Project{Name: projectPath}
