@@ -53,7 +53,7 @@ var kCONSTANTDASHES string = "--------------------------------------------------
 func main() {
 	var projectPath = getDirectoryName()
 	fmt.Println("Project directory is: ", projectPath)
-	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?\nType yes or no: ")
+	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
 	if willTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
 	} else {
@@ -63,6 +63,14 @@ func main() {
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	project = searchProjectForStrings(projectPath, project)
+
+	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished updating project. Reopen project and make sure there is no error.")
+	var shouldUndo = askBooleanQuestion("\nDo you want to undo?")
+	if shouldUndo {
+		fmt.Println("\nUndoing...")
+	} else {
+		fmt.Println("\nThank you for using Strings Utility by Samuel P. Folledo 😁")
+	}
 }
 
 //Loop through each files and look for each strings in each lines
@@ -228,13 +236,13 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
 func askBooleanQuestion(question string) bool {
-	shouldTranslate := askQuestionToUser("\n" + kCONSTANTDASHES + "\n" + question)
+	shouldTranslate := askQuestionToUser("\n" + question + "\nType yes or no: ")
 	shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
 	for {                                              //infinite loop to handle user inputs that are not expected
 		if shouldTranslate == "yes" || shouldTranslate == "no" || shouldTranslate == "y" || shouldTranslate == "n" { //break if user input expected inputs
 			break
 		}
-		shouldTranslate = askQuestionToUser("\n" + kCONSTANTDASHES + "\n\nUser input error: Please type yes or no only" + question)
+		shouldTranslate = askQuestionToUser("\n\nUser input error = Please type yes or no only" + question + ": ")
 		shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
 	}
 	if shouldTranslate == "yes" || shouldTranslate == "y" {
