@@ -88,7 +88,14 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 	var fileContents = readFile(path)        //get the contents of
 	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {             //loop through each lines
-		getStringsFromLine2(line)
+		var constantArray = getStringsFromLine2(line)
+		if len(constantArray) != 0 { //if a constant exist
+			for _, constant := range constantArray {
+				fileContents = strings.Replace(fileContents, constant.Value, constant.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+				print("\nCONTENTS ==== ", fileContents, "\n")
+				updateConstantsFile(constant) //lastly, write it to our Constant file
+			}
+		}
 	}
 	replaceFile(path, fileContents) //update our .swift file with fileContents
 	return
@@ -120,14 +127,6 @@ func getStringsFromLine2(line string) (constantArray []ConstantVariable) {
 			default: //any other characters will be ignored
 				break
 			}
-		}
-	}
-	if len(constantArray) != 0 {
-		for _, constant := range constantArray {
-			print("\nCONSTANT ARRAY WE GOT ", constant.Value, "\n")
-			// contents = strings.Replace(fileContents, constantVariable.Value, constantVariable.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-			// print("\nCONTENTS ==== ", contents, "\n")
-			// updateConstantsFile(constantVariable.Value, constantVariable.Name) //lastly, write it to our Constant file
 		}
 	}
 	return
@@ -200,10 +199,9 @@ func getStringsFromLine(fileContents, line string) (contents string, constantArr
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
-func updateConstantsFile(quotedWord, variableName string) {
-	var constantVariable = "\npublic let " + variableName + ": String = " + quotedWord
-	if constantFileContents := readFile(kCONSTANTFILEPATH); !strings.Contains(constantFileContents, variableName) { //if constant variable doesn't exist in our Constants file, write it
-		writeToFile(kCONSTANTFILEPATH, constantVariable)
+func updateConstantsFile(constant ConstantVariable) {
+	if constantFileContents := readFile(kCONSTANTFILEPATH); !strings.Contains(constantFileContents, constant.Name) { //if constant variable doesn't exist in our Constants file, write it
+		writeToFile(kCONSTANTFILEPATH, "\n"+constant.Variable) //append the constant variable
 	}
 }
 
