@@ -62,12 +62,7 @@ func main() {
 	fmt.Println("Cloning " + trimPathBeforeLastSlash(projectPath, false) + " before applying any changes...")
 	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
 	//4) Prompt if user wants to also translate
-	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
-	if willTranslate {
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
-	} else {
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
-	}
+	promptShouldTranslate()
 	//5) Start updating files
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
@@ -236,6 +231,23 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 	return
 }
 
+func promptCommitAnyChanges() {
+	var commitConfirmation = askBooleanQuestion("\nDid you finish committing any changes to your project? Say yes to continue")
+	if !commitConfirmation { //if user said no, then exit program
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nPlease finish commiting any changes and run this again.")
+		os.Exit(100) //exit status 100 means did not finish commmitting
+	}
+}
+
+func promptShouldTranslate() {
+	var shouldTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
+	if shouldTranslate {
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
+	} else {
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
+	}
+}
+
 func promptToUndo() {
 	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished updating project. Reopen project and make sure there is no error.")
 	var shouldUndo = askBooleanQuestion("\nDo you want to undo?")
@@ -247,27 +259,19 @@ func promptToUndo() {
 	}
 }
 
-func promptCommitAnyChanges() {
-	var commitConfirmation = askBooleanQuestion("\nDid you finish committing any changes to your project? Say yes to continue")
-	if !commitConfirmation { //if user said no, then exit program
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nPlease finish commiting any changes and run this again.")
-		os.Exit(100) //exit status 100 means did not finish commmitting
-	}
-}
-
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
 func askBooleanQuestion(question string) bool {
-	shouldTranslate := askQuestionToUser("\n" + question + "\nType yes or no: ")
-	shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
-	for {                                              //infinite loop to handle user inputs that are not expected
-		if shouldTranslate == "yes" || shouldTranslate == "no" || shouldTranslate == "y" || shouldTranslate == "n" { //break if user input expected inputs
+	boolAnswer := askQuestionToUser("\n" + question + "\nType yes or no: ")
+	boolAnswer = strings.ToLower(boolAnswer) //lower case the response
+	for {                                    //infinite loop to handle user inputs that are not expected
+		if boolAnswer == "yes" || boolAnswer == "no" || boolAnswer == "y" || boolAnswer == "n" { //break if user input expected inputs
 			break
 		}
-		shouldTranslate = askQuestionToUser("\n\nUser input error = Please type yes or no only" + question + ": ")
-		shouldTranslate = strings.ToLower(shouldTranslate) //lower case the response
+		boolAnswer = askQuestionToUser("\n\nUser input error = Please type yes or no only" + question + ": ")
+		boolAnswer = strings.ToLower(boolAnswer) //lower case the response
 	}
-	if shouldTranslate == "yes" || shouldTranslate == "y" {
+	if boolAnswer == "yes" || boolAnswer == "y" {
 		return true
 	}
 	return false
