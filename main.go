@@ -9,6 +9,8 @@ import (
 	"path/filepath" //to use filepath.Ext(*fileFlag) to trim file extension
 	"regexp"
 	"strings"
+
+	"./lib/copy"
 )
 
 type Directory struct {
@@ -52,6 +54,7 @@ var kCONSTANTDASHES string = "--------------------------------------------------
 
 func main() {
 	var projectPath = getDirectoryName()
+	copy.CopyDir(projectPath, "/Users/macbookpro15/desktop")
 	fmt.Println("Project directory is: ", projectPath)
 	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
 	if willTranslate {
