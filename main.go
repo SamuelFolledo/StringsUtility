@@ -11,7 +11,6 @@ import (
 	"regexp"
 	"strings"
 
-	// "github.com/copy"
 	"github.com/SamuelFolledo/StringsUtility/copy"
 )
 
