@@ -4,13 +4,12 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath" //to use filepath.Ext(*fileFlag) to trim file extension
 	"regexp"
 	"strings"
-
-	"./lib/copy"
 )
 
 type Directory struct {
@@ -54,7 +53,8 @@ var kCONSTANTDASHES string = "--------------------------------------------------
 
 func main() {
 	var projectPath = getDirectoryName()
-	copy.CopyDir(projectPath, "/Users/macbookpro15/desktop")
+	var projectCopyName = trimPathBeforeLastSlash(projectPath, false)
+	CopyDir(projectPath, "/Users/macbookpro15/desktop/"+projectCopyName+"_copy")
 	fmt.Println("Project directory is: ", projectPath)
 	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
 	if willTranslate {
@@ -377,4 +377,101 @@ func removeAllSymbols(word string) string {
 	}
 	processedString := reg.ReplaceAllString(word, "")
 	return processedString
+}
+
+func CopyFile(src, dst string) (err error) {
+	in, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer in.Close()
+
+	out, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer func() {
+		if e := out.Close(); e != nil {
+			err = e
+		}
+	}()
+
+	_, err = io.Copy(out, in)
+	if err != nil {
+		return
+	}
+
+	err = out.Sync()
+	if err != nil {
+		return
+	}
+
+	si, err := os.Stat(src)
+	if err != nil {
+		return
+	}
+	err = os.Chmod(dst, si.Mode())
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// CopyDir recursively copies a directory tree, attempting to preserve permissions.
+// Source directory must exist, destination directory must *not* exist.
+// Symlinks are ignored and skipped.
+func CopyDir(src string, dst string) (err error) {
+	src = filepath.Clean(src)
+	dst = filepath.Clean(dst)
+
+	si, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if !si.IsDir() {
+		return fmt.Errorf("source is not a directory")
+	}
+
+	_, err = os.Stat(dst)
+	if err != nil && !os.IsNotExist(err) {
+		return
+	}
+	if err == nil {
+		return fmt.Errorf("destination already exists")
+	}
+
+	err = os.MkdirAll(dst, si.Mode())
+	if err != nil {
+		return
+	}
+
+	entries, err := ioutil.ReadDir(src)
+	if err != nil {
+		return
+	}
+
+	for _, entry := range entries {
+		srcPath := filepath.Join(src, entry.Name())
+		dstPath := filepath.Join(dst, entry.Name())
+
+		if entry.IsDir() {
+			err = CopyDir(srcPath, dstPath)
+			if err != nil {
+				return
+			}
+		} else {
+			// Skip symlinks.
+			if entry.Mode()&os.ModeSymlink != 0 {
+				continue
+			}
+
+			err = CopyFile(srcPath, dstPath)
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	return
 }
