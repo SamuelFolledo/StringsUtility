@@ -53,9 +53,9 @@ var kCONSTANTDASHES string = "--------------------------------------------------
 
 func main() {
 	var projectPath = getDirectoryName()
-	var projectCopyName = trimPathBeforeLastSlash(projectPath, false)
-	CopyDir(projectPath, "/Users/macbookpro15/desktop/"+projectCopyName+"_copy")
-	fmt.Println("Project directory is: ", projectPath)
+	fmt.Println("Cloning " + trimPathBeforeLastSlash(projectPath, false) + " before applying any changes...")
+	CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
+	// fmt.Println("Project directory is: ", projectPath)
 
 	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
 	if willTranslate {
@@ -221,13 +221,13 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 			filePath = path + "/" + fileName //path of file
 			if isExactName {                 //if we want the exact fileName...
 				if fileName == fileNameToSearch {
-					fmt.Println("Searched and EXACTLY found ", fileNameToSearch, " at ", filePath)
+					// fmt.Println("Searched and EXACTLY found ", fileNameToSearch, " at ", filePath)
 					isFound = true
 					return
 				}
 			} else { //if we want fileName to only contain
 				if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
-					fmt.Println("Searched and found ", fileNameToSearch, " CONTAINS at ", filePath)
+					// fmt.Println("Searched and found ", fileNameToSearch, " CONTAINS at ", filePath)
 					isFound = true
 					return
 				}
