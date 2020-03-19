@@ -11,7 +11,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/SamuelFolledo/StringsUtility/copy"
+	"github.com/SamuelFolledo/StringsUtility/vendor/github.com/copy"
 )
 
 type Directory struct {
