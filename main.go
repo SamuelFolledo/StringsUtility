@@ -73,22 +73,7 @@ func main() {
 	project = setupConstantFile(projectPath, project)
 	project = searchProjectForStrings(projectPath, project)
 	//6) Prompt to undo
-	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished updating project. Reopen project and make sure there is no error.")
-	var shouldUndo = askBooleanQuestion("\nDo you want to undo?")
-	if shouldUndo {
-		fmt.Println("\nUndoing...")
-		copy.CopyDir(projectPath+"_previous", projectPath) //copy from previous
-	} else {
-		fmt.Println("\nThank you for using Strings Utility by Samuel P. Folledo 😁")
-	}
-}
-
-func promptCommitAnyChanges() {
-	var commitConfirmation = askBooleanQuestion("\nDid you finish committing any changes to your project? Say yes to continue")
-	if !commitConfirmation { //if user said no, then exit program
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nPlease finish commiting any changes and run this again.")
-		os.Exit(100) //exit status 100 means did not finish commmitting
-	}
+	promptToUndo()
 }
 
 //Loop through each files and look for each strings in each lines
@@ -249,6 +234,25 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 		}
 	}
 	return
+}
+
+func promptToUndo() {
+	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished updating project. Reopen project and make sure there is no error.")
+	var shouldUndo = askBooleanQuestion("\nDo you want to undo?")
+	if shouldUndo {
+		fmt.Println("\nUndoing...")
+		copy.CopyDir(projectPath+"_previous", projectPath) //copy from previous
+	} else {
+		fmt.Println("\nThank you for using Strings Utility by Samuel P. Folledo 😁")
+	}
+}
+
+func promptCommitAnyChanges() {
+	var commitConfirmation = askBooleanQuestion("\nDid you finish committing any changes to your project? Say yes to continue")
+	if !commitConfirmation { //if user said no, then exit program
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nPlease finish commiting any changes and run this again.")
+		os.Exit(100) //exit status 100 means did not finish commmitting
+	}
 }
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
