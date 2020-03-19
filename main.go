@@ -10,6 +10,9 @@ import (
 	"path/filepath" //to use filepath.Ext(*fileFlag) to trim file extension
 	"regexp"
 	"strings"
+
+	// "github.com/copy"
+	"github.com/SamuelFolledo/StringsUtility/copy"
 )
 
 type Directory struct {
@@ -54,8 +57,7 @@ var kCONSTANTDASHES string = "--------------------------------------------------
 func main() {
 	var projectPath = getDirectoryName()
 	fmt.Println("Cloning " + trimPathBeforeLastSlash(projectPath, false) + " before applying any changes...")
-	CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
-	// fmt.Println("Project directory is: ", projectPath)
+	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
 
 	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
 	if willTranslate {
