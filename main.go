@@ -53,21 +53,26 @@ var kCONSTANTFILENAME string
 var kCONSTANTDASHES string = "----------------------------------------------------------"
 
 func main() {
-	var projectPath = getDirectoryName()
+	var projectPath = getDirectoryName() //get project's path directory flag
+	//1) Welcome
+	fmt.Println("\nThank you for trying out Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or send an issue at github.com/SamuelFolledo/StringsUtility")
+	//2) Prompt fresh commit
+	promptCommitAnyChanges()
+	//3) Clone project
 	fmt.Println("Cloning " + trimPathBeforeLastSlash(projectPath, false) + " before applying any changes...")
 	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
-
+	//4) Prompt if user wants to also translate
 	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
 	if willTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
 	} else {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
 	}
-
+	//5) Start updating files
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	project = searchProjectForStrings(projectPath, project)
-
+	//6) Prompt to undo
 	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished updating project. Reopen project and make sure there is no error.")
 	var shouldUndo = askBooleanQuestion("\nDo you want to undo?")
 	if shouldUndo {
@@ -76,7 +81,14 @@ func main() {
 	} else {
 		fmt.Println("\nThank you for using Strings Utility by Samuel P. Folledo 😁")
 	}
+}
 
+func promptCommitAnyChanges() {
+	var commitConfirmation = askBooleanQuestion("\nDid you finish committing any changes to your project? Say yes to continue")
+	if !commitConfirmation { //if user said no, then exit program
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nPlease finish commiting any changes and run this again.")
+		os.Exit(100) //exit status 100 means did not finish commmitting
+	}
 }
 
 //Loop through each files and look for each strings in each lines
