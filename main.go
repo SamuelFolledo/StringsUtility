@@ -56,6 +56,7 @@ func main() {
 	var projectCopyName = trimPathBeforeLastSlash(projectPath, false)
 	CopyDir(projectPath, "/Users/macbookpro15/desktop/"+projectCopyName+"_copy")
 	fmt.Println("Project directory is: ", projectPath)
+
 	var willTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
 	if willTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
