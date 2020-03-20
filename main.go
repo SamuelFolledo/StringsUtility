@@ -57,7 +57,7 @@ func main() {
 	var projectPath = getDirectoryName() //get project's path directory flag
 	//1) Welcome
 	fmt.Println("\n" + kCONSTANTDASHES)
-	color.Bold.Print("\n\nThank you for using Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or send an issue at github.com/SamuelFolledo/StringsUtility\n\n")
+	color.Bold.Print("\n\nThank you for using Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or send an issue at github.com/SamuelFolledo/StringsUtility\n\n\n")
 	fmt.Print(kCONSTANTDASHES)
 	//2) Prompt fresh commit
 	promptCommitAnyChanges()
@@ -188,7 +188,7 @@ func createNewConstantFile(path string) (constant File) {
 		constant.Path = trimmedPath + "/" + constant.Name                                               //remove AppDelegate.swift from the path which will be used to write our Constant file into
 		writeToFile(constant.Path, "//Thank you for using Samuel Folledo's Go Utility\n\nimport UIKit") //NOTE: writing to xcode project doesn't automatically add the Constant.swift file to the project
 	} else {
-		fmt.Println("Error: Failed to find ", fileNameToSearch)
+		fmt.Print("Error: Failed to find ", fileNameToSearch)
 	}
 	return
 }
@@ -256,14 +256,15 @@ func promptToUndo(srcPath, destPath string) {
 	color.Style{color.Green, color.OpBold}.Print("\nFinished updating project. Reopen project and make sure there is no error.\n")
 	var shouldUndo = askBooleanQuestion("QUESTION: Do you want to undo?")
 	if shouldUndo {
+		fmt.Print("\n" + kCONSTANTDASHES + "\n")
 		fmt.Print("\nUndoing...")
 		// copy.CopyDir(projectPath+"_previous", projectPath) //copy from previous
 		undoUtilityChanges(srcPath, destPath)
 		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n")
 
-	} else {
-		fmt.Println("\nThank you for using Strings Utility by Samuel P. Folledo 😁")
 	}
+	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• email: samuelfolledo@gmail.com")
+	color.Bold.Print("\n\nThank you for using Strings Utility by Samuel P. Folledo.\n")
 }
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
@@ -296,7 +297,7 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 						replaceFile(filePath, prevContents)
 					}
 				} else {
-					fmt.Println("Error: Failed to find ", fileName, " during undo. Please remove all changes using version control")
+					fmt.Print("Error: Failed to find ", fileName, " during undo. Please remove all changes using version control")
 				}
 				prevProjPath = trimPathAfterLastSlash(prevProjPath) //reset path by removing the / + fileName
 			}
@@ -311,7 +312,7 @@ func askBooleanQuestion(question string) bool {
 		if boolAnswer == "yes" || boolAnswer == "no" || boolAnswer == "y" || boolAnswer == "n" { //break if user input expected inputs
 			break
 		}
-		fmt.Print("\n\n")
+		fmt.Print("\n")
 		// color.Error.Print("Please respond with yes or no only")
 		color.Style{color.FgRed, color.OpBold}.Print("ERROR: Please respond with ")
 		color.Style{color.FgRed, color.OpBold, color.OpUnderscore}.Print("yes")
