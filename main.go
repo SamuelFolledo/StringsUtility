@@ -262,6 +262,7 @@ func promptToUndo(srcPath, destPath string) {
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
+//undo changes from project by writing file contents from previous version of the project stored when the program runs
 func undoUtilityChanges(prevProjPath, projPath string) {
 	files, err := ioutil.ReadDir(prevProjPath) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
@@ -280,73 +281,21 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
 			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file that's not the constants file... look for strings
 				prevProjPath = prevProjPath + "/" + fileName
-				// currentProject = handleSwiftFile(prevProjPath, project)
-
-				//------------
-				// var fileNameToSearch = "AppDelegate.swift"
-				// constant.Name = "Constants.swift"
-				// fmt.Println("Currently at " + prevProjPath + " to " + filePath)
-				var isFound, filePath = searchFileLocation(projPath, fileName, true) //get AppDelegate's path
-				if isFound {                                                         //if AppDelegate is found, create our Constants.swift in this directory
+				var isFound, filePath = searchFileLocation(projPath, fileName, true) //search project for file with the same name as .swift file from previour version
+				if isFound {                                                         //if found... read both file's content
 					var prevContents = readFile(prevProjPath)
 					var currentContents = readFile(filePath)
-					if prevContents != currentContents { //only write if they are not the same
+					if prevContents != currentContents { //if contents are not the same, replace project's file contents with the previous project's contents
 						fmt.Println("\nCopying contents of " + prevProjPath + " to " + filePath)
 						replaceFile(filePath, prevContents)
 					}
-					// var trimmedPath = trimPathAfterLastSlash(filePath)
-					// print(filePath, " trimmed is=", trimmedPath)
-					// constant.Path = trimmedPath + "/" + constant.Name                                               //remove AppDelegate.swift from the path which will be used to write our Constant file into
-					// writeToFile(constant.Path, "//Thank you for using Samuel Folledo's Go Utility\n\nimport UIKit") //NOTE: writing to xcode project doesn't automatically add the Constant.swift file to the project
 				} else {
-					fmt.Println("Error: Failed to find ", fileName)
+					fmt.Println("Error: Failed to find ", fileName, " during undo. Please remove all changes using version control")
 				}
-
 				prevProjPath = trimPathAfterLastSlash(prevProjPath) //reset path by removing the / + fileName
-			} //not .swift file
+			}
 		}
 	}
-
-	// (path, fileNameToSearch string, isExactName bool) (isFound bool, filePath string)
-
-	// files, err := ioutil.ReadDir(prevProjPath) //ReadDir returns a slice of FileInfo structs
-	// if isError(err) {
-	// 	return
-	// }
-	// for _, file := range files { //loop through each files and directories
-	// 	var fileName = file.Name()
-	// 	if file.IsDir() { //skip if file is directory
-	// 		if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
-	// 			continue
-	// 		}
-	// 		var prevPath = prevProjPath
-	// 		prevProjPath = prevProjPath + "/" + fileName                                                //update directory path by adding /fileName
-
-	// 		isFound, filePath = undoUtilityChanges(prevProjPath, projPath) //recursively call this function again
-	// 		if isFound {                                                                //if we found it then keep returning
-	// 			return
-	// 		}
-	// 		prevProjPath = prevPath //if not found, go to next directory, but update our path
-	// 	}
-	// 	var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
-	// 	if fileExtension == ".swift" {                                //if file is a .swift file
-	// 		filePath = path + "/" + fileName //path of file
-	// 		if fileName == fileNameToSearch {
-	// 			// fmt.Println("Searched and EXACTLY found ", fileNameToSearch, " at ", filePath)
-	// 			isFound = true
-	// 			return
-	// 		}
-	// 	}
-	// }
-
-	// var isFound, filePath = searchFileLocation(path, "Constant", false) //search for any files containing Constant
-	// var constantFile = File{}
-	// if isFound { //if a Constant file originally exist...
-	// 	constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
-	// 	constantFile.Path = filePath
-	// } else { //create a Constants.swift file to the same directory AppDelegate.swift is at
-	// 	constantFile = createNewConstantFile(path)
-	// }
 }
 
 func askBooleanQuestion(question string) bool {
