@@ -260,10 +260,10 @@ func promptToUndo(srcPath, destPath string) {
 		fmt.Print("\nUndoing...")
 		// copy.CopyDir(projectPath+"_previous", projectPath) //copy from previous
 		undoUtilityChanges(srcPath, destPath)
-		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n")
+		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n" + kCONSTANTDASHES + "\n")
 
 	}
-	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• email: samuelfolledo@gmail.com")
+	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
 	color.Bold.Print("\n\nThank you for using Strings Utility by Samuel P. Folledo.\n")
 }
 
