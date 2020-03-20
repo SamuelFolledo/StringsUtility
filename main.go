@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/SamuelFolledo/StringsUtility/github.com/copy"
+	"github.com/gookit/color" //for adding colors to CLI outputs
 )
 
 type Directory struct {
@@ -232,15 +233,15 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 }
 
 func promptCommitAnyChanges() {
-	var commitConfirmation = askBooleanQuestion("\nDid you finish committing any changes to your project? Say yes to continue")
+	var commitConfirmation = askBooleanQuestion("Did you finish commiting any changes to your project? Say yes to continue")
 	if !commitConfirmation { //if user said no, then exit program
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nPlease finish commiting any changes and run this again.")
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nSince you are not ready yet, please finish commiting any changes and run StringsUtility again.")
 		os.Exit(100) //exit status 100 means did not finish commmitting
 	}
 }
 
 func promptShouldTranslate() {
-	var shouldTranslate = askBooleanQuestion("\nWould you also like to translate your strings found in Constant file?")
+	var shouldTranslate = askBooleanQuestion("Would you also like to translate your strings found in Constant file?")
 	if shouldTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
 	} else {
@@ -250,7 +251,7 @@ func promptShouldTranslate() {
 
 func promptToUndo(srcPath, destPath string) {
 	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished updating project. Reopen project and make sure there is no error.")
-	var shouldUndo = askBooleanQuestion("\nDo you want to undo?")
+	var shouldUndo = askBooleanQuestion("Do you want to undo?")
 	if shouldUndo {
 		fmt.Println("\nUndoing...")
 		// copy.CopyDir(projectPath+"_previous", projectPath) //copy from previous
@@ -299,7 +300,7 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 }
 
 func askBooleanQuestion(question string) bool {
-	boolAnswer := askQuestionToUser("\n" + question + "\nType yes or no: ")
+	boolAnswer := askQuestionToUser(question + "\nType yes or no: ")
 	boolAnswer = strings.ToLower(boolAnswer) //lower case the response
 	for {                                    //infinite loop to handle user inputs that are not expected
 		if boolAnswer == "yes" || boolAnswer == "no" || boolAnswer == "y" || boolAnswer == "n" { //break if user input expected inputs
@@ -316,7 +317,9 @@ func askBooleanQuestion(question string) bool {
 
 //given a question, ask and wait for user's CLI input
 func askQuestionToUser(question string) string {
-	fmt.Print(question)
+	print("\n")
+	// color.Print("<suc>he</><comment>llo</>, <cyan>wel</><red>come</>\n")
+	color.Style{color.Green, color.OpBold}.Print(question)
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()
 	return input.Text()
