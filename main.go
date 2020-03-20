@@ -56,7 +56,9 @@ var kCONSTANTDASHES string = "--------------------------------------------------
 func main() {
 	var projectPath = getDirectoryName() //get project's path directory flag
 	//1) Welcome
-	fmt.Println("\n" + kCONSTANTDASHES + "\n\nThank you for using Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or send an issue at github.com/SamuelFolledo/StringsUtility\n\n" + kCONSTANTDASHES)
+	fmt.Println("\n" + kCONSTANTDASHES)
+	color.Bold.Print("\n\nThank you for using Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or send an issue at github.com/SamuelFolledo/StringsUtility\n\n")
+	fmt.Print(kCONSTANTDASHES)
 	//2) Prompt fresh commit
 	promptCommitAnyChanges()
 	//3) Clone project
@@ -233,7 +235,7 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 }
 
 func promptCommitAnyChanges() {
-	var commitConfirmation = askBooleanQuestion("Did you finish commiting any changes to your project? Say yes to continue")
+	var commitConfirmation = askBooleanQuestion("QUESTION: Did you finish commiting any changes to your project? Say yes to continue")
 	if !commitConfirmation { //if user said no, then exit program
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nSince you are not ready yet, please finish commiting any changes and run StringsUtility again.")
 		os.Exit(100) //exit status 100 means did not finish commmitting
@@ -241,7 +243,7 @@ func promptCommitAnyChanges() {
 }
 
 func promptShouldTranslate() {
-	var shouldTranslate = askBooleanQuestion("Would you also like to translate your strings found in Constant file?")
+	var shouldTranslate = askBooleanQuestion("QUESTION: Would you also like to translate your strings found in Constant file?")
 	if shouldTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
 	} else {
@@ -250,12 +252,15 @@ func promptShouldTranslate() {
 }
 
 func promptToUndo(srcPath, destPath string) {
-	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished updating project. Reopen project and make sure there is no error.")
-	var shouldUndo = askBooleanQuestion("Do you want to undo?")
+	fmt.Println("\n" + kCONSTANTDASHES)
+	color.Style{color.Green, color.OpBold}.Print("\nFinished updating project. Reopen project and make sure there is no error.\n")
+	var shouldUndo = askBooleanQuestion("QUESTION: Do you want to undo?")
 	if shouldUndo {
-		fmt.Println("\nUndoing...")
+		fmt.Print("\nUndoing...")
 		// copy.CopyDir(projectPath+"_previous", projectPath) //copy from previous
 		undoUtilityChanges(srcPath, destPath)
+		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n")
+
 	} else {
 		fmt.Println("\nThank you for using Strings Utility by Samuel P. Folledo 😁")
 	}
@@ -287,7 +292,7 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 					var prevContents = readFile(prevProjPath)
 					var currentContents = readFile(filePath)
 					if prevContents != currentContents { //if contents are not the same, replace project's file contents with the previous project's contents
-						fmt.Println("\nCopying contents of " + prevProjPath + " to " + filePath)
+						// fmt.Println("\nCopying contents of " + prevProjPath + " to " + filePath)
 						replaceFile(filePath, prevContents)
 					}
 				} else {
@@ -306,7 +311,14 @@ func askBooleanQuestion(question string) bool {
 		if boolAnswer == "yes" || boolAnswer == "no" || boolAnswer == "y" || boolAnswer == "n" { //break if user input expected inputs
 			break
 		}
-		boolAnswer = askQuestionToUser("\n\nUser input error = Please type yes or no only" + question + ": ")
+		fmt.Print("\n\n")
+		// color.Error.Print("Please respond with yes or no only")
+		color.Style{color.FgRed, color.OpBold}.Print("ERROR: Please respond with ")
+		color.Style{color.FgRed, color.OpBold, color.OpUnderscore}.Print("yes")
+		color.Style{color.FgRed, color.OpBold}.Print(" or ")
+		color.Style{color.FgRed, color.OpBold, color.OpUnderscore}.Print("no")
+		color.Style{color.FgRed, color.OpBold}.Print(" only")
+		boolAnswer = askQuestionToUser(question + ": ")
 		boolAnswer = strings.ToLower(boolAnswer) //lower case the response
 	}
 	if boolAnswer == "yes" || boolAnswer == "y" {
@@ -319,7 +331,7 @@ func askBooleanQuestion(question string) bool {
 func askQuestionToUser(question string) string {
 	print("\n")
 	// color.Print("<suc>he</><comment>llo</>, <cyan>wel</><red>come</>\n")
-	color.Style{color.Green, color.OpBold}.Print(question)
+	color.Style{color.Cyan, color.OpBold}.Print(question)
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()
 	return input.Text()
