@@ -50,12 +50,12 @@ var fileFlag = flag.String("file", "", "Name of file")
 var dirFlag = flag.String("dir", "", "Name of directory")
 var kCONSTANTFILEPATH string
 var kCONSTANTFILENAME string
-var kCONSTANTDASHES string = "----------------------------------------------------------"
+var kCONSTANTDASHES string = "--------------------------------------------------------------------------------------------------"
 
 func main() {
 	var projectPath = getDirectoryName() //get project's path directory flag
 	//1) Welcome
-	fmt.Println("\nThank you for trying out Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or send an issue at github.com/SamuelFolledo/StringsUtility")
+	fmt.Println("\n" + kCONSTANTDASHES + "\n\nThank you for using Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or send an issue at github.com/SamuelFolledo/StringsUtility\n\n" + kCONSTANTDASHES)
 	//2) Prompt fresh commit
 	promptCommitAnyChanges()
 	//3) Clone project
@@ -278,8 +278,8 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 			undoUtilityChanges(prevProjPath, projPath)          //recursively call this function again
 			prevProjPath = trimPathAfterLastSlash(prevProjPath) //reset path by removing the / + fileName
 		} else { //if file...
-			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
-			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file that's not the constants file... look for strings
+			var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+			if fileExtension == ".swift" {                                //if we find a Swift file that's not the constants file... look for strings
 				prevProjPath = prevProjPath + "/" + fileName
 				var isFound, filePath = searchFileLocation(projPath, fileName, true) //search project for file with the same name as .swift file from previour version
 				if isFound {                                                         //if found... read both file's content
