@@ -262,7 +262,6 @@ func promptToUndo(srcPath, destPath string) {
 		undoUtilityChanges(srcPath, destPath)
 		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n\n")
 		fmt.Print(kCONSTANTDASHES + "\n")
-
 	}
 	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
 	color.Bold.Print("\n\nThank you for using Strings Utility by Samuel P. Folledo.\n")
