@@ -57,13 +57,13 @@ var kCONSTANTDASHES string = "--------------------------------------------------
 func main() {
 	var projectPath = getDirectoryName() //get project's path directory flag
 	//1) Welcome
-	fmt.Println("\n" + kCONSTANTDASHES)
-	color.Bold.Print("\n\nThank you for using Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or send an issue at github.com/SamuelFolledo/StringsUtility\n\n\n")
-	fmt.Print(kCONSTANTDASHES)
+	fmt.Print("\n" + kCONSTANTDASHES)
+	color.Bold.Print("\n\n\nThank you for using Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or create an issue at github.com/SamuelFolledo/StringsUtility\n\n\n")
+	fmt.Print(kCONSTANTDASHES, "\n")
 	//2) Prompt fresh commit
 	promptCommitAnyChanges()
 	//3) Clone project
-	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished cloning " + trimPathBeforeLastSlash(projectPath, false) + ". Ready to apply StringsUtility changes")
+	fmt.Print("\n\nFinished cloning "+trimPathBeforeLastSlash(projectPath, false)+". StringsUtility is ready to make changes\n\n"+kCONSTANTDASHES, "\n")
 	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
 	//4 Initialize project
 	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
@@ -246,7 +246,7 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 //////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
 
 func promptCommitAnyChanges() {
-	var commitConfirmation = askBooleanQuestion("QUESTION: Did you finish commiting any changes to your project? Say yes to continue")
+	var commitConfirmation = askBooleanQuestion("RECOMMENDATION: Before using StringsUtility it is recommended to commit any changes? Say yes to continue")
 	if !commitConfirmation { //if user said no, then exit program
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nSince you are not ready yet, please finish commiting any changes and run StringsUtility again.")
 		os.Exit(100) //exit status 100 means did not finish commmitting
@@ -254,41 +254,45 @@ func promptCommitAnyChanges() {
 }
 
 func promptPutStringsToConstant(project Project, projectPath, constantPath string) Project {
-	var shouldMoveStrings = askBooleanQuestion("QUESTION: Would you like StringsUtility to put all strings in .swift files to a constant file?")
+	var shouldMoveStrings = askBooleanQuestion("FEATURE 1: Would you like StringsUtility to move all strings in .swift files to a constant file?")
 	var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldMoveStrings {
-		fmt.Print("\n"+kCONSTANTDASHES+"\n\nPutting strings to ", projectName, "... ")
+		fmt.Print("\nPutting strings to ", projectName, "... ")
 		project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
 		color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. You can project and make sure there is no error.\n")
 	} else {
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not move strings")
+		fmt.Println("\n\nWill not move strings.")
 	}
+	fmt.Println("\n" + kCONSTANTDASHES)
 	return project
 }
 
 func promptShouldTranslate(project Project) Project {
-	var shouldTranslate = askBooleanQuestion("QUESTION: Would you also like to translate your strings found in Constant file?")
+	var shouldTranslate = askBooleanQuestion("FEATURE 2: Would you also like to translate your strings found in Constant file?")
 	if shouldTranslate {
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
+		fmt.Println("\n\nTranslating...")
 		fmt.Println("PATHHHH", project.ConstantFile.Path)
 	} else {
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
+		fmt.Println("\n\nWill not translate...")
 	}
+	fmt.Println("\n" + kCONSTANTDASHES + "\n")
 	return project
 }
 
 func promptToUndo(srcPath, destPath string) {
-	fmt.Println("\n" + kCONSTANTDASHES)
-	color.Style{color.Green, color.OpBold}.Print("\nFinished updating project. Reopen project and make sure there is no error.\n")
+	// fmt.Println("\n" + kCONSTANTDASHES)
+	color.Style{color.Green, color.OpBold}.Print("Finished updating project. Reopen project and make sure there is no error.\n")
 	var shouldUndo = askBooleanQuestion("QUESTION: Do you want to undo?")
 	if shouldUndo {
-		fmt.Print("\n" + kCONSTANTDASHES + "\n")
+		// fmt.Print("\n" + kCONSTANTDASHES + "\n")
 		fmt.Print("\nUndoing...")
 		undoUtilityChanges(srcPath, destPath)
-		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n\n")
-		fmt.Print(kCONSTANTDASHES + "\n")
+		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n")
+	} else {
+		color.Bold.Println("\nWe're glad that StringsUtility was a success for you")
 	}
-	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
+	fmt.Println("\n" + kCONSTANTDASHES + "\n")
+	fmt.Print("For feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
 	color.Bold.Print("\n\nThank you for using StringsUtility by Samuel P. Folledo.\n")
 }
 
