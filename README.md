@@ -27,6 +27,14 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 - Translate strings using [Google Cloud Translator](https://cloud.google.com/translate/docs)
 
 ## How to Use?
+
+### Install Golang with Homebrew:
+  ```
+  $ brew update
+  $ brew install golang
+  ```
+
+### Run StringsUtility
 - clone the repo
   ```
   git clone https://github.com/SamuelFolledo/StringsUtility
