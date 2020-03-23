@@ -62,17 +62,16 @@ func main() {
 	//2) Prompt fresh commit
 	promptCommitAnyChanges()
 	//3) Clone project
-	fmt.Println("\n" + kCONSTANTDASHES + "\n\nCloning " + trimPathBeforeLastSlash(projectPath, false) + " before applying any changes...")
+	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished cloning " + trimPathBeforeLastSlash(projectPath, false) + ". Ready to apply StringsUtility changes")
 	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
 	//4 Initialize project
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	//5) Prompt if user wants to put all strings to the constant file
-	project = promptPutStringsToConstant(project, kCONSTANTFILEPATH)
+	project = promptPutStringsToConstant(project, projectPath, kCONSTANTFILEPATH)
 	//6) Prompt if user wants to also translate
-	promptShouldTranslate()
+	project = promptShouldTranslate(project)
 	//5) Start updating files
-
 	//6) Prompt to undo
 	promptToUndo(projectPath+"_previous", projectPath)
 }
@@ -247,23 +246,27 @@ func promptCommitAnyChanges() {
 	}
 }
 
-func promptPutStringsToConstant(project Project, constantPath string) Project {
+func promptPutStringsToConstant(project Project, projectPath, constantPath string) Project {
 	var shouldConstantStrings = askBooleanQuestion("QUESTION: Would you like StringsUtility to put all strings in .swift files to a constant file?")
+	var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldConstantStrings {
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
+		fmt.Println("\n"+kCONSTANTDASHES+"\n\nPutting strings to", projectName)
+		project = searchProjectForStrings(projectPath, project)
+		color.Style{color.Green, color.OpBold}.Print("\nFinished moving all strings. Reopen project and make sure there is no error.\n")
 	} else {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
 	}
 	return project
 }
 
-func promptShouldTranslate() {
+func promptShouldTranslate(project Project) Project {
 	var shouldTranslate = askBooleanQuestion("QUESTION: Would you also like to translate your strings found in Constant file?")
 	if shouldTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
 	} else {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
 	}
+	return project
 }
 
 func promptToUndo(srcPath, destPath string) {
@@ -273,7 +276,6 @@ func promptToUndo(srcPath, destPath string) {
 	if shouldUndo {
 		fmt.Print("\n" + kCONSTANTDASHES + "\n")
 		fmt.Print("\nUndoing...")
-		// copy.CopyDir(projectPath+"_previous", projectPath) //copy from previous
 		undoUtilityChanges(srcPath, destPath)
 		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n\n")
 		fmt.Print(kCONSTANTDASHES + "\n")
