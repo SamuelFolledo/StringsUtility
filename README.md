@@ -33,7 +33,7 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
   ```
   $ git clone https://github.com/SamuelFolledo/StringsUtility
   ```
-- cd into the repo
+- go to the project
   ```
   $ cd StringsUtility
   ```
@@ -47,7 +47,7 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 ### Run StringsUtility
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
   ```
-  go build && go run main.go -dir=PATH_To_YOUR_PROJECT
+  $ go build && go run main.go -dir=PATH_TO_YOUR_PROJECT
   ``` 
 
 ## Demo
