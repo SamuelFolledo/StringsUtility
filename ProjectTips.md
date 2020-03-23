@@ -1,5 +1,5 @@
-# StringsUtility Requirements and Recommendations
-Project requirements and recommendations in order to make StringsUtility as effective and error-free as possible.
+# StringsUtility Project Recommendations
+Project tips in order to make StringsUtility as effective and error-free as possible.
 
 ### Feature 1: Moving Strings to Constant file
 - [ ] Have at least __1 constants file__ (e.g. ```Constants.swift```) in your project.
