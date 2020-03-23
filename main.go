@@ -41,6 +41,7 @@ type ConstantVariable struct {
 
 type Project struct {
 	Name            string
+	Path            string
 	Directories     []Directory
 	HasConstantFile bool
 	ConstantFile    File
@@ -65,7 +66,7 @@ func main() {
 	fmt.Println("\n" + kCONSTANTDASHES + "\n\nFinished cloning " + trimPathBeforeLastSlash(projectPath, false) + ". Ready to apply StringsUtility changes")
 	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
 	//4 Initialize project
-	var project = Project{Name: projectPath}
+	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
 	project = setupConstantFile(projectPath, project)
 	//5) Prompt if user wants to put all strings to the constant file
 	project = promptPutStringsToConstant(project, projectPath, kCONSTANTFILEPATH)
@@ -77,7 +78,7 @@ func main() {
 }
 
 //Loop through each files and look for each strings in each lines
-func searchProjectForStrings(path string, project Project) (currentProject Project) {
+func moveStringsToConstant(path string, project Project) (currentProject Project) {
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
@@ -88,9 +89,9 @@ func searchProjectForStrings(path string, project Project) (currentProject Proje
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
-			path = path + "/" + fileName                            //update directory path by adding /fileName
-			currentProject = searchProjectForStrings(path, project) //recursively call this function again
-			path = trimPathAfterLastSlash(path)                     //reset path by removing the / + fileName
+			path = path + "/" + fileName                          //update directory path by adding /fileName
+			currentProject = moveStringsToConstant(path, project) //recursively call this function again
+			path = trimPathAfterLastSlash(path)                   //reset path by removing the / + fileName
 		} else { //if file...
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
 			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file that's not the constants file... look for strings
@@ -250,9 +251,9 @@ func promptPutStringsToConstant(project Project, projectPath, constantPath strin
 	var shouldConstantStrings = askBooleanQuestion("QUESTION: Would you like StringsUtility to put all strings in .swift files to a constant file?")
 	var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldConstantStrings {
-		fmt.Println("\n"+kCONSTANTDASHES+"\n\nPutting strings to", projectName)
-		project = searchProjectForStrings(projectPath, project)
-		color.Style{color.Green, color.OpBold}.Print("\nFinished moving all strings. Reopen project and make sure there is no error.\n")
+		fmt.Print("\n"+kCONSTANTDASHES+"\n\nPutting strings to ", projectName, "... ")
+		// project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
+		color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. You can project and make sure there is no error.\n")
 	} else {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
 	}
@@ -263,6 +264,7 @@ func promptShouldTranslate(project Project) Project {
 	var shouldTranslate = askBooleanQuestion("QUESTION: Would you also like to translate your strings found in Constant file?")
 	if shouldTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
+		fmt.Println("PATHHHH", project.Path)
 	} else {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
 	}
