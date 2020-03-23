@@ -268,7 +268,7 @@ func promptPutStringsToConstant(project Project, projectPath, constantPath strin
 }
 
 func promptShouldTranslate(project Project) Project {
-	var shouldTranslate = askBooleanQuestion("FEATURE 2: Would you also like to translate your strings found in Constant file?")
+	var shouldTranslate = askBooleanQuestion("FEATURE 2: String Localization. Have you created a Localizable.strings?")
 	if shouldTranslate {
 		fmt.Println("\n\nTranslating...")
 		fmt.Println("PATHHHH", project.ConstantFile.Path)
