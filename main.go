@@ -68,12 +68,10 @@ func main() {
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	//5) Prompt if user wants to put all strings to the constant file
-	promptPutStringsToConstant(kCONSTANTFILEPATH)
+	project = promptPutStringsToConstant(project, kCONSTANTFILEPATH)
 	//6) Prompt if user wants to also translate
 	promptShouldTranslate()
 	//5) Start updating files
-
-	project = searchProjectForStrings(projectPath, project)
 
 	//6) Prompt to undo
 	promptToUndo(projectPath+"_previous", projectPath)
@@ -249,13 +247,14 @@ func promptCommitAnyChanges() {
 	}
 }
 
-func promptPutStringsToConstant(constantPath string) {
-	var shouldConstantStrings = askBooleanQuestion("QUESTION: Would you like StringsUtility to put all strings to a constant file?")
+func promptPutStringsToConstant(project Project, constantPath string) Project {
+	var shouldConstantStrings = askBooleanQuestion("QUESTION: Would you like StringsUtility to put all strings in .swift files to a constant file?")
 	if shouldConstantStrings {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
 	} else {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
 	}
+	return project
 }
 
 func promptShouldTranslate() {
@@ -280,7 +279,7 @@ func promptToUndo(srcPath, destPath string) {
 		fmt.Print(kCONSTANTDASHES + "\n")
 	}
 	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
-	color.Bold.Print("\n\nThank you for using Strings Utility by Samuel P. Folledo.\n")
+	color.Bold.Print("\n\nThank you for using StringsUtility by Samuel P. Folledo.\n")
 }
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
