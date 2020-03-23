@@ -65,11 +65,13 @@ func main() {
 	fmt.Println("\n" + kCONSTANTDASHES + "\n\nCloning " + trimPathBeforeLastSlash(projectPath, false) + " before applying any changes...")
 	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
 	//4) Prompt if user wants to also translate
+	promptPutStringsToConstant()
 	promptShouldTranslate()
 	//5) Start updating files
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
 	project = searchProjectForStrings(projectPath, project)
+
 	//6) Prompt to undo
 	promptToUndo(projectPath+"_previous", projectPath)
 }
@@ -234,12 +236,18 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 	return
 }
 
+//////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
+
 func promptCommitAnyChanges() {
 	var commitConfirmation = askBooleanQuestion("QUESTION: Did you finish commiting any changes to your project? Say yes to continue")
 	if !commitConfirmation { //if user said no, then exit program
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nSince you are not ready yet, please finish commiting any changes and run StringsUtility again.")
 		os.Exit(100) //exit status 100 means did not finish commmitting
 	}
+}
+
+func promptPutStringsToConstant() {
+
 }
 
 func promptShouldTranslate() {
@@ -449,7 +457,8 @@ func removeAllSymbols(word string) string {
 	// Make a Regex to say we only want letters and numbers
 	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
 	if isError(err) {
-		return ""
+		fmt.Print("ERROR: removing all symbols for word", word, " err = ", err)
+		return word
 	}
 	processedString := reg.ReplaceAllString(word, "")
 	return processedString
