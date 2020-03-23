@@ -6,8 +6,8 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 
 ### Feature 2: Strings Localization
 
-#### Part 1: Move strings to Localizable
-[ ] Have a ```Localizable.strings``` file
+#### PART 1: Move strings to Localizable
+- [ ] Have a ```Localizable.strings``` file
 
-#### Part 2: String Translation
-[ ] 
+#### PART 2: String Translation
+- [ ] 
