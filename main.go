@@ -78,34 +78,38 @@ func main() {
 }
 
 //Loop through each files and look for each strings in each lines
-func moveStringsToConstant(path string, project Project) (currentProject Project) {
+func moveStringsToConstant(path string, project Project) Project {
+	// fmt.Println("00 Project path I need =", project.ConstantFile.Path)
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
-		return
+		return project
 	}
 	for _, file := range files { //loop through each files and directories
 		var fileName = file.Name()
 		if file.IsDir() { //if directory...
+			// fmt.Println("WHILE AT PATH: ", fileName, "\t1-Project path I need =", project.ConstantFile.Path)
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
-			path = path + "/" + fileName                          //update directory path by adding /fileName
-			currentProject = moveStringsToConstant(path, project) //recursively call this function again
-			path = trimPathAfterLastSlash(path)                   //reset path by removing the / + fileName
+			path = path + "/" + fileName                   //update directory path by adding /fileName
+			project = moveStringsToConstant(path, project) //recursively call this function again
+			path = trimPathAfterLastSlash(path)            //reset path by removing the / + fileName
 		} else { //if file...
+			// fmt.Println("WHILE AT PATH: ", fileName, "\t2-Project path I need =", project.ConstantFile.Path)
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
 			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file that's not the constants file... look for strings
 				path = path + "/" + fileName
-				currentProject = handleSwiftFile(path, project)
+				project = handleSwiftFile(path, project)
 				path = trimPathAfterLastSlash(path) //reset path by removing the / + fileName
 			} //not .swift file
 		}
 	}
-	return
+	return project
 }
 
 //looks for strings in a .swift file and updates the .swift file and Constants file accordingly
-func handleSwiftFile(path string, project Project) (currentProject Project) {
+func handleSwiftFile(path string, project Project) Project {
+	// fmt.Println("WHILE AT PATH: ", path, "\t3-Project path I need =", project.ConstantFile.Path)
 	var fileContents = readFile(path)        //get the contents of
 	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {             //loop through each lines
@@ -119,7 +123,7 @@ func handleSwiftFile(path string, project Project) (currentProject Project) {
 		}
 	}
 	replaceFile(path, fileContents) //update our .swift file with fileContents
-	return
+	return project
 }
 
 //takes a line with strings and returns an array of ConstantVariable
@@ -175,6 +179,8 @@ func setupConstantFile(path string, project Project) Project {
 	} else { //create a Constants.swift file to the same directory AppDelegate.swift is at
 		constantFile = createNewConstantFile(path)
 	}
+	project.ConstantFile.Name = constantFile.Name
+	project.ConstantFile.Path = constantFile.Path
 	kCONSTANTFILEPATH = constantFile.Path //keep the reference to the path's file and name
 	kCONSTANTFILENAME = constantFile.Name
 	return project
@@ -252,7 +258,7 @@ func promptPutStringsToConstant(project Project, projectPath, constantPath strin
 	var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldConstantStrings {
 		fmt.Print("\n"+kCONSTANTDASHES+"\n\nPutting strings to ", projectName, "... ")
-		// project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
+		project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
 		color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. You can project and make sure there is no error.\n")
 	} else {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
@@ -264,7 +270,7 @@ func promptShouldTranslate(project Project) Project {
 	var shouldTranslate = askBooleanQuestion("QUESTION: Would you also like to translate your strings found in Constant file?")
 	if shouldTranslate {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
-		fmt.Println("PATHHHH", project.Path)
+		fmt.Println("PATHHHH", project.ConstantFile.Path)
 	} else {
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
 	}
