@@ -254,14 +254,14 @@ func promptCommitAnyChanges() {
 }
 
 func promptPutStringsToConstant(project Project, projectPath, constantPath string) Project {
-	var shouldConstantStrings = askBooleanQuestion("QUESTION: Would you like StringsUtility to put all strings in .swift files to a constant file?")
+	var shouldMoveStrings = askBooleanQuestion("QUESTION: Would you like StringsUtility to put all strings in .swift files to a constant file?")
 	var projectName = trimPathBeforeLastSlash(projectPath, true)
-	if shouldConstantStrings {
+	if shouldMoveStrings {
 		fmt.Print("\n"+kCONSTANTDASHES+"\n\nPutting strings to ", projectName, "... ")
 		project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
 		color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. You can project and make sure there is no error.\n")
 	} else {
-		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not move strings")
 	}
 	return project
 }
