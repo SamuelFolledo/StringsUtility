@@ -7,7 +7,7 @@ Project requirements and recommendations in order to make StringsUtility as effe
 ### Feature 2: Strings Localization
 
 #### Part 1: Move strings to Localizable
-    - [ ] Have a ```Localizable.strings``` file
+- [ ] Have a ```Localizable.strings``` file
 
-    #### Part 2: String Translation
-    - [ ] 
+#### Part 2: String Translation
+- [ ] 
