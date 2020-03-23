@@ -28,7 +28,7 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 
 ## How to Use?
 
-### Install Golang with Homebrew:
+### [Install Golang](https://sourabhbajaj.com/mac-setup/Go/README.html) with Homebrew:
   ```
   $ brew update
   $ brew install golang
