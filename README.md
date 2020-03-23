@@ -33,11 +33,11 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
   ```
 - cd into the repo
   ```
-  cd GoUtility
+  cd StringsUtility
   ```
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
   ```
-  go run main.go --dir=PATH_To_YOUR_PROJECT
+  go build && go run main.go -dir=PATH_To_YOUR_PROJECT
   ``` 
 
 ## Demo
