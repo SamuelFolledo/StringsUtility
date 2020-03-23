@@ -28,6 +28,16 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 
 ## How to Use?
 
+### Download StringsUtility
+- clone the repo
+  ```
+  $ git clone https://github.com/SamuelFolledo/StringsUtility
+  ```
+- cd into the repo
+  ```
+  $ cd StringsUtility
+  ```
+
 ### [Install Golang](https://sourabhbajaj.com/mac-setup/Go/README.html) with Homebrew:
   ```
   $ brew update
@@ -35,14 +45,6 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
   ```
 
 ### Run StringsUtility
-- clone the repo
-  ```
-  git clone https://github.com/SamuelFolledo/StringsUtility
-  ```
-- cd into the repo
-  ```
-  cd StringsUtility
-  ```
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
   ```
   go build && go run main.go -dir=PATH_To_YOUR_PROJECT
