@@ -64,12 +64,15 @@ func main() {
 	//3) Clone project
 	fmt.Println("\n" + kCONSTANTDASHES + "\n\nCloning " + trimPathBeforeLastSlash(projectPath, false) + " before applying any changes...")
 	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
-	//4) Prompt if user wants to also translate
-	promptPutStringsToConstant()
-	promptShouldTranslate()
-	//5) Start updating files
+	//4 Initialize project
 	var project = Project{Name: projectPath}
 	project = setupConstantFile(projectPath, project)
+	//5) Prompt if user wants to put all strings to the constant file
+	promptPutStringsToConstant(kCONSTANTFILEPATH)
+	//6) Prompt if user wants to also translate
+	promptShouldTranslate()
+	//5) Start updating files
+
 	project = searchProjectForStrings(projectPath, project)
 
 	//6) Prompt to undo
@@ -246,8 +249,13 @@ func promptCommitAnyChanges() {
 	}
 }
 
-func promptPutStringsToConstant() {
-
+func promptPutStringsToConstant(constantPath string) {
+	var shouldConstantStrings = askBooleanQuestion("QUESTION: Would you like StringsUtility to put all strings to a constant file?")
+	if shouldConstantStrings {
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nTranslating...")
+	} else {
+		fmt.Println("\n" + kCONSTANTDASHES + "\n\nWill not translate...")
+	}
 }
 
 func promptShouldTranslate() {
