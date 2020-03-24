@@ -395,8 +395,7 @@ func updateLocalizableStrings(project Project, str string) Project {
 		var path = lang.Path + "/Localizable.strings"
 		var fileContents = readFile(path)
 		if !strings.Contains(fileContents, str) { //if str does not exist in Localizable.strings...
-			var stringToWrite = str + " = \"\";" //equivalent to: "word" = "";
-			fmt.Println("Writing", stringToWrite)
+			var stringToWrite = str + " = \"\";"  //equivalent to: "word" = "";
 			writeToFile(path, "\n"+stringToWrite) //write at the end
 		}
 	}
@@ -463,52 +462,51 @@ func translateProject(project Project) Project {
 			var length = len(strArray)
 			if length == 1 { //no translation
 				text = strArray[0]
+				text = text[1 : len(text)-1]                         //removes the first and last character, which are both "
+				translatedText = translateText(lang.GoogleKey, text) //translate to Spanish
+				print("Translated text: ", text, " in ", lang.Name, " is ", translatedText, "\n")
 			} else if length == 2 { //text has translation
 				text = strArray[0]
 				translatedText = strArray[1]
 			} else { //line has no strings
 				continue
 			}
-			if translatedText == "" {
-				fmt.Println("Text: ", text, " is not translated")
-			} else {
-				fmt.Println("Text: ", text, " in ", lang.GoogleKey, " is = ", translatedText)
+			for _, language := range project.Languages { //save cost, check if other languages supported has the same key
+				if language.Name == lang.Name { //if same language...
+					continue
+				}
+				if language.GoogleKey == lang.GoogleKey { //if diff language, but same key... populate with the same stuff
+					fmt.Println(language.Name, " and ", lang.Name, " has the same key")
+				}
 			}
 		}
 	}
-
-	var text = "I love you"
-	var translatedText, err = translateText("es", text) //translate to Spanish
-	if isError(err) {
-		return project
-	}
-	print("\"", text, "\" in SPANISH is \"", translatedText, "\"\n")
 	return project
 }
 
 //////////////////////////////////////////////////// MARK: Google Translate METHODS ////////////////////////////////////////////////////
 //function that takes a text to translate and language to translate to and returns an error or the translatedText
-func translateText(targetLanguage, text string) (string, error) {
+func translateText(targetLanguage, text string) string {
 	ctx := context.Background()
 	lang, err := language.Parse(targetLanguage)
 	if isError(err) {
-		return "", fmt.Errorf("language.Parse: %v", err)
+		return ""
 	}
 
 	client, err := translate.NewClient(ctx) ///Users/macbookpro15/Downloads/StringsUtility-Tester-785c7f11aedf.json
 	if isError(err) {
-		return "", err
+		return ""
 	}
 	defer client.Close()
 
 	resp, err := client.Translate(ctx, []string{text}, lang, nil)
 	if isError(err) {
-		return "", fmt.Errorf("Translate: %v", err)
+		return ""
 	}
 	if len(resp) == 0 {
-		return "", fmt.Errorf("Translate returned empty response to text: %s", text)
+		return ""
 	}
-	return resp[0].Text, nil
+	return resp[0].Text
 }
 
 //////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
