@@ -153,12 +153,12 @@ func moveStringsToConstant(path string, project Project) Project {
 			project = moveStringsToConstant(path, project) //recursively call this function again
 			path = trimPathAfterLastSlash(path)            //reset path by removing the / + fileName
 		} else { //if file...
-			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))           //gets the file extension from file name
-			if fileExtension == ".swift" && fileName != project.ConstantFile.Path { //if we find a Swift file that's not the constants file... look for strings
-				path = path + "/" + fileName
+			var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+			path = path + "/" + fileName
+			if fileExtension == ".swift" && path != project.ConstantFile.Path { //if we find a Swift file that's not the constants file... look for strings
 				project = handleSwiftFile(path, project)
-				path = trimPathAfterLastSlash(path) //reset path by removing the / + fileName
 			} //not .swift file
+			path = trimPathAfterLastSlash(path) //reset path by removing the / + fileName
 		}
 	}
 	return project
@@ -178,8 +178,7 @@ func handleSwiftFile(path string, project Project) Project {
 		if len(constantArray) != 0 { //if a constant exist
 			for _, constant := range constantArray {
 				fileContents = strings.Replace(fileContents, constant.Value, constant.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-				// print("\nCONTENTS ==== ", fileContents, "\n")
-				updateConstantsFile(constant, project.ConstantFile.Path) //lastly, write it to our Constant file
+				updateConstantsFile(constant, project.ConstantFile.Path)                       //lastly, write it to our Constant file
 			}
 		}
 	}
@@ -239,9 +238,10 @@ func isValidString(str string) bool {
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
-func updateConstantsFile(constant ConstantVariable, path string) {
-	if constantFileContents := readFile(path); !strings.Contains(constantFileContents, constant.Name) { //if constant variable doesn't exist in our Constants file, write it
-		writeToFile(path, "\n"+constant.Variable) //append the constant variable
+func updateConstantsFile(constant ConstantVariable, constantPath string) {
+	if constantFileContents := readFile(constantPath); !strings.Contains(constantFileContents, constant.Name) { //if constant variable doesn't exist in our Constants file, write it
+		fmt.Println("Constant contains===", constant.Name, " = ", constant.Value, " changing to ", constant.Variable)
+		writeToFile(constantPath, "\n"+constant.Variable) //append the constant variable
 	}
 }
 
