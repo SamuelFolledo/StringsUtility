@@ -462,24 +462,27 @@ func translateProject(project Project) Project {
 			var length = len(strArray)
 			if length == 1 { //no translation
 				text = strArray[0]
-				text = text[1 : len(text)-1]                         //removes the first and last character, which are both "
-				translatedText = translateText(lang.GoogleKey, text) //translate to Spanish
-				print("Translated text: ", text, " in ", lang.Name, " is ", translatedText, "\n")
+				var textToTranslate = text[1 : len(text)-1]                     //removes the first and last character, which are both "
+				translatedText = translateText(lang.GoogleKey, textToTranslate) //translate to Spanish
+				print("Translated text: ", textToTranslate, " in ", lang.Name, " is ", translatedText, "\n")
+				var newLine = text + " = \"" + translatedText + "\";"
+				fileContents = strings.Replace(fileContents, line, newLine, 1) //update fileContent's old line with new line
 			} else if length == 2 { //text has translation
 				text = strArray[0]
 				translatedText = strArray[1]
 			} else { //line has no strings
 				continue
 			}
-			for _, language := range project.Languages { //save cost, check if other languages supported has the same key
-				if language.Name == lang.Name { //if same language...
-					continue
-				}
-				if language.GoogleKey == lang.GoogleKey { //if diff language, but same key... populate with the same stuff
-					fmt.Println(language.Name, " and ", lang.Name, " has the same key")
-				}
-			}
+			// for _, language := range project.Languages { //save cost, check if other languages supported has the same key
+			// 	if language.Name == lang.Name { //if same language...
+			// 		continue
+			// 	}
+			// 	if language.GoogleKey == lang.GoogleKey { //if diff language, but same key... populate with the same stuff
+			// 		fmt.Println(language.Name, " and ", lang.Name, " has the same key")
+			// 	}
+			// }
 		}
+		replaceFile(path, fileContents)
 	}
 	return project
 }
