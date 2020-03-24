@@ -447,6 +447,36 @@ func searchForFilePath(counter int, path, fileNameToSearch string, isExactName b
 }
 
 func translateProject(project Project) Project {
+	if len(project.Languages) < 0 {
+		fmt.Println("No languages detected")
+		return project
+	}
+	for _, lang := range project.Languages { //for each language our project wants to support
+		var path = lang.Path + "/Localizable.strings"
+		fmt.Println("\nFILE =", path)
+		var fileContents = readFile(path)                  //read the Localizable.strings contents
+		var linesArray = contentToLinesArray(fileContents) //convert contents to array of lines
+		for _, line := range linesArray {                  //loop through each line
+			var strArray = getStringsFromLine(line) //get strings
+			var text string
+			var translatedText string
+			var length = len(strArray)
+			if length == 1 { //no translation
+				text = strArray[0]
+			} else if length == 2 { //text has translation
+				text = strArray[0]
+				translatedText = strArray[1]
+			} else { //line has no strings
+				continue
+			}
+			if translatedText == "" {
+				fmt.Println("Text: ", text, " is not translated")
+			} else {
+				fmt.Println("Text: ", text, " in ", lang.GoogleKey, " is = ", translatedText)
+			}
+		}
+	}
+
 	var text = "I love you"
 	var translatedText, err = translateText("es", text) //translate to Spanish
 	if isError(err) {
