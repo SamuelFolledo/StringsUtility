@@ -22,6 +22,11 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 - Have strings autocompleted
 - Easily manage all your strings in one file
 
+## [Tips](Tips):
+- To avoid common errors, strings which contains the following will substrings not be put to the constant file or translated. Edit files accordingly 
+```"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "IMG_", "vid_", "VID_", "gif_", "GIF_"```
+    - Files named like ```UIImage(named: "heart")``` will be translated unintentionally, so consider editing like so ```UIImage(named: "IMG_heart")```
+
 ## Upcoming Features
 - Localizable.strings generator
 - Translate strings using [Google Cloud Translator](https://cloud.google.com/translate/docs)
