@@ -16,14 +16,16 @@
 </p>
 
 Swift utility written in [Go](https://golang.org/) that does the following:
-- __Feature 1:__ Moves all strings from a .swift files and put it to a constant file 
-- __Feature 2:__ Moves all valid translateable strings to a Localizable.strings file and 
+- __Feature 1:__ Moves all strings from a .swift files to a constant file 
+- __Feature 2:__ Moves all valid translatable strings to a Localizable.strings file and 
 - __Feature 3:__ Use [Google Cloud Translator API](https://cloud.google.com/translate/docs) to automatically translate strings in all ```Localizable.strings```, allowing all iOS, MacOS, etc apps support multiple languages in a matter of seconds
 
 ## Why Use?
 - Avoid unintended typos
 - Have strings autocompleted
+- Auto generate strings ```Localizable.strings```
 - Easily manage all your strings in one file
+- Automatically translate all strings in ```Localizable.strings```
 
 ## [Tips](Tips.md):
 - Currently does not support multi line strings
@@ -71,6 +73,8 @@ Swift utility written in [Go](https://golang.org/) that does the following:
     ```
     export GOOGLE_APPLICATION_CREDENTIALS="/Users/Samuel/Downloads/StringsUtility-Tester-785c7f11aedf.json "
     ```
+
+For further details, tips, recommendations go to [Tips and Requirements](Tips.md)
 
 ### Run StringsUtility
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
