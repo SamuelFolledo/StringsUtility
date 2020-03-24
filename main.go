@@ -110,10 +110,10 @@ func moveStringsToConstant(path string, project Project) Project {
 //looks for strings in a .swift file and updates the .swift file and Constants file accordingly
 func handleSwiftFile(path string, project Project) Project {
 	// fmt.Println("WHILE AT PATH: ", path, "\t3-Project path I need =", project.ConstantFile.Path)
-	var fileContents = readFile(path)        //get the contents of
-	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
-	for _, line := range lines {             //loop through each lines
-		var constantArray = getStringsFromLine(line)
+	var fileContents = readFile(path)          //get the contents of
+	lines := contentToLinesArray(fileContents) //turns fileContents to array of strings
+	for _, line := range lines {               //loop through each lines
+		var constantArray = lineToWordsArray(line)
 		if len(constantArray) != 0 { //if a constant exist
 			for _, constant := range constantArray {
 				fileContents = strings.Replace(fileContents, constant.Value, constant.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
@@ -127,7 +127,7 @@ func handleSwiftFile(path string, project Project) Project {
 }
 
 //takes a line with strings and returns an array of ConstantVariable
-func getStringsFromLine(line string) (constantArray []ConstantVariable) {
+func lineToWordsArray(line string) (constantArray []ConstantVariable) {
 	var foundFirstQuote bool                     //initialize as false
 	if i := strings.Index(line, "\""); i != -1 { //if line has "
 		var startIndex = -1
@@ -280,11 +280,9 @@ func promptShouldTranslate(project Project) Project {
 }
 
 func promptToUndo(srcPath, destPath string) {
-	// fmt.Println("\n" + kCONSTANTDASHES)
 	color.Style{color.Green, color.OpBold}.Print("Finished updating project. Reopen project and make sure there is no error.\n")
 	var shouldUndo = askBooleanQuestion("QUESTION: Do you want to undo?")
 	if shouldUndo {
-		// fmt.Print("\n" + kCONSTANTDASHES + "\n")
 		fmt.Print("\nUndoing...")
 		undoUtilityChanges(srcPath, destPath)
 		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n")
@@ -465,7 +463,7 @@ func splitVariableAndString(str string) (variable, quotedWord string) {
 }
 
 //turns strings to array of lines
-func stringLineToArray(str string) (results []string) {
+func contentToLinesArray(str string) (results []string) {
 	// - strings.Fields function to split a string into substrings removing any space characters, including newlines.
 	// - strings.Split function to split a string into its comma separated values
 	results = strings.Split(str, "\n") //split strings by line
