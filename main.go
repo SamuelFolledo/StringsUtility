@@ -123,13 +123,15 @@ func main() {
 	project = setupConstantFile(projectPath, project)
 	//5) FEATURE 1: Prompt if user wants to put all strings to the constant file
 	project = promptMoveStringsToConstant(project, projectPath, kCONSTANTFILEPATH)
-	//6) FEATURE 2: Prompt if user wants to move strings in constant file to all Localizable.strings file
+	//6) Get languages supported
+	project, _, _ = getProjectLanguages(project, 0, project.Path, "Localizable.strings")
+	//7) FEATURE 2: Prompt if user wants to move strings in constant file to all Localizable.strings file
 	project = promptMoveStringsToLocalizable(project)
-	//7) FEATURE 3: Prompt if user wants to translate strings
+	//8) FEATURE 3: Prompt if user wants to translate strings
 	project = promptTranslateStrings(project)
-	//8) Prompt to undo by copying contents from the cloned project
+	//9) Prompt to undo by copying contents from the cloned project
 	promptToUndo(projectPath+"_previous", projectPath)
-	//9) Delete the cloned project
+	//10) Delete the cloned project
 	deleteAllFiles(projectPath + "_previous")
 }
 
@@ -373,7 +375,6 @@ func localizeConstantStrings(project Project) Project {
 					unexpectedError("Line " + line + " unexpectedly have multiple strings.")
 				}
 				var str = strArray[0]
-				fmt.Println("Bout to transform and translate ", str)
 				var localizedStr = "NSLocalizedString(" + str + ", comment: \"\")"
 				fileContents = strings.Replace(fileContents, str, localizedStr, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
 				updateLocalizableStrings(project, str)
@@ -388,7 +389,6 @@ func localizeConstantStrings(project Project) Project {
 func updateLocalizableStrings(project Project, str string) Project {
 	for _, lang := range project.Languages { //do it to all project's Localizable.strings file
 		var path = lang.Path + "/Localizable.strings"
-		fmt.Println("path===", path)
 		var fileContents = readFile(path)
 		if !strings.Contains(fileContents, str) { //if str does not exist in Localizable.strings...
 			var stringToWrite = str + " = \"\";" //equivalent to: "word" = "";
@@ -396,17 +396,6 @@ func updateLocalizableStrings(project Project, str string) Project {
 			writeToFile(path, "\n"+stringToWrite) //write at the end
 		}
 	}
-	return project
-}
-
-//Translate all strings in a project
-func translateProject(project Project) Project {
-	project, _, _ = getProjectLanguages(project, 0, project.Path, "Localizable.strings")
-	// fmt.Println("Detected ", len(project.Languages), " languages")
-	//in constant file. change all valid strings to NSLocalizedString("Default Configuration", comment: "")
-	project = localizeConstantStrings(project)
-	//start translating strings from Constant
-
 	return project
 }
 
@@ -465,11 +454,12 @@ func promptCommitAnyChanges() {
 
 func promptMoveStringsToConstant(project Project, projectPath, constantPath string) Project {
 	var shouldMoveStrings = askBooleanQuestion("FEATURE 1: Would you like StringsUtility to move all strings in .swift files to a constant file?")
-	var projectName = trimPathBeforeLastSlash(projectPath, true)
+	// var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldMoveStrings {
-		fmt.Print("\nPutting strings to ", projectName, "... ")
+		fmt.Print("\nMoving strings to ", project.ConstantFile.Path, "... ")
 		project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
-		color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. You can project and make sure there is no error.\n")
+		// color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. Reopen project and make sure there is no error.\n")
+		color.Style{color.Green}.Print("Finished moving all strings.\n")
 	} else {
 		fmt.Println("\n\nWill not move strings.")
 	}
@@ -516,12 +506,12 @@ func promptToUndo(srcPath, destPath string) {
 	if shouldUndo {
 		fmt.Print("\nUndoing...")
 		undoUtilityChanges(srcPath, destPath)
-		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n")
+		color.Style{color.Green}.Print(" Finished undoing\n")
 	} else {
 		color.Bold.Println("\nWe're glad that StringsUtility was a success for you")
 	}
-	fmt.Println("\n" + kCONSTANTDASHES + "\n")
-	fmt.Print("For feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
+	fmt.Print("\n" + kCONSTANTDASHES + "\n")
+	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
 	color.Bold.Print("\n\nThank you for using StringsUtility by Samuel P. Folledo.\n")
 }
 
