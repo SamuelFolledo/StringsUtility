@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -9,6 +10,9 @@ import (
 	"path/filepath" //to use filepath.Ext(*fileFlag) to trim file extension
 	"regexp"
 	"strings"
+
+	"cloud.google.com/go/translate"
+	"golang.org/x/text/language"
 
 	"github.com/SamuelFolledo/StringsUtility/github.com/copy"
 	"github.com/gookit/color" //for adding colors to CLI outputs
@@ -444,6 +448,31 @@ func searchForFilePath(counter int, path, fileNameToSearch string, isExactName b
 
 func translateProject(project Project) Project {
 	return project
+}
+
+//////////////////////////////////////////////////// MARK: Google Translate METHODS ////////////////////////////////////////////////////
+//function that takes a text to translate and language to translate to and returns an error or the translatedText
+func translateText(targetLanguage, text string) (string, error) {
+	ctx := context.Background()
+	lang, err := language.Parse(targetLanguage)
+	if isError(err) {
+		return "", fmt.Errorf("language.Parse: %v", err)
+	}
+
+	client, err := translate.NewClient(ctx)
+	if isError(err) {
+		return "", err
+	}
+	defer client.Close()
+
+	resp, err := client.Translate(ctx, []string{text}, lang, nil)
+	if isError(err) {
+		return "", fmt.Errorf("Translate: %v", err)
+	}
+	if len(resp) == 0 {
+		return "", fmt.Errorf("Translate returned empty response to text: %s", text)
+	}
+	return resp[0].Text, nil
 }
 
 //////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
