@@ -61,6 +61,50 @@ var dirFlag = flag.String("dir", "", "Name of directory")
 var kCONSTANTFILEPATH string
 var kCONSTANTFILENAME string
 var kCONSTANTDASHES string = "--------------------------------------------------------------------------------------------------"
+var languages = []Language{
+	Language{Name: "Filipino", LProj: "fil.lproj", GoogleKey: "tl"},
+	Language{Name: "Filipino (Philippines)", LProj: "fil-PH.lproj", GoogleKey: "tl"},
+	Language{Name: "English", LProj: "en.lproj", GoogleKey: "en"},
+	Language{Name: "English (Australia)", LProj: "en-AU.lproj", GoogleKey: "en"},
+	Language{Name: "English (India)", LProj: "en-IN.lproj", GoogleKey: "en"},
+	Language{Name: "English (United Kingdom)", LProj: "en-GB.lproj", GoogleKey: "en-GB"}, //
+	Language{Name: "Spanish", LProj: "es.lproj", GoogleKey: "es"},
+	Language{Name: "Spanish (Latin-America)", LProj: "es-419.lproj", GoogleKey: "es"},
+	Language{Name: "French", LProj: "fr.lproj", GoogleKey: "fr"},
+	Language{Name: "French (Canada)", LProj: "fr-CA.lproj", GoogleKey: "fr"},
+	Language{Name: "Chinese, Simplified", LProj: "zh-Hans.lproj", GoogleKey: "zh-CN"},
+	Language{Name: "Chinese, Traditional", LProj: "zh-Hant.lproj", GoogleKey: "zh-CN"},
+	Language{Name: "Chinese (Hong Kong)", LProj: "zh-HK.lproj", GoogleKey: "zh-CN"},
+	Language{Name: "Japanese", LProj: "ja.lproj", GoogleKey: "ja"},
+	Language{Name: "Germany", LProj: "de.lproj", GoogleKey: "de"},
+	Language{Name: "Russian", LProj: "ru.lproj", GoogleKey: "ru"},
+	Language{Name: "Portugese (Portugal)", LProj: "pt-PT.lproj", GoogleKey: "pt-PT"},
+	Language{Name: "Portugese (Brazil)", LProj: "pt-BR.lproj", GoogleKey: "pt-BR"},
+	Language{Name: "Italian", LProj: "it.lproj", GoogleKey: "it"},
+	Language{Name: "Korean", LProj: "ko.lproj", GoogleKey: "ko"},
+	Language{Name: "Arabic", LProj: "ar.lproj", GoogleKey: "ar"},
+	Language{Name: "Turkish", LProj: "tr.lproj", GoogleKey: "tr"},
+	Language{Name: "Thailand", LProj: "th.lproj", GoogleKey: "th"},
+	Language{Name: "Dutch", LProj: "nl.lproj", GoogleKey: "nl"},
+	Language{Name: "Swedish", LProj: "sv.lproj", GoogleKey: "sv"},
+	Language{Name: "Danish", LProj: "da.lproj", GoogleKey: "da"},
+	Language{Name: "Vietnamese", LProj: "vi.lproj", GoogleKey: "vi"},
+	Language{Name: "Norgwegian", LProj: "nb.lproj", GoogleKey: "no"},
+	Language{Name: "Polish", LProj: "pl.lproj", GoogleKey: "pl"},
+	Language{Name: "Finnish", LProj: "fi.lproj", GoogleKey: "fi"},
+	Language{Name: "Indonesian", LProj: "id.lproj", GoogleKey: "id"},
+	Language{Name: "Hebrew", LProj: "he.lproj", GoogleKey: "iw"},
+	Language{Name: "Greek", LProj: "el.lproj", GoogleKey: "el"},
+	Language{Name: "Romanian", LProj: "ro.lproj", GoogleKey: "ro"},
+	Language{Name: "Hungarian", LProj: "hu.lproj", GoogleKey: "hu"},
+	Language{Name: "Czech", LProj: "cs.lproj", GoogleKey: "cs"},
+	Language{Name: "Catalan", LProj: "ca.lproj", GoogleKey: "ca"},
+	Language{Name: "Slovak", LProj: "sk.lproj", GoogleKey: "sk"},
+	Language{Name: "Ukranian", LProj: "uk.lproj", GoogleKey: "uk"},
+	Language{Name: "Croatian", LProj: "hr.lproj", GoogleKey: "hr"},
+	Language{Name: "Malay", LProj: "ms.lproj", GoogleKey: "ms"},
+	Language{Name: "Hindi", LProj: "hi.lproj", GoogleKey: ""},
+}
 
 func main() {
 	var projectPath = getDirectoryName() //get project's path directory flag
@@ -270,6 +314,12 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 	return
 }
 
+//Translate all strings in a project
+func translateProject(project Project) Project {
+
+	return project
+}
+
 //////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
 
 func promptCommitAnyChanges() {
@@ -299,6 +349,7 @@ func promptShouldTranslate(project Project) Project {
 	if shouldTranslate {
 		fmt.Println("\n\nTranslating...")
 		fmt.Println("PATHHHH", project.ConstantFile.Path)
+		project = translateProject(project)
 	} else {
 		fmt.Println("\n\nWill not translate...")
 	}
