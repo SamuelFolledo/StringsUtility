@@ -139,7 +139,6 @@ func main() {
 
 //Loop through each files and look for each strings in each lines
 func moveStringsToConstant(path string, project Project) Project {
-	// fmt.Println("00 Project path I need =", project.ConstantFile.Path)
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return project
@@ -147,7 +146,6 @@ func moveStringsToConstant(path string, project Project) Project {
 	for _, file := range files { //loop through each files and directories
 		var fileName = file.Name()
 		if file.IsDir() { //if directory...
-			// fmt.Println("WHILE AT PATH: ", fileName, "\t1-Project path I need =", project.ConstantFile.Path)
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
@@ -155,7 +153,6 @@ func moveStringsToConstant(path string, project Project) Project {
 			project = moveStringsToConstant(path, project) //recursively call this function again
 			path = trimPathAfterLastSlash(path)            //reset path by removing the / + fileName
 		} else { //if file...
-			// fmt.Println("WHILE AT PATH: ", fileName, "\t2-Project path I need =", project.ConstantFile.Path)
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))           //gets the file extension from file name
 			if fileExtension == ".swift" && fileName != project.ConstantFile.Path { //if we find a Swift file that's not the constants file... look for strings
 				path = path + "/" + fileName
@@ -169,7 +166,6 @@ func moveStringsToConstant(path string, project Project) Project {
 
 //looks for strings in a .swift file and updates the .swift file and Constants file accordingly
 func handleSwiftFile(path string, project Project) Project {
-	// fmt.Println("WHILE AT PATH: ", path, "\t3-Project path I need =", project.ConstantFile.Path)
 	var fileContents = readFile(path)          //get the contents of
 	lines := contentToLinesArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {               //loop through each lines
@@ -405,7 +401,6 @@ func searchForFilePath(counter int, path, fileNameToSearch string, isExactName b
 		return
 	}
 	for _, file := range files { //loop through each files and directories
-		// fmt.Println("File name =", file.Name(), " c =", counter, " rc = ", returnedCounter)
 		var fileName = file.Name()
 		if file.IsDir() { //skip if file is directory
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
@@ -414,30 +409,22 @@ func searchForFilePath(counter int, path, fileNameToSearch string, isExactName b
 			var prevPath = path
 			path = path + "/" + fileName                                                                                 //update directory path by adding /fileName
 			returnedCounter, isFound, filePath = searchForFilePath(returnedCounter, path, fileNameToSearch, isExactName) //recursively call this function again
-			// if isFound {                                                                                                 //if we found it then keep returning
-			// 	return
-			// }
-			path = prevPath //if not found, go to next directory, but update our path
+			path = prevPath                                                                                              //if not found, go to next directory, but update our path
 		}
-		// var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
 		filePath = path + "/" + fileName //path of file
 		if isExactName {                 //if we want the exact fileName...
 			if fileName == fileNameToSearch {
-				// fmt.Println("Searched and EXACTLY found ", fileNameToSearch, " at ", filePath)
 				isFound = true
 				returnedCounter += 1
-				// return
 			}
 		} else { //if we want fileName to only contain
 			if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
-				// fmt.Println("Searched and found ", fileNameToSearch, " CONTAINS at ", filePath)
 				isFound = true
 				returnedCounter += 1
 				// return
 			}
 		}
 	}
-	print("WE FOUND languages found", " c =", counter, " rc = ", returnedCounter, "\n\n")
 	return
 }
 
@@ -448,7 +435,6 @@ func translateProject(project Project) Project {
 	}
 	for _, lang := range project.Languages { //for each language our project wants to support
 		var path = lang.Path + "/Localizable.strings"
-		fmt.Println("\nFILE =", path)
 		var fileContents = readFile(path)                  //read the Localizable.strings contents
 		var linesArray = contentToLinesArray(fileContents) //convert contents to array of lines
 		for _, line := range linesArray {                  //loop through each line
@@ -521,11 +507,9 @@ func promptCommitAnyChanges() {
 
 func promptMoveStringsToConstant(project Project, projectPath, constantPath string) Project {
 	var shouldMoveStrings = askBooleanQuestion("FEATURE 1: Would you like StringsUtility to move all strings in .swift files to a constant file?")
-	// var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldMoveStrings {
 		fmt.Print("\nMoving strings to ", project.ConstantFile.Path, "... ")
 		project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
-		// color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. Reopen project and make sure there is no error.\n")
 		color.Style{color.Green}.Print("Finished moving all strings.\n")
 	} else {
 		fmt.Println("\n\nWill not move strings.")
@@ -633,7 +617,6 @@ func askBooleanQuestion(question string) bool {
 			break
 		}
 		fmt.Print("\n")
-		// color.Error.Print("Please respond with yes or no only")
 		color.Style{color.FgRed, color.OpBold}.Print("ERROR: Please respond with ")
 		color.Style{color.FgRed, color.OpBold, color.OpUnderscore}.Print("yes")
 		color.Style{color.FgRed, color.OpBold}.Print(" or ")
@@ -651,7 +634,6 @@ func askBooleanQuestion(question string) bool {
 //given a question, ask and wait for user's CLI input
 func askQuestionToUser(question string) string {
 	print("\n")
-	// color.Print("<suc>he</><comment>llo</>, <cyan>wel</><red>come</>\n")
 	color.Style{color.Cyan, color.OpBold}.Print(question)
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()
@@ -773,8 +755,8 @@ func splitVariableAndString(str string) (variable, quotedWord string) {
 func contentToLinesArray(str string) (results []string) {
 	// - strings.Fields function to split a string into substrings removing any space characters, including newlines.
 	// - strings.Split function to split a string into its comma separated values
-	results = strings.Split(str, "\n") //split strings by line
 	// output := strings.Join(lines, "\n") //puts array to string
+	results = strings.Split(str, "\n") //split strings by line
 	return
 }
 
