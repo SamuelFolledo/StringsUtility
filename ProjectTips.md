@@ -7,8 +7,11 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 ## Feature 2: Strings Localization
 
 #### PART 1: Move strings to Localizable
-- [ ] Create/Have a ```Localizable.strings``` file
-<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/startLocalizable.gif" width="640" height="362">
+- [ ] Create/Have a ```Localizable.strings``` file.
+    1. In your project, New File
+    2. Look for Strings file
+    <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/localizableFile.gif" width="369" height="265">
+    3. Name it ```Localizable``` __exactly__
 
 - [ ] To support multiple languages, create more ```Localizable.strings``` file in languages you want to support
 <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="640" height="320">
