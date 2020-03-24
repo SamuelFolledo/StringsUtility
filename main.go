@@ -14,6 +14,14 @@ import (
 	"github.com/gookit/color" //for adding colors to CLI outputs
 )
 
+type Language struct {
+	Name      string
+	LProj     string
+	GoogleKey string
+	Path      string
+	Exist     bool
+}
+
 type Directory struct {
 	Path  string
 	Name  string
@@ -43,6 +51,7 @@ type Project struct {
 	Name            string
 	Path            string
 	Directories     []Directory
+	Languages       []Language
 	HasConstantFile bool
 	ConstantFile    File
 }
@@ -53,6 +62,50 @@ var dirFlag = flag.String("dir", "", "Name of directory")
 var kCONSTANTFILEPATH string
 var kCONSTANTFILENAME string
 var kCONSTANTDASHES string = "--------------------------------------------------------------------------------------------------"
+var supportedLanguages = []Language{
+	Language{Name: "Filipino", LProj: "fil.lproj", GoogleKey: "tl"},
+	Language{Name: "Filipino (Philippines)", LProj: "fil-PH.lproj", GoogleKey: "tl"},
+	Language{Name: "English", LProj: "en.lproj", GoogleKey: "en"},
+	Language{Name: "English (Australia)", LProj: "en-AU.lproj", GoogleKey: "en"},
+	Language{Name: "English (India)", LProj: "en-IN.lproj", GoogleKey: "en"},
+	Language{Name: "English (United Kingdom)", LProj: "en-GB.lproj", GoogleKey: "en-GB"}, //
+	Language{Name: "Spanish", LProj: "es.lproj", GoogleKey: "es"},
+	Language{Name: "Spanish (Latin-America)", LProj: "es-419.lproj", GoogleKey: "es"},
+	Language{Name: "French", LProj: "fr.lproj", GoogleKey: "fr"},
+	Language{Name: "French (Canada)", LProj: "fr-CA.lproj", GoogleKey: "fr"},
+	Language{Name: "Chinese, Simplified", LProj: "zh-Hans.lproj", GoogleKey: "zh-CN"},
+	Language{Name: "Chinese, Traditional", LProj: "zh-Hant.lproj", GoogleKey: "zh-CN"},
+	Language{Name: "Chinese (Hong Kong)", LProj: "zh-HK.lproj", GoogleKey: "zh-CN"},
+	Language{Name: "Japanese", LProj: "ja.lproj", GoogleKey: "ja"},
+	Language{Name: "Germany", LProj: "de.lproj", GoogleKey: "de"},
+	Language{Name: "Russian", LProj: "ru.lproj", GoogleKey: "ru"},
+	Language{Name: "Portugese (Portugal)", LProj: "pt-PT.lproj", GoogleKey: "pt-PT"},
+	Language{Name: "Portugese (Brazil)", LProj: "pt-BR.lproj", GoogleKey: "pt-BR"},
+	Language{Name: "Italian", LProj: "it.lproj", GoogleKey: "it"},
+	Language{Name: "Korean", LProj: "ko.lproj", GoogleKey: "ko"},
+	Language{Name: "Arabic", LProj: "ar.lproj", GoogleKey: "ar"},
+	Language{Name: "Turkish", LProj: "tr.lproj", GoogleKey: "tr"},
+	Language{Name: "Thailand", LProj: "th.lproj", GoogleKey: "th"},
+	Language{Name: "Dutch", LProj: "nl.lproj", GoogleKey: "nl"},
+	Language{Name: "Swedish", LProj: "sv.lproj", GoogleKey: "sv"},
+	Language{Name: "Danish", LProj: "da.lproj", GoogleKey: "da"},
+	Language{Name: "Vietnamese", LProj: "vi.lproj", GoogleKey: "vi"},
+	Language{Name: "Norgwegian", LProj: "nb.lproj", GoogleKey: "no"},
+	Language{Name: "Polish", LProj: "pl.lproj", GoogleKey: "pl"},
+	Language{Name: "Finnish", LProj: "fi.lproj", GoogleKey: "fi"},
+	Language{Name: "Indonesian", LProj: "id.lproj", GoogleKey: "id"},
+	Language{Name: "Hebrew", LProj: "he.lproj", GoogleKey: "iw"},
+	Language{Name: "Greek", LProj: "el.lproj", GoogleKey: "el"},
+	Language{Name: "Romanian", LProj: "ro.lproj", GoogleKey: "ro"},
+	Language{Name: "Hungarian", LProj: "hu.lproj", GoogleKey: "hu"},
+	Language{Name: "Czech", LProj: "cs.lproj", GoogleKey: "cs"},
+	Language{Name: "Catalan", LProj: "ca.lproj", GoogleKey: "ca"},
+	Language{Name: "Slovak", LProj: "sk.lproj", GoogleKey: "sk"},
+	Language{Name: "Ukranian", LProj: "uk.lproj", GoogleKey: "uk"},
+	Language{Name: "Croatian", LProj: "hr.lproj", GoogleKey: "hr"},
+	Language{Name: "Malay", LProj: "ms.lproj", GoogleKey: "ms"},
+	Language{Name: "Hindi", LProj: "hi.lproj", GoogleKey: ""},
+}
 
 func main() {
 	var projectPath = getDirectoryName() //get project's path directory flag
@@ -68,13 +121,18 @@ func main() {
 	//4 Initialize project
 	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
 	project = setupConstantFile(projectPath, project)
-	//5) Prompt if user wants to put all strings to the constant file
-	project = promptPutStringsToConstant(project, projectPath, kCONSTANTFILEPATH)
-	//6) Prompt if user wants to also translate
-	project = promptShouldTranslate(project)
-	//5) Start updating files
-	//6) Prompt to undo
+	//5) FEATURE 1: Prompt if user wants to put all strings to the constant file
+	project = promptMoveStringsToConstant(project, projectPath, kCONSTANTFILEPATH)
+	//6) Get languages supported
+	project, _, _ = getProjectLanguages(project, 0, project.Path, "Localizable.strings")
+	//7) FEATURE 2: Prompt if user wants to move strings in constant file to all Localizable.strings file
+	project = promptMoveStringsToLocalizable(project)
+	//8) FEATURE 3: Prompt if user wants to translate strings
+	project = promptTranslateStrings(project)
+	//9) Prompt to undo by copying contents from the cloned project
 	promptToUndo(projectPath+"_previous", projectPath)
+	//10) Delete the cloned project
+	deleteAllFiles(projectPath + "_previous")
 }
 
 //Loop through each files and look for each strings in each lines
@@ -110,10 +168,15 @@ func moveStringsToConstant(path string, project Project) Project {
 //looks for strings in a .swift file and updates the .swift file and Constants file accordingly
 func handleSwiftFile(path string, project Project) Project {
 	// fmt.Println("WHILE AT PATH: ", path, "\t3-Project path I need =", project.ConstantFile.Path)
-	var fileContents = readFile(path)        //get the contents of
-	lines := stringLineToArray(fileContents) //turns fileContents to array of strings
-	for _, line := range lines {             //loop through each lines
-		var constantArray = getStringsFromLine(line)
+	var fileContents = readFile(path)          //get the contents of
+	lines := contentToLinesArray(fileContents) //turns fileContents to array of strings
+	for _, line := range lines {               //loop through each lines
+		var strArray = getStringsFromLine(line)
+		var constantArray = []ConstantVariable{}
+		for _, str := range strArray {
+			var constantVariable = stringToConstantVariable(str)
+			constantArray = append(constantArray, constantVariable)
+		}
 		if len(constantArray) != 0 { //if a constant exist
 			for _, constant := range constantArray {
 				fileContents = strings.Replace(fileContents, constant.Value, constant.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
@@ -126,13 +189,15 @@ func handleSwiftFile(path string, project Project) Project {
 	return project
 }
 
-//takes a line with strings and returns an array of ConstantVariable
-func getStringsFromLine(line string) (constantArray []ConstantVariable) {
+//takes a line with strings and returns an array of strings
+func getStringsFromLine(line string) (strArray []string) {
+	if strings.Contains(line, "\"\"\"") { //if line contains """ then it's a multi line strings which is currently not supported
+		return
+	}
 	var foundFirstQuote bool                     //initialize as false
 	if i := strings.Index(line, "\""); i != -1 { //if line has "
 		var startIndex = -1
 		var endIndex = -1
-		var constantVariable ConstantVariable
 		for i := 0; i < len(line); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
 			switch string(line[i]) {
 			case "\"": //if character is "
@@ -140,9 +205,9 @@ func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 					foundFirstQuote = false
 					endIndex = i
 					var lineString = line[startIndex : endIndex+1] //line's string is in line's index from startIndex to endIndex+1
-					constantVariable = stringToConstantVariable(lineString)
-					constantArray = append(constantArray, constantVariable) //append the word
-					constantVariable = ConstantVariable{}                   //reset it
+					if isValidString(lineString) {                 //append if it's a valid string
+						strArray = append(strArray, lineString)
+					}
 				} else { //if first "... look for the second one
 					startIndex = i
 					foundFirstQuote = true
@@ -161,6 +226,20 @@ func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 	return
 }
 
+//checks if string is a valid string to be put in constant or translated
+func isValidString(str string) bool {
+	if len(strings.TrimSpace(str)) <= 2 { //if there is nothing in string other than "", then it is invalid string
+		return false
+	}
+	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"} //these strings are not allowed in a string to be put in constant or translated
+	for _, subStr := range invalidSubstrings {
+		if strings.Contains(strings.ToLower(str), subStr) { //if lowerCased(str) contains invalid substring, then str is invalid
+			return false
+		}
+	}
+	return true
+}
+
 //writes constant variable to our Constants file it doesn't exist yet
 func updateConstantsFile(constant ConstantVariable) {
 	if constantFileContents := readFile(kCONSTANTFILEPATH); !strings.Contains(constantFileContents, constant.Name) { //if constant variable doesn't exist in our Constants file, write it
@@ -171,7 +250,7 @@ func updateConstantsFile(constant ConstantVariable) {
 //search for Constant file, if it doesn't exist, create a new one
 func setupConstantFile(path string, project Project) Project {
 	//1. Make sure we have a Constant file
-	var isFound, filePath = searchFileLocation(path, "Constant", false) //search for any files containing Constant
+	var isFound, filePath = searchForSwiftFile(path, "Constant", false) //search for any files containing Constant
 	var constantFile = File{}
 	if isFound { //if a Constant file originally exist...
 		constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
@@ -190,7 +269,7 @@ func setupConstantFile(path string, project Project) Project {
 func createNewConstantFile(path string) (constant File) {
 	var fileNameToSearch = "AppDelegate.swift"
 	constant.Name = "Constants.swift"
-	var isFound, filePath = searchFileLocation(path, fileNameToSearch, true) //get AppDelegate's path
+	var isFound, filePath = searchForSwiftFile(path, fileNameToSearch, true) //get AppDelegate's path
 	if isFound {                                                             //if AppDelegate is found, create our Constants.swift in this directory
 		var trimmedPath = trimPathAfterLastSlash(filePath)
 		// print(filePath, " trimmed is=", trimmedPath)
@@ -203,7 +282,7 @@ func createNewConstantFile(path string) (constant File) {
 }
 
 //Search a path until it finds a path that contains a fileName we are searching for. isExactName will determine if fileName must exactly match or must contain only
-func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFound bool, filePath string) {
+func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFound bool, filePath string) {
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
@@ -216,7 +295,7 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 			}
 			var prevPath = path
 			path = path + "/" + fileName                                                //update directory path by adding /fileName
-			isFound, filePath = searchFileLocation(path, fileNameToSearch, isExactName) //recursively call this function again
+			isFound, filePath = searchForSwiftFile(path, fileNameToSearch, isExactName) //recursively call this function again
 			if isFound {                                                                //if we found it then keep returning
 				return
 			}
@@ -243,6 +322,130 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 	return
 }
 
+//count how many Localizable.strings file there are and store their paths
+func getProjectLanguages(project Project, counter int, path, fileNameToSearch string) (returnedProject Project, returnedCounter int, filePath string) {
+	returnedProject = project
+	returnedCounter = counter          //set counter
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
+	if isError(err) {
+		return
+	}
+	for _, file := range files { //loop through each files and directories
+		var fileName = file.Name()
+		if file.IsDir() { //skip if file is directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
+				continue
+			}
+			var prevPath = path
+			path = path + "/" + fileName                                                                                               //update directory path by adding /fileName
+			returnedProject, returnedCounter, filePath = getProjectLanguages(returnedProject, returnedCounter, path, fileNameToSearch) //recursively call this function again
+			path = prevPath                                                                                                            //if not found, go to next directory, but update our path
+		}
+		filePath = path + "/" + fileName //path of file
+		if fileName == fileNameToSearch {
+			returnedCounter += 1
+			var language = createLanguageFromPath(filePath)
+			returnedProject.Languages = append(project.Languages, language)
+		}
+	}
+	return
+}
+
+func createLanguageFromPath(path string) Language {
+	var language = Language{}
+	var languagePath = trimPathAfterLastSlash(path)
+	var languageName = trimPathBeforeLastSlash(languagePath, false)
+	for _, lan := range supportedLanguages {
+		if languageName == lan.LProj {
+			language = lan
+		}
+	}
+	language.Path = languagePath
+	return language
+}
+
+//Turn all Constant's strings to NSLocalizedString("", comment: "") strings
+func localizeConstantStrings(project Project) Project {
+	var fileContents = readFile(project.ConstantFile.Path)
+	var linesArray = contentToLinesArray(fileContents)
+	for _, line := range linesArray {
+		if !strings.Contains(line, "NSLocalizedString(\"") { //if line does not contain NSLocalizedString
+			if strArray := getStringsFromLine(line); len(strArray) > 0 { //ensures that the line has a string that is OK to be translated
+				if len(strArray) > 1 { //little error handling that will more than likely not get executed
+					unexpectedError("Line " + line + " unexpectedly have multiple strings.")
+				}
+				var str = strArray[0]
+				var localizedStr = "NSLocalizedString(" + str + ", comment: \"\")"
+				fileContents = strings.Replace(fileContents, str, localizedStr, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+				updateLocalizableStrings(project, str)
+			}
+		}
+	}
+	replaceFile(project.ConstantFile.Path, fileContents)
+	return project
+}
+
+//write strings to all project's Localizable.strings file
+func updateLocalizableStrings(project Project, str string) Project {
+	for _, lang := range project.Languages { //do it to all project's Localizable.strings file
+		var path = lang.Path + "/Localizable.strings"
+		var fileContents = readFile(path)
+		if !strings.Contains(fileContents, str) { //if str does not exist in Localizable.strings...
+			var stringToWrite = str + " = \"\";" //equivalent to: "word" = "";
+			fmt.Println("Writing", stringToWrite)
+			writeToFile(path, "\n"+stringToWrite) //write at the end
+		}
+	}
+	return project
+}
+
+func searchForFilePath(counter int, path, fileNameToSearch string, isExactName bool) (returnedCounter int, isFound bool, filePath string) {
+	returnedCounter = counter
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
+	if isError(err) {
+		return
+	}
+	for _, file := range files { //loop through each files and directories
+		// fmt.Println("File name =", file.Name(), " c =", counter, " rc = ", returnedCounter)
+		var fileName = file.Name()
+		if file.IsDir() { //skip if file is directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
+				continue
+			}
+			var prevPath = path
+			path = path + "/" + fileName                                                                                 //update directory path by adding /fileName
+			returnedCounter, isFound, filePath = searchForFilePath(returnedCounter, path, fileNameToSearch, isExactName) //recursively call this function again
+			// if isFound {                                                                                                 //if we found it then keep returning
+			// 	return
+			// }
+			path = prevPath //if not found, go to next directory, but update our path
+		}
+		// var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+		filePath = path + "/" + fileName //path of file
+		if isExactName {                 //if we want the exact fileName...
+			if fileName == fileNameToSearch {
+				// fmt.Println("Searched and EXACTLY found ", fileNameToSearch, " at ", filePath)
+				isFound = true
+				returnedCounter += 1
+				// return
+			}
+		} else { //if we want fileName to only contain
+			if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+				// fmt.Println("Searched and found ", fileNameToSearch, " CONTAINS at ", filePath)
+				isFound = true
+				returnedCounter += 1
+				// return
+			}
+		}
+	}
+	print("WE FOUND languages found", " c =", counter, " rc = ", returnedCounter, "\n\n")
+	return
+}
+
+func translateProject(project Project) Project {
+	return project
+}
+
 //////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
 
 func promptCommitAnyChanges() {
@@ -253,13 +456,14 @@ func promptCommitAnyChanges() {
 	}
 }
 
-func promptPutStringsToConstant(project Project, projectPath, constantPath string) Project {
+func promptMoveStringsToConstant(project Project, projectPath, constantPath string) Project {
 	var shouldMoveStrings = askBooleanQuestion("FEATURE 1: Would you like StringsUtility to move all strings in .swift files to a constant file?")
-	var projectName = trimPathBeforeLastSlash(projectPath, true)
+	// var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldMoveStrings {
-		fmt.Print("\nPutting strings to ", projectName, "... ")
+		fmt.Print("\nMoving strings to ", project.ConstantFile.Path, "... ")
 		project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
-		color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. You can project and make sure there is no error.\n")
+		// color.Style{color.Green, color.OpBold}.Print("Finished moving all strings. Reopen project and make sure there is no error.\n")
+		color.Style{color.Green}.Print("Finished moving all strings.\n")
 	} else {
 		fmt.Println("\n\nWill not move strings.")
 	}
@@ -267,32 +471,56 @@ func promptPutStringsToConstant(project Project, projectPath, constantPath strin
 	return project
 }
 
-func promptShouldTranslate(project Project) Project {
+func promptMoveStringsToLocalizable(project Project) Project {
 	var shouldTranslate = askBooleanQuestion("FEATURE 2: String Localization. Have you created a Localizable.strings?")
 	if shouldTranslate {
-		fmt.Println("\n\nTranslating...")
-		fmt.Println("PATHHHH", project.ConstantFile.Path)
+		print("\nLocalizing strings...")
+		project = localizeConstantStrings(project)
+		color.Green.Print(" Finished moving and localizing strings.\n")
 	} else {
-		fmt.Println("\n\nWill not translate...")
+		fmt.Print("\nWill not localize strings...")
 	}
-	fmt.Println("\n" + kCONSTANTDASHES + "\n")
+	fmt.Print("\n\n" + kCONSTANTDASHES + "\n")
 	return project
 }
 
+func promptTranslateStrings(project Project) Project {
+	var shouldTranslate = askBooleanQuestion("FEATURE 3: String Translation. Have you setup Google Cloud Translator?")
+	if shouldTranslate {
+		print("\nTranslating strings...")
+		project = translateProject(project)
+		finishedTranslatingMessage(project)
+	} else {
+		fmt.Print("\nWill not translate strings...")
+	}
+	fmt.Println("\n\n" + kCONSTANTDASHES + "\n")
+	return project
+}
+
+func finishedTranslatingMessage(project Project) {
+	color.Green.Print(" Finished translating to:")
+	for i, lang := range project.Languages {
+		color.Style{color.Green, color.OpBold}.Print(" " + lang.Name)
+		if i < len(project.Languages)-1 { //if not in the end, append a comma
+			color.Green.Print(",")
+		} else {
+			color.Green.Print(".")
+		}
+	}
+}
+
 func promptToUndo(srcPath, destPath string) {
-	// fmt.Println("\n" + kCONSTANTDASHES)
 	color.Style{color.Green, color.OpBold}.Print("Finished updating project. Reopen project and make sure there is no error.\n")
 	var shouldUndo = askBooleanQuestion("QUESTION: Do you want to undo?")
 	if shouldUndo {
-		// fmt.Print("\n" + kCONSTANTDASHES + "\n")
 		fmt.Print("\nUndoing...")
 		undoUtilityChanges(srcPath, destPath)
-		color.Style{color.Green, color.OpBold}.Print(" Finished undoing\n")
+		color.Style{color.Green}.Print(" Finished undoing\n")
 	} else {
 		color.Bold.Println("\nWe're glad that StringsUtility was a success for you")
 	}
-	fmt.Println("\n" + kCONSTANTDASHES + "\n")
-	fmt.Print("For feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
+	fmt.Print("\n" + kCONSTANTDASHES + "\n")
+	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
 	color.Bold.Print("\n\nThank you for using StringsUtility by Samuel P. Folledo.\n")
 }
 
@@ -317,7 +545,7 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
 			if fileExtension == ".swift" {                                //if we find a Swift file that's not the constants file... look for strings
 				prevProjPath = prevProjPath + "/" + fileName
-				var isFound, filePath = searchFileLocation(projPath, fileName, true) //search project for file with the same name as .swift file from previour version
+				var isFound, filePath = searchForSwiftFile(projPath, fileName, true) //search project for file with the same name as .swift file from previour version
 				if isFound {                                                         //if found... read both file's content
 					var prevContents = readFile(prevProjPath)
 					var currentContents = readFile(filePath)
@@ -401,6 +629,20 @@ func writeToFile(fileName, line string) {
 	}
 }
 
+//deletes a all files
+func deleteAllFiles(path string) {
+	var err = os.RemoveAll(path)
+	// var err = os.Remove(path) //this will scream: directory not empty, so we must used RemoveAll()
+	if isError(err) {
+		return
+	}
+}
+
+//prints in yellow error message and asks for email
+func unexpectedError(msg string) {
+	color.FgLightYellow.Println(msg + " Please email me at samuelfolledo@gmail.com if this happens")
+}
+
 //turns word to kWORD
 func capitalizedWord(word string) string {
 	var processedWord = removeAllSymbols(word)
@@ -465,7 +707,7 @@ func splitVariableAndString(str string) (variable, quotedWord string) {
 }
 
 //turns strings to array of lines
-func stringLineToArray(str string) (results []string) {
+func contentToLinesArray(str string) (results []string) {
 	// - strings.Fields function to split a string into substrings removing any space characters, including newlines.
 	// - strings.Split function to split a string into its comma separated values
 	results = strings.Split(str, "\n") //split strings by line
