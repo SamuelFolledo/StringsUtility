@@ -128,6 +128,9 @@ func handleSwiftFile(path string, project Project) Project {
 
 //takes a line with strings and returns an array of ConstantVariable
 func getStringsFromLine(line string) (constantArray []ConstantVariable) {
+	if strings.Contains(line, "\"\"\"") { //if line contains """ then it's a multi line strings which is currently not supported
+		return
+	}
 	var foundFirstQuote bool                     //initialize as false
 	if i := strings.Index(line, "\""); i != -1 { //if line has "
 		var startIndex = -1
