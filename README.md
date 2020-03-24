@@ -35,11 +35,9 @@ Swift utility written in [Go](https://golang.org/) that does the following:
 
 ## Upcoming Features
 - searches and translates strings from .xib and .storyboard files
-- Translate strings using [Google Cloud Translator](https://cloud.google.com/translate/docs)
 
 ## How to Use?
-
-### Download StringsUtility
+#### Download StringsUtility
 - [ ] clone the repo
   ```
   $ git clone https://github.com/SamuelFolledo/StringsUtility
@@ -49,14 +47,14 @@ Swift utility written in [Go](https://golang.org/) that does the following:
   $ cd StringsUtility
   ```
 
-### [Install Golang](https://sourabhbajaj.com/mac-setup/Go/README.html) with Homebrew:
+#### [Install Golang](https://sourabhbajaj.com/mac-setup/Go/README.html) with Homebrew:
   ```
   $ brew update
 - [ ] Install Go
   $ brew install golang
   ```
 
-### Setup Google Cloud Translator: [Basic Setup Instruction](https://cloud.google.com/translate/docs/basic/setup-basic)
+#### Setup Google Cloud Translator: [Basic Setup Instruction](https://cloud.google.com/translate/docs/basic/setup-basic)
 - [ ] Create or select a project
 - [ ] Enable the Cloud Translation API for this project
 - [ ] Download a private key as JSON
@@ -76,14 +74,14 @@ Swift utility written in [Go](https://golang.org/) that does the following:
 
 For further details, tips, recommendations go to [Tips and Requirements](Tips.md)
 
-### Run StringsUtility
+#### Run StringsUtility
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
   ```
   $ go build && go run main.go -dir=PATH_TO_YOUR_PROJECT
   ``` 
 
 ## Demo
-<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/stringsUtilityDemo.gif" width="896" height="521">
+
 
 ### Links
 - [MakeSchool's](makeschool.com)'s [BEW2.5: Patterns & Practices in Strongly Typed Languages](https://make-school-courses.github.io/BEW-2.5-Strongly-Typed-Languages/#/) - the only university that teaches Go
