@@ -570,10 +570,9 @@ func promptToUndo(srcPath, destPath string) {
 
 //takes a previous project's path and deletes it if user wants to
 func promptToDeletePrevProject(prevProjPath string) {
-	// color.Style{color.Green, color.OpBold}.Print("Finished updating project. Reopen project and make sure there is no error.\n")
-	var shouldUndo = askBooleanQuestion("QUESTION: Delete the cloned and previous version of the project?")
+	var shouldUndo = askBooleanQuestion("QUESTION: Delete the cloned previous version of the project?")
 	if shouldUndo {
-		deleteAllFiles(prevProjPath + "_previous")
+		deleteAllFiles(prevProjPath)
 		color.Style{color.Green}.Print("\nFinished deleting\n")
 	}
 	fmt.Print("\n" + kCONSTANTDASHES + "\n")
