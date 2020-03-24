@@ -48,10 +48,10 @@ Swift utility written in [Go](https://golang.org/) that does the following:
   ```
 
 #### [Install Golang](https://sourabhbajaj.com/mac-setup/Go/README.html) with Homebrew:
+- [ ] Make sure HomeBrew is updated
   ```
   $ brew update
-  ```
-  
+  ```  
 - [ ] Install Go
   ```
   $ brew install golang
