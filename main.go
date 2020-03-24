@@ -242,7 +242,7 @@ func updateConstantsFile(constant ConstantVariable) {
 //search for Constant file, if it doesn't exist, create a new one
 func setupConstantFile(path string, project Project) Project {
 	//1. Make sure we have a Constant file
-	var isFound, filePath = searchFileLocation(path, "Constant", false) //search for any files containing Constant
+	var isFound, filePath = searchForSwiftFile(path, "Constant", false) //search for any files containing Constant
 	var constantFile = File{}
 	if isFound { //if a Constant file originally exist...
 		constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
@@ -261,7 +261,7 @@ func setupConstantFile(path string, project Project) Project {
 func createNewConstantFile(path string) (constant File) {
 	var fileNameToSearch = "AppDelegate.swift"
 	constant.Name = "Constants.swift"
-	var isFound, filePath = searchFileLocation(path, fileNameToSearch, true) //get AppDelegate's path
+	var isFound, filePath = searchForSwiftFile(path, fileNameToSearch, true) //get AppDelegate's path
 	if isFound {                                                             //if AppDelegate is found, create our Constants.swift in this directory
 		var trimmedPath = trimPathAfterLastSlash(filePath)
 		// print(filePath, " trimmed is=", trimmedPath)
@@ -274,7 +274,7 @@ func createNewConstantFile(path string) (constant File) {
 }
 
 //Search a path until it finds a path that contains a fileName we are searching for. isExactName will determine if fileName must exactly match or must contain only
-func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFound bool, filePath string) {
+func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFound bool, filePath string) {
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
@@ -287,7 +287,7 @@ func searchFileLocation(path, fileNameToSearch string, isExactName bool) (isFoun
 			}
 			var prevPath = path
 			path = path + "/" + fileName                                                //update directory path by adding /fileName
-			isFound, filePath = searchFileLocation(path, fileNameToSearch, isExactName) //recursively call this function again
+			isFound, filePath = searchForSwiftFile(path, fileNameToSearch, isExactName) //recursively call this function again
 			if isFound {                                                                //if we found it then keep returning
 				return
 			}
@@ -393,7 +393,7 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
 			if fileExtension == ".swift" {                                //if we find a Swift file that's not the constants file... look for strings
 				prevProjPath = prevProjPath + "/" + fileName
-				var isFound, filePath = searchFileLocation(projPath, fileName, true) //search project for file with the same name as .swift file from previour version
+				var isFound, filePath = searchForSwiftFile(projPath, fileName, true) //search project for file with the same name as .swift file from previour version
 				if isFound {                                                         //if found... read both file's content
 					var prevContents = readFile(prevProjPath)
 					var currentContents = readFile(filePath)
