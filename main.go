@@ -63,8 +63,6 @@ type Project struct {
 // note, that variables are pointers
 var fileFlag = flag.String("file", "", "Name of file")
 var dirFlag = flag.String("dir", "", "Name of directory")
-var kCONSTANTFILEPATH string
-var kCONSTANTFILENAME string
 var kCONSTANTDASHES string = "--------------------------------------------------------------------------------------------------"
 var supportedLanguages = []Language{
 	Language{Name: "Filipino", LProj: "fil.lproj", GoogleKey: "tl"},
@@ -126,7 +124,7 @@ func main() {
 	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
 	project = setupConstantFile(projectPath, project)
 	//5) FEATURE 1: Prompt if user wants to put all strings to the constant file
-	project = promptMoveStringsToConstant(project, projectPath, kCONSTANTFILEPATH)
+	project = promptMoveStringsToConstant(project, projectPath, project.ConstantFile.Path)
 	//6) Get languages supported
 	project, _, _ = getProjectLanguages(project, 0, project.Path, "Localizable.strings")
 	//7) FEATURE 2: Prompt if user wants to move strings in constant file to all Localizable.strings file
@@ -158,8 +156,8 @@ func moveStringsToConstant(path string, project Project) Project {
 			path = trimPathAfterLastSlash(path)            //reset path by removing the / + fileName
 		} else { //if file...
 			// fmt.Println("WHILE AT PATH: ", fileName, "\t2-Project path I need =", project.ConstantFile.Path)
-			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))   //gets the file extension from file name
-			if fileExtension == ".swift" && fileName != kCONSTANTFILENAME { //if we find a Swift file that's not the constants file... look for strings
+			var fileExtension = filepath.Ext(strings.TrimSpace(fileName))           //gets the file extension from file name
+			if fileExtension == ".swift" && fileName != project.ConstantFile.Path { //if we find a Swift file that's not the constants file... look for strings
 				path = path + "/" + fileName
 				project = handleSwiftFile(path, project)
 				path = trimPathAfterLastSlash(path) //reset path by removing the / + fileName
@@ -185,7 +183,7 @@ func handleSwiftFile(path string, project Project) Project {
 			for _, constant := range constantArray {
 				fileContents = strings.Replace(fileContents, constant.Value, constant.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
 				// print("\nCONTENTS ==== ", fileContents, "\n")
-				updateConstantsFile(constant) //lastly, write it to our Constant file
+				updateConstantsFile(constant, project.ConstantFile.Path) //lastly, write it to our Constant file
 			}
 		}
 	}
@@ -245,9 +243,9 @@ func isValidString(str string) bool {
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
-func updateConstantsFile(constant ConstantVariable) {
-	if constantFileContents := readFile(kCONSTANTFILEPATH); !strings.Contains(constantFileContents, constant.Name) { //if constant variable doesn't exist in our Constants file, write it
-		writeToFile(kCONSTANTFILEPATH, "\n"+constant.Variable) //append the constant variable
+func updateConstantsFile(constant ConstantVariable, path string) {
+	if constantFileContents := readFile(path); !strings.Contains(constantFileContents, constant.Name) { //if constant variable doesn't exist in our Constants file, write it
+		writeToFile(path, "\n"+constant.Variable) //append the constant variable
 	}
 }
 
@@ -264,8 +262,6 @@ func setupConstantFile(path string, project Project) Project {
 	}
 	project.ConstantFile.Name = constantFile.Name
 	project.ConstantFile.Path = constantFile.Path
-	kCONSTANTFILEPATH = constantFile.Path //keep the reference to the path's file and name
-	kCONSTANTFILENAME = constantFile.Name
 	return project
 }
 
