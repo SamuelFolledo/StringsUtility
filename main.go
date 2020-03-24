@@ -224,9 +224,9 @@ func isValidString(str string) bool {
 	if len(strings.TrimSpace(str)) <= 2 { //if there is nothing in string other than "", then it is invalid string
 		return false
 	}
-	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "IMG_", "vid_", "VID_", "gif_", "GIF_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif"} //these strings are not allowed in a string to be put in constant or translated
+	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"} //these strings are not allowed in a string to be put in constant or translated
 	for _, subStr := range invalidSubstrings {
-		if strings.Contains(str, subStr) { //if string contains invalid substring, return false
+		if strings.Contains(strings.ToLower(str), subStr) { //if lowerCased(str) contains invalid substring, return false
 			return false
 		}
 	}
