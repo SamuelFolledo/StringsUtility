@@ -30,7 +30,6 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 
 ## Upcoming Features
 - searches and translates strings from .xib and .storyboard files
-- Localizable.strings generator
 - Translate strings using [Google Cloud Translator](https://cloud.google.com/translate/docs)
 
 ## How to Use?
@@ -51,6 +50,23 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
   $ brew install golang
   ```
 
+### Setup Google Cloud Translator: [Basic Setup Instruction](https://cloud.google.com/translate/docs/basic/setup-basic)
+- [ ] Create or select a project
+- [ ] Enable the Cloud Translation API for this project
+- [ ] Download a private key as JSON
+- [ ] While inside StringsUtility, run in terminal
+  ```
+  $ go get -u cloud.google.com/go/translate
+  ```
+- [ ] __Important:__ Run this command __once__ each time the project starts to set the environment variable. Replace the ```[PATH]``` to the path of the ```.json``` file downloaded from setup 2 step 3. [Instructions](https://cloud.google.com/docs/authentication/production) for more info or for Windows setup
+    ```
+    export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
+    ```
+    For example:
+    ```
+    export GOOGLE_APPLICATION_CREDENTIALS="/home/user/Downloads/[FILE_NAME].json"
+    ```
+    
 ### Run StringsUtility
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
   ```
