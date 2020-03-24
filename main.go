@@ -480,16 +480,33 @@ func promptMoveStringsToConstant(project Project, projectPath, constantPath stri
 func promptMoveStringsToLocalizable(project Project) Project {
 	var shouldTranslate = askBooleanQuestion("FEATURE 2: String Localization. Have you created a Localizable.strings?")
 	if shouldTranslate {
-		fmt.Println("\n\nTranslating...")
-		project = translateProject(project)
+		print("\nLocalizing strings...")
+		project = localizeConstantStrings(project)
+		color.Green.Print(" Finished moving and localizing strings.\n")
 	} else {
-		fmt.Println("\n\nWill not translate...")
+		fmt.Print("\nWill not localize strings...")
 	}
-	fmt.Println("\n" + kCONSTANTDASHES + "\n")
+	fmt.Print("\n\n" + kCONSTANTDASHES + "\n")
 	return project
 }
 
 func promptTranslateStrings(project Project) Project {
+	var shouldTranslate = askBooleanQuestion("FEATURE 3: String Translation. Have you setup Google Cloud Translator?")
+	if shouldTranslate {
+		print("\nTranslating strings...")
+		color.Green.Print(" Finished translating to:")
+		for i, lang := range project.Languages {
+			color.Style{color.Green, color.OpBold}.Print(" " + lang.Name)
+			if i < len(project.Languages)-1 { //if not in the end, append a comma
+				color.Green.Print(",")
+			} else {
+				color.Green.Print(".")
+			}
+		}
+	} else {
+		fmt.Print("\nWill not translate strings...")
+	}
+	fmt.Println("\n\n" + kCONSTANTDASHES + "\n")
 	return project
 }
 
