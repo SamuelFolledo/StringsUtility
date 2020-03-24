@@ -126,8 +126,10 @@ func main() {
 	//6) Prompt if user wants to also translate
 	project = promptToTranslate(project)
 	//5) Start updating files
-	//6) Prompt to undo
+	//6) Prompt to undo by copying contents from the cloned project
 	promptToUndo(projectPath+"_previous", projectPath)
+	// Delete the cloned project
+	deleteAllFiles(projectPath + "_previous")
 }
 
 //Loop through each files and look for each strings in each lines
@@ -606,6 +608,16 @@ func writeToFile(fileName, line string) {
 	}
 }
 
+//deletes a all files
+func deleteAllFiles(path string) {
+	var err = os.RemoveAll(path)
+	// var err = os.Remove(path) //this will scream: directory not empty, so we must used RemoveAll()
+	if isError(err) {
+		return
+	}
+}
+
+//prints in yellow error message and asks for email
 func unexpectedError(msg string) {
 	color.FgLightYellow.Println(msg + " Please email me at samuelfolledo@gmail.com if this happens")
 }
