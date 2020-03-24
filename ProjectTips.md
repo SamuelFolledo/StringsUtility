@@ -11,6 +11,7 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     1. In your project, New File
     2. Look for Strings file
     <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/localizableFile.png" width="369" height="265">
+    
     3. Name it ```Localizable``` __exactly__
 
 - [ ] To support multiple languages, create more ```Localizable.strings``` file in languages you want to support
