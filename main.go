@@ -442,6 +442,10 @@ func searchForFilePath(counter int, path, fileNameToSearch string, isExactName b
 	return
 }
 
+func translateProject(project Project) Project {
+
+}
+
 //////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
 
 func promptCommitAnyChanges() {
@@ -484,20 +488,25 @@ func promptTranslateStrings(project Project) Project {
 	var shouldTranslate = askBooleanQuestion("FEATURE 3: String Translation. Have you setup Google Cloud Translator?")
 	if shouldTranslate {
 		print("\nTranslating strings...")
-		color.Green.Print(" Finished translating to:")
-		for i, lang := range project.Languages {
-			color.Style{color.Green, color.OpBold}.Print(" " + lang.Name)
-			if i < len(project.Languages)-1 { //if not in the end, append a comma
-				color.Green.Print(",")
-			} else {
-				color.Green.Print(".")
-			}
-		}
+		project = translateProject(project)
+		finishedTranslatingMessage(project)
 	} else {
 		fmt.Print("\nWill not translate strings...")
 	}
 	fmt.Println("\n\n" + kCONSTANTDASHES + "\n")
 	return project
+}
+
+func finishedTranslatingMessage(project Project) {
+	color.Green.Print(" Finished translating to:")
+	for i, lang := range project.Languages {
+		color.Style{color.Green, color.OpBold}.Print(" " + lang.Name)
+		if i < len(project.Languages)-1 { //if not in the end, append a comma
+			color.Green.Print(",")
+		} else {
+			color.Green.Print(".")
+		}
+	}
 }
 
 func promptToUndo(srcPath, destPath string) {
