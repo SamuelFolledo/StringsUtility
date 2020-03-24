@@ -166,7 +166,12 @@ func handleSwiftFile(path string, project Project) Project {
 	var fileContents = readFile(path)          //get the contents of
 	lines := contentToLinesArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {               //loop through each lines
-		var constantArray = getStringsFromLine(line)
+		var strArray = getStringsFromLine(line)
+		var constantArray = []ConstantVariable{}
+		for _, str := range strArray {
+			var constantVariable = stringToConstantVariable(str)
+			constantArray = append(constantArray, constantVariable)
+		}
 		if len(constantArray) != 0 { //if a constant exist
 			for _, constant := range constantArray {
 				fileContents = strings.Replace(fileContents, constant.Value, constant.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
@@ -179,8 +184,8 @@ func handleSwiftFile(path string, project Project) Project {
 	return project
 }
 
-//takes a line with strings and returns an array of ConstantVariable
-func getStringsFromLine(line string) (constantArray []ConstantVariable) {
+//takes a line with strings and returns an array of strings
+func getStringsFromLine(line string) (strArray []string) {
 	if strings.Contains(line, "\"\"\"") { //if line contains """ then it's a multi line strings which is currently not supported
 		return
 	}
@@ -188,7 +193,6 @@ func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 	if i := strings.Index(line, "\""); i != -1 { //if line has "
 		var startIndex = -1
 		var endIndex = -1
-		var constantVariable ConstantVariable
 		for i := 0; i < len(line); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
 			switch string(line[i]) {
 			case "\"": //if character is "
@@ -197,10 +201,8 @@ func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 					endIndex = i
 					var lineString = line[startIndex : endIndex+1] //line's string is in line's index from startIndex to endIndex+1
 					if isValidString(lineString) {                 //append if it's a valid string
-						constantVariable = stringToConstantVariable(lineString)
-						constantArray = append(constantArray, constantVariable) //append the word
+						strArray = append(strArray, lineString)
 					}
-					constantVariable = ConstantVariable{} //reset it
 				} else { //if first "... look for the second one
 					startIndex = i
 					foundFirstQuote = true
