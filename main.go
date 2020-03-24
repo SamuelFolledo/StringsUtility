@@ -340,7 +340,7 @@ func getProjectLanguages(project Project, counter int, path, fileNameToSearch st
 		if fileName == fileNameToSearch {
 			returnedCounter += 1
 			var language = createLanguageFromPath(filePath)
-			project.Languages = append(project.Languages, language)
+			returnedProject.Languages = append(project.Languages, language)
 		}
 	}
 	return
