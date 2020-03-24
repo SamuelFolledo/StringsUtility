@@ -314,8 +314,86 @@ func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFoun
 	return
 }
 
+//count how many Localizable.strings file there are and store their paths
+func countLanguageFiles(counter int, path, fileNameToSearch string) (returnedCounter int, filePath string) {
+	returnedCounter = counter          //set counter
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
+	if isError(err) {
+		return
+	}
+	for _, file := range files { //loop through each files and directories
+		var fileName = file.Name()
+		if file.IsDir() { //skip if file is directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
+				continue
+			}
+			var prevPath = path
+			path = path + "/" + fileName                                                            //update directory path by adding /fileName
+			returnedCounter, filePath = countLanguageFiles(returnedCounter, path, fileNameToSearch) //recursively call this function again
+			path = prevPath                                                                         //if not found, go to next directory, but update our path
+		}
+		// var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+		filePath = path + "/" + fileName //path of file
+		if fileName == fileNameToSearch {
+			returnedCounter += 1
+		}
+	}
+	return
+}
+
+func searchForFilePath(counter int, path, fileNameToSearch string, isExactName bool) (returnedCounter int, isFound bool, filePath string) {
+	returnedCounter = counter
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
+	if isError(err) {
+		return
+	}
+	for _, file := range files { //loop through each files and directories
+		// fmt.Println("File name =", file.Name(), " c =", counter, " rc = ", returnedCounter)
+		var fileName = file.Name()
+		if file.IsDir() { //skip if file is directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
+				continue
+			}
+			var prevPath = path
+			path = path + "/" + fileName                                                                                 //update directory path by adding /fileName
+			returnedCounter, isFound, filePath = searchForFilePath(returnedCounter, path, fileNameToSearch, isExactName) //recursively call this function again
+			// if isFound {                                                                                                 //if we found it then keep returning
+			// 	return
+			// }
+			path = prevPath //if not found, go to next directory, but update our path
+		}
+		// var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+		filePath = path + "/" + fileName //path of file
+		if isExactName {                 //if we want the exact fileName...
+			if fileName == fileNameToSearch {
+				// fmt.Println("Searched and EXACTLY found ", fileNameToSearch, " at ", filePath)
+				isFound = true
+				returnedCounter += 1
+				// return
+			}
+		} else { //if we want fileName to only contain
+			if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+				// fmt.Println("Searched and found ", fileNameToSearch, " CONTAINS at ", filePath)
+				isFound = true
+				returnedCounter += 1
+				// return
+			}
+		}
+	}
+	print("WE FOUND languages found", " c =", counter, " rc = ", returnedCounter, "\n\n")
+	return
+}
+
 //Translate all strings in a project
 func translateProject(project Project) Project {
+	//search if Localizable.string exist
+	languageCount, _ := countLanguageFiles(0, project.Path, "Localizable.strings")
+	fmt.Println("Detected ", languageCount, " languages")
+	//search for lProj and figure out which ones exist and store their path
+
+	//in constant file. change all valid strings to NSLocalizedString("Default Configuration", comment: "")
+
+	//start translating strings from Constant
 
 	return project
 }
