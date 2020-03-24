@@ -121,14 +121,15 @@ func main() {
 	//4 Initialize project
 	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
 	project = setupConstantFile(projectPath, project)
-	//5) Prompt if user wants to put all strings to the constant file
-	project = promptToMoveStrings(project, projectPath, kCONSTANTFILEPATH)
-	//6) Prompt if user wants to also translate
-	project = promptToTranslate(project)
-	//5) Start updating files
-	//6) Prompt to undo by copying contents from the cloned project
+	//5) FEATURE 1: Prompt if user wants to put all strings to the constant file
+	project = promptMoveStringsToConstant(project, projectPath, kCONSTANTFILEPATH)
+	//6) FEATURE 2: Prompt if user wants to move strings in constant file to all Localizable.strings file
+	project = promptMoveStringsToLocalizable(project)
+	//7) FEATURE 3: Prompt if user wants to translate strings
+	project = promptTranslateStrings(project)
+	//8) Prompt to undo by copying contents from the cloned project
 	promptToUndo(projectPath+"_previous", projectPath)
-	// Delete the cloned project
+	//9) Delete the cloned project
 	deleteAllFiles(projectPath + "_previous")
 }
 
@@ -462,7 +463,7 @@ func promptCommitAnyChanges() {
 	}
 }
 
-func promptToMoveStrings(project Project, projectPath, constantPath string) Project {
+func promptMoveStringsToConstant(project Project, projectPath, constantPath string) Project {
 	var shouldMoveStrings = askBooleanQuestion("FEATURE 1: Would you like StringsUtility to move all strings in .swift files to a constant file?")
 	var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldMoveStrings {
@@ -476,7 +477,7 @@ func promptToMoveStrings(project Project, projectPath, constantPath string) Proj
 	return project
 }
 
-func promptToTranslate(project Project) Project {
+func promptMoveStringsToLocalizable(project Project) Project {
 	var shouldTranslate = askBooleanQuestion("FEATURE 2: String Localization. Have you created a Localizable.strings?")
 	if shouldTranslate {
 		fmt.Println("\n\nTranslating...")
@@ -485,6 +486,10 @@ func promptToTranslate(project Project) Project {
 		fmt.Println("\n\nWill not translate...")
 	}
 	fmt.Println("\n" + kCONSTANTDASHES + "\n")
+	return project
+}
+
+func promptTranslateStrings(project Project) Project {
 	return project
 }
 
