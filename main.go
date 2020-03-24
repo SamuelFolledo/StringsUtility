@@ -113,7 +113,7 @@ func handleSwiftFile(path string, project Project) Project {
 	var fileContents = readFile(path)          //get the contents of
 	lines := contentToLinesArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {               //loop through each lines
-		var constantArray = lineToWordsArray(line)
+		var constantArray = getStringsFromLine(line)
 		if len(constantArray) != 0 { //if a constant exist
 			for _, constant := range constantArray {
 				fileContents = strings.Replace(fileContents, constant.Value, constant.Name, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
@@ -127,7 +127,7 @@ func handleSwiftFile(path string, project Project) Project {
 }
 
 //takes a line with strings and returns an array of ConstantVariable
-func lineToWordsArray(line string) (constantArray []ConstantVariable) {
+func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 	var foundFirstQuote bool                     //initialize as false
 	if i := strings.Index(line, "\""); i != -1 { //if line has "
 		var startIndex = -1
