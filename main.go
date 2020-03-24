@@ -373,11 +373,26 @@ func localizeConstantStrings(project Project) Project {
 				fmt.Println("Bout to transform and translate ", str)
 				var localizedStr = "NSLocalizedString(" + str + ", comment: \"\")"
 				fileContents = strings.Replace(fileContents, str, localizedStr, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
-				// updateLocalizableStrings(str)
+				updateLocalizableStrings(project, str)
 			}
 		}
 	}
 	replaceFile(project.ConstantFile.Path, fileContents)
+	return project
+}
+
+//write strings to all project's Localizable.strings file
+func updateLocalizableStrings(project Project, str string) Project {
+	for _, lang := range project.Languages { //do it to all project's Localizable.strings file
+		var path = lang.Path + "/Localizable.strings"
+		fmt.Println("path===", path)
+		var fileContents = readFile(path)
+		if !strings.Contains(fileContents, str) { //if str does not exist in Localizable.strings...
+			var stringToWrite = str + " = \"\";" //equivalent to: "word" = "";
+			fmt.Println("Writing", stringToWrite)
+			writeToFile(path, "\n"+stringToWrite) //write at the end
+		}
+	}
 	return project
 }
 
