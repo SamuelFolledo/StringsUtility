@@ -133,8 +133,8 @@ func main() {
 	project = promptTranslateStrings(project)
 	//9) Prompt to undo by copying contents from the cloned project
 	promptToUndo(projectPath+"_previous", projectPath)
-	//10) Delete the cloned project
-	deleteAllFiles(projectPath + "_previous")
+	//10) Prompt to delete the previous project
+	promptToDeletePrevProject(projectPath + "_previous")
 }
 
 //Loop through each files and look for each strings in each lines
@@ -518,7 +518,7 @@ func promptMoveStringsToConstant(project Project, projectPath, constantPath stri
 }
 
 func promptMoveStringsToLocalizable(project Project) Project {
-	var shouldTranslate = askBooleanQuestion("FEATURE 2: String Localization. Have you created a Localizable.strings?")
+	var shouldTranslate = askBooleanQuestion("FEATURE 2: String Localization. Do you have a Localizable.strings that strings can go into?")
 	if shouldTranslate {
 		print("\nLocalizing strings...")
 		project = localizeConstantStrings(project)
@@ -531,7 +531,7 @@ func promptMoveStringsToLocalizable(project Project) Project {
 }
 
 func promptTranslateStrings(project Project) Project {
-	var shouldTranslate = askBooleanQuestion("FEATURE 3: String Translation. Have you setup Google Cloud Translator?")
+	var shouldTranslate = askBooleanQuestion("FEATURE 3: String Translation. Do you have Google Cloud Translator setup?")
 	if shouldTranslate {
 		print("\nTranslating strings...")
 		project = translateProject(project)
@@ -564,6 +564,17 @@ func promptToUndo(srcPath, destPath string) {
 		color.Style{color.Green}.Print(" Finished undoing\n")
 	} else {
 		color.Bold.Println("\nWe're glad that StringsUtility was a success for you")
+	}
+	fmt.Print("\n" + kCONSTANTDASHES + "\n")
+}
+
+//takes a previous project's path and deletes it if user wants to
+func promptToDeletePrevProject(prevProjPath string) {
+	// color.Style{color.Green, color.OpBold}.Print("Finished updating project. Reopen project and make sure there is no error.\n")
+	var shouldUndo = askBooleanQuestion("QUESTION: Delete the cloned and previous version of the project?")
+	if shouldUndo {
+		deleteAllFiles(prevProjPath + "_previous")
+		color.Style{color.Green}.Print("\nFinished deleting\n")
 	}
 	fmt.Print("\n" + kCONSTANTDASHES + "\n")
 	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
@@ -655,7 +666,7 @@ func replaceFile(filePath, lines string) {
 	bytesToWrite := []byte(lines)                         //data written
 	err := ioutil.WriteFile(filePath, bytesToWrite, 0644) //filename, byte array (binary representation), and 0644 which represents permission number. (0-777) //will create a new text file if that text file does not exist yet
 	if isError(err) {
-		fmt.Println("Error Writing to file:", filePath, "====", err)
+		fmt.Println("Error Writing to file:", filePath, "=", err)
 		return
 	}
 }
@@ -728,7 +739,7 @@ func getDirectoryName() string {
 func readFile(fileName string) (content string) { //method that will read a file and return lines or error
 	fileContents, err := ioutil.ReadFile(fileName)
 	if isError(err) {
-		print("Error reading ", fileName, "====", err)
+		print("Error reading ", fileName, "=", err)
 		return
 	}
 	content = string(fileContents)
