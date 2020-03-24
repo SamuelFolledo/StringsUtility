@@ -14,6 +14,14 @@ import (
 	"github.com/gookit/color" //for adding colors to CLI outputs
 )
 
+type Language struct {
+	Name      string
+	LProj     string
+	GoogleKey string
+	Path      string
+	Exist     bool
+}
+
 type Directory struct {
 	Path  string
 	Name  string
