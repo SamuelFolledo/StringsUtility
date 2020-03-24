@@ -55,6 +55,7 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 - [ ] Create or select a project
 - [ ] Enable the Cloud Translation API for this project
 - [ ] Download a private key as JSON
+- [ ] Go to [Project's Console](https://console.cloud.google.com/)
 - [ ] While inside StringsUtility, run in terminal
   ```
   $ go get -u cloud.google.com/go/translate
@@ -65,7 +66,6 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
     ```
     For example:
     ```
-
     export GOOGLE_APPLICATION_CREDENTIALS="/Users/Samuel/Downloads/StringsUtility-Tester-785c7f11aedf.json "
     ```
 

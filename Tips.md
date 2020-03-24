@@ -20,3 +20,10 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 
 ### FEATURE 3: String Translation
 - [ ] Have [Google Cloud Translation API](https://console.cloud.google.com/apis/library/translate.googleapis.com?q=translation&project=go-makesite&folder&organizationId) setup
+
+## Common Errors
+- ```dialing: google: could not find default credentials.```   
+    - __Make sure you have done the following:__
+    - [ ] ```go get -u cloud.google.com/go/translate```
+    - [ ] ```export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"```
+

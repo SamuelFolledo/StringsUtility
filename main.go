@@ -447,6 +447,12 @@ func searchForFilePath(counter int, path, fileNameToSearch string, isExactName b
 }
 
 func translateProject(project Project) Project {
+	var text = "I love you"
+	var translatedText, err = translateText("es", text) //translate to Spanish
+	if isError(err) {
+		return project
+	}
+	print("\"", text, "\" in SPANISH is \"", translatedText, "\"\n")
 	return project
 }
 
@@ -459,7 +465,7 @@ func translateText(targetLanguage, text string) (string, error) {
 		return "", fmt.Errorf("language.Parse: %v", err)
 	}
 
-	client, err := translate.NewClient(ctx)
+	client, err := translate.NewClient(ctx) ///Users/macbookpro15/Downloads/StringsUtility-Tester-785c7f11aedf.json
 	if isError(err) {
 		return "", err
 	}
