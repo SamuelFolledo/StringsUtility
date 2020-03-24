@@ -51,6 +51,7 @@ type Project struct {
 	Name            string
 	Path            string
 	Directories     []Directory
+	Languages       []Language
 	HasConstantFile bool
 	ConstantFile    File
 }
@@ -61,7 +62,7 @@ var dirFlag = flag.String("dir", "", "Name of directory")
 var kCONSTANTFILEPATH string
 var kCONSTANTFILENAME string
 var kCONSTANTDASHES string = "--------------------------------------------------------------------------------------------------"
-var languages = []Language{
+var supportedLanguages = []Language{
 	Language{Name: "Filipino", LProj: "fil.lproj", GoogleKey: "tl"},
 	Language{Name: "Filipino (Philippines)", LProj: "fil-PH.lproj", GoogleKey: "tl"},
 	Language{Name: "English", LProj: "en.lproj", GoogleKey: "en"},
@@ -315,7 +316,8 @@ func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFoun
 }
 
 //count how many Localizable.strings file there are and store their paths
-func countLanguageFiles(counter int, path, fileNameToSearch string) (returnedCounter int, filePath string) {
+func countLanguageFiles(project Project, counter int, path, fileNameToSearch string) (returnedProject Project, returnedCounter int, filePath string) {
+	returnedProject = project
 	returnedCounter = counter          //set counter
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
@@ -328,17 +330,48 @@ func countLanguageFiles(counter int, path, fileNameToSearch string) (returnedCou
 				continue
 			}
 			var prevPath = path
-			path = path + "/" + fileName                                                            //update directory path by adding /fileName
-			returnedCounter, filePath = countLanguageFiles(returnedCounter, path, fileNameToSearch) //recursively call this function again
-			path = prevPath                                                                         //if not found, go to next directory, but update our path
+			path = path + "/" + fileName                                                                                              //update directory path by adding /fileName
+			returnedProject, returnedCounter, filePath = countLanguageFiles(returnedProject, returnedCounter, path, fileNameToSearch) //recursively call this function again
+			path = prevPath                                                                                                           //if not found, go to next directory, but update our path
 		}
 		// var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
 		filePath = path + "/" + fileName //path of file
 		if fileName == fileNameToSearch {
 			returnedCounter += 1
+			var language = createLanguageFromPath(filePath)
+			project.Languages = append(project.Languages, language)
 		}
 	}
 	return
+}
+
+func createLanguageFromPath(path string) Language {
+	var language = Language{}
+	var languagePath = trimPathAfterLastSlash(path)
+	var languageName = trimPathBeforeLastSlash(languagePath, false)
+	for _, lan := range supportedLanguages {
+		if languageName == lan.LProj {
+			fmt.Println(languageName)
+			language = lan
+		}
+	}
+	language.Path = languagePath
+	fmt.Println("LANGUAGE =", language)
+	return language
+}
+
+//Translate all strings in a project
+func translateProject(project Project) Project {
+	//search if Localizable.string exist
+	project, _, _ = countLanguageFiles(project, 0, project.Path, "Localizable.strings")
+	fmt.Println("Detected ", len(project.Languages), " languages")
+	//search for lProj and figure out which ones exist and store their path
+
+	//in constant file. change all valid strings to NSLocalizedString("Default Configuration", comment: "")
+
+	//start translating strings from Constant
+
+	return project
 }
 
 func searchForFilePath(counter int, path, fileNameToSearch string, isExactName bool) (returnedCounter int, isFound bool, filePath string) {
@@ -382,20 +415,6 @@ func searchForFilePath(counter int, path, fileNameToSearch string, isExactName b
 	}
 	print("WE FOUND languages found", " c =", counter, " rc = ", returnedCounter, "\n\n")
 	return
-}
-
-//Translate all strings in a project
-func translateProject(project Project) Project {
-	//search if Localizable.string exist
-	languageCount, _ := countLanguageFiles(0, project.Path, "Localizable.strings")
-	fmt.Println("Detected ", languageCount, " languages")
-	//search for lProj and figure out which ones exist and store their path
-
-	//in constant file. change all valid strings to NSLocalizedString("Default Configuration", comment: "")
-
-	//start translating strings from Constant
-
-	return project
 }
 
 //////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
