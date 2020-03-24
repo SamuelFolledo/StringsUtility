@@ -143,10 +143,11 @@ func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 					foundFirstQuote = false
 					endIndex = i
 					var lineString = line[startIndex : endIndex+1] //line's string is in line's index from startIndex to endIndex+1
-
-					constantVariable = stringToConstantVariable(lineString)
-					constantArray = append(constantArray, constantVariable) //append the word
-					constantVariable = ConstantVariable{}                   //reset it
+					if isValidString(lineString) {                 //append if it's a valid string
+						constantVariable = stringToConstantVariable(lineString)
+						constantArray = append(constantArray, constantVariable) //append the word
+					}
+					constantVariable = ConstantVariable{} //reset it
 				} else { //if first "... look for the second one
 					startIndex = i
 					foundFirstQuote = true
@@ -167,9 +168,16 @@ func getStringsFromLine(line string) (constantArray []ConstantVariable) {
 
 //checks if string is a valid string to be put in constant or translated
 func isValidString(str string) bool {
+	if len(strings.TrimSpace(str)) <= 2 { //if there is nothing in string other than "", then it is invalid string
+		return false
+	}
 	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "IMG_", "vid_", "VID_", "gif_", "GIF_"} //these strings are not allowed in a string to be put in constant or translated
-
-	return false
+	for _, subStr := range invalidSubstrings {
+		if strings.Contains(str, subStr) { //if string contains invalid substring, return false
+			return false
+		}
+	}
+	return true
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
