@@ -122,9 +122,9 @@ func main() {
 	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
 	project = setupConstantFile(projectPath, project)
 	//5) Prompt if user wants to put all strings to the constant file
-	project = promptPutStringsToConstant(project, projectPath, kCONSTANTFILEPATH)
+	project = promptToMoveStrings(project, projectPath, kCONSTANTFILEPATH)
 	//6) Prompt if user wants to also translate
-	project = promptShouldTranslate(project)
+	project = promptToTranslate(project)
 	//5) Start updating files
 	//6) Prompt to undo
 	promptToUndo(projectPath+"_previous", projectPath)
@@ -316,7 +316,7 @@ func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFoun
 }
 
 //count how many Localizable.strings file there are and store their paths
-func countLanguageFiles(project Project, counter int, path, fileNameToSearch string) (returnedProject Project, returnedCounter int, filePath string) {
+func getProjectLanguages(project Project, counter int, path, fileNameToSearch string) (returnedProject Project, returnedCounter int, filePath string) {
 	returnedProject = project
 	returnedCounter = counter          //set counter
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
@@ -330,11 +330,10 @@ func countLanguageFiles(project Project, counter int, path, fileNameToSearch str
 				continue
 			}
 			var prevPath = path
-			path = path + "/" + fileName                                                                                              //update directory path by adding /fileName
-			returnedProject, returnedCounter, filePath = countLanguageFiles(returnedProject, returnedCounter, path, fileNameToSearch) //recursively call this function again
-			path = prevPath                                                                                                           //if not found, go to next directory, but update our path
+			path = path + "/" + fileName                                                                                               //update directory path by adding /fileName
+			returnedProject, returnedCounter, filePath = getProjectLanguages(returnedProject, returnedCounter, path, fileNameToSearch) //recursively call this function again
+			path = prevPath                                                                                                            //if not found, go to next directory, but update our path
 		}
-		// var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
 		filePath = path + "/" + fileName //path of file
 		if fileName == fileNameToSearch {
 			returnedCounter += 1
@@ -356,19 +355,15 @@ func createLanguageFromPath(path string) Language {
 		}
 	}
 	language.Path = languagePath
-	fmt.Println("LANGUAGE =", language)
 	return language
 }
 
 //Translate all strings in a project
 func translateProject(project Project) Project {
-	//search if Localizable.string exist
-	project, _, _ = countLanguageFiles(project, 0, project.Path, "Localizable.strings")
+	project, _, _ = getProjectLanguages(project, 0, project.Path, "Localizable.strings")
 	fmt.Println("Detected ", len(project.Languages), " languages")
-	//search for lProj and figure out which ones exist and store their path
-
 	//in constant file. change all valid strings to NSLocalizedString("Default Configuration", comment: "")
-
+	fmt.Println("co=", project.ConstantFile.Path)
 	//start translating strings from Constant
 
 	return project
@@ -427,7 +422,7 @@ func promptCommitAnyChanges() {
 	}
 }
 
-func promptPutStringsToConstant(project Project, projectPath, constantPath string) Project {
+func promptToMoveStrings(project Project, projectPath, constantPath string) Project {
 	var shouldMoveStrings = askBooleanQuestion("FEATURE 1: Would you like StringsUtility to move all strings in .swift files to a constant file?")
 	var projectName = trimPathBeforeLastSlash(projectPath, true)
 	if shouldMoveStrings {
@@ -441,11 +436,10 @@ func promptPutStringsToConstant(project Project, projectPath, constantPath strin
 	return project
 }
 
-func promptShouldTranslate(project Project) Project {
+func promptToTranslate(project Project) Project {
 	var shouldTranslate = askBooleanQuestion("FEATURE 2: String Localization. Have you created a Localizable.strings?")
 	if shouldTranslate {
 		fmt.Println("\n\nTranslating...")
-		fmt.Println("PATHHHH", project.ConstantFile.Path)
 		project = translateProject(project)
 	} else {
 		fmt.Println("\n\nWill not translate...")
