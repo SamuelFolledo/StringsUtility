@@ -65,7 +65,8 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
     ```
     For example:
     ```
-    export GOOGLE_APPLICATION_CREDENTIALS="/home/user/Downloads/[FILE_NAME].json"
+
+    export GOOGLE_APPLICATION_CREDENTIALS="/Users/Samuel/Downloads/StringsUtility-Tester-785c7f11aedf.json "
     ```
 
 ### Run StringsUtility
