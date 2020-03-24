@@ -8,7 +8,8 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 
 #### PART 1: Move strings to Localizable
 - [ ] Create/Have a ```Localizable.strings``` file
-<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/startLocalization.gif" width="640" height="362">
+<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/startLocalizable.gif" width="640" height="362">
+
 - [ ] To support multiple languages, create more ```Localizable.strings``` file in languages you want to support
 <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="640" height="320">
 
