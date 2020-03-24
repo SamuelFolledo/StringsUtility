@@ -23,11 +23,13 @@ A CLI app written in [Go](https://golang.org/) that takes an Xcode project, and 
 - Easily manage all your strings in one file
 
 ## [Tips](Tips.md):
+- Currently does not support multi line strings
 - To avoid common errors, strings which contains the following will substrings not be put to the constant file or translated. Edit files accordingly 
-```"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "IMG_", "vid_", "VID_", "gif_", "GIF_"```
+```"/", "\", "{", "}", "http", "https", ".com", "#", "%", "img_", "IMG_", "vid_", "VID_", "gif_", "GIF_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif"```
     - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
 
 ## Upcoming Features
+- searches and translates strings from .xib and .storyboard files
 - Localizable.strings generator
 - Translate strings using [Google Cloud Translator](https://cloud.google.com/translate/docs)
 
