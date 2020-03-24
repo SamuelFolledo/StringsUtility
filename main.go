@@ -228,7 +228,7 @@ func isValidString(str string) bool {
 	}
 	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"} //these strings are not allowed in a string to be put in constant or translated
 	for _, subStr := range invalidSubstrings {
-		if strings.Contains(strings.ToLower(str), subStr) { //if lowerCased(str) contains invalid substring, return false
+		if strings.Contains(strings.ToLower(str), subStr) { //if lowerCased(str) contains invalid substring, then str is invalid
 			return false
 		}
 	}
@@ -352,7 +352,6 @@ func createLanguageFromPath(path string) Language {
 	var languageName = trimPathBeforeLastSlash(languagePath, false)
 	for _, lan := range supportedLanguages {
 		if languageName == lan.LProj {
-			fmt.Println(languageName)
 			language = lan
 		}
 	}
@@ -360,12 +359,34 @@ func createLanguageFromPath(path string) Language {
 	return language
 }
 
+//Turn all Constant's strings to NSLocalizedString("", comment: "") strings
+func localizeConstantStrings(project Project) Project {
+	var fileContents = readFile(project.ConstantFile.Path)
+	var linesArray = contentToLinesArray(fileContents)
+	for _, line := range linesArray {
+		if !strings.Contains(line, "NSLocalizedString(\"") { //if line does not contain NSLocalizedString
+			if strArray := getStringsFromLine(line); len(strArray) > 0 { //ensures that the line has a string that is OK to be translated
+				if len(strArray) > 1 { //little error handling that will more than likely not get executed
+					unexpectedError("Line " + line + " unexpectedly have multiple strings.")
+				}
+				var str = strArray[0]
+				fmt.Println("Bout to transform and translate ", str)
+				var localizedStr = "NSLocalizedString(" + str + ", comment: \"\")"
+				fileContents = strings.Replace(fileContents, str, localizedStr, 1) //from fileContents, replace the doubleQuotedWord with our variableName, -1 means globally, but changed it to one at a time
+				// updateLocalizableStrings(str)
+			}
+		}
+	}
+	replaceFile(project.ConstantFile.Path, fileContents)
+	return project
+}
+
 //Translate all strings in a project
 func translateProject(project Project) Project {
 	project, _, _ = getProjectLanguages(project, 0, project.Path, "Localizable.strings")
-	fmt.Println("Detected ", len(project.Languages), " languages")
+	// fmt.Println("Detected ", len(project.Languages), " languages")
 	//in constant file. change all valid strings to NSLocalizedString("Default Configuration", comment: "")
-	fmt.Println("co=", project.ConstantFile.Path)
+	project = localizeConstantStrings(project)
 	//start translating strings from Constant
 
 	return project
@@ -568,6 +589,10 @@ func writeToFile(fileName, line string) {
 	if _, err = f.WriteString(line); err != nil {
 		panic(err)
 	}
+}
+
+func unexpectedError(msg string) {
+	color.FgLightYellow.Println(msg + " Please email me at samuelfolledo@gmail.com if this happens")
 }
 
 //turns word to kWORD
