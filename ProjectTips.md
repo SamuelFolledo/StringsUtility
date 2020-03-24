@@ -11,7 +11,7 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/localizableFile.png" width="369" height="265">
 
 - [ ] To support more languages, go to Project -> Info -> Localizations -> ```+``` like the demo below
-<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="640" height="320">
+<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="478" height="238">
 
 #### PART 2: String Translation
 - [ ] Have [Google Cloud Translation API](https://console.cloud.google.com/apis/library/translate.googleapis.com?q=translation&project=go-makesite&folder&organizationId) setup
