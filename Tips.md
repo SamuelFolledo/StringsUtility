@@ -4,7 +4,7 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 ## Tips:
 - To avoid unnecessary common errors, strings which contains the following will substrings not be put to the constant file or translated. Edit files accordingly 
 ```"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "IMG_", "vid_", "VID_", "gif_", "GIF_"```
-    - Files named like ```UIImage(named: "heart")``` will be translated unintentionally, so consider adding ```"IMG_heart"```
+    - Files named like ```UIImage(named: "heart")``` will be translated unintentionally, so consider editing like so ```UIImage(named: "IMG_heart")```
 
 ## Feature 1: Moving Strings to Constant file
 - [ ] Have at least __1 constants file__ (e.g. ```Constants.swift```) in your project for the strings to get stored into.
