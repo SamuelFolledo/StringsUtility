@@ -497,7 +497,7 @@ func translateText(targetLanguage, text string) string {
 //////////////////////////////////////////////////// MARK: PROMPTS METHODS ////////////////////////////////////////////////////
 
 func promptCommitAnyChanges() {
-	var commitConfirmation = askBooleanQuestion("RECOMMENDATION: Before using StringsUtility it is recommended to commit any changes? Say yes to continue")
+	var commitConfirmation = askBooleanQuestion(false, "RECOMMENDATION: Before using StringsUtility it is recommended to commit any changes? Say yes to continue")
 	if !commitConfirmation { //if user said no, then exit program
 		fmt.Println("\n" + kCONSTANTDASHES + "\n\nSince you are not ready yet, please finish commiting any changes and run StringsUtility again.")
 		os.Exit(100) //exit status 100 means did not finish commmitting
@@ -505,7 +505,7 @@ func promptCommitAnyChanges() {
 }
 
 func promptMoveStringsToConstant(project Project, projectPath, constantPath string) Project {
-	var shouldMoveStrings = askBooleanQuestion("FEATURE 1: Would you like StringsUtility to move all strings in .swift files to a constant file?")
+	var shouldMoveStrings = askBooleanQuestion(true, "FEATURE 1: Would you like StringsUtility to move all strings in .swift files to a constant file?")
 	if shouldMoveStrings {
 		fmt.Print("\nMoving strings to ", project.ConstantFile.Path, "... ")
 		project = moveStringsToConstant(projectPath, project) //MAKE SURE TO UNCOMMENT LATER
@@ -518,7 +518,7 @@ func promptMoveStringsToConstant(project Project, projectPath, constantPath stri
 }
 
 func promptMoveStringsToLocalizable(project Project) Project {
-	var shouldTranslate = askBooleanQuestion("FEATURE 2: String Localization. Do you have a Localizable.strings that strings can go into?")
+	var shouldTranslate = askBooleanQuestion(true, "FEATURE 2: String Localization. Do you have a Localizable.strings that strings can go into?")
 	if shouldTranslate {
 		print("\nLocalizing strings...")
 		project = localizeConstantStrings(project)
@@ -531,7 +531,7 @@ func promptMoveStringsToLocalizable(project Project) Project {
 }
 
 func promptTranslateStrings(project Project) Project {
-	var shouldTranslate = askBooleanQuestion("FEATURE 3: String Translation. Do you have Google Cloud Translator setup?")
+	var shouldTranslate = askBooleanQuestion(true, "FEATURE 3: String Translation. Do you have Google Cloud Translator setup?")
 	if shouldTranslate {
 		print("\nTranslating strings...")
 		project = translateProject(project)
@@ -557,7 +557,7 @@ func finishedTranslatingMessage(project Project) {
 
 func promptToUndo(srcPath, destPath string) {
 	color.Style{color.Green, color.OpBold}.Print("Finished updating project. Reopen project and make sure there is no error.\n")
-	var shouldUndo = askBooleanQuestion("QUESTION: Do you want to undo?")
+	var shouldUndo = askBooleanQuestion(false, "QUESTION: Do you want to undo?")
 	if shouldUndo {
 		fmt.Print("\nUndoing...")
 		undoUtilityChanges(srcPath, destPath)
@@ -570,7 +570,7 @@ func promptToUndo(srcPath, destPath string) {
 
 //takes a previous project's path and deletes it if user wants to
 func promptToDeletePrevProject(prevProjPath string) {
-	var shouldUndo = askBooleanQuestion("QUESTION: Delete the cloned previous version of the project?")
+	var shouldUndo = askBooleanQuestion(false, "QUESTION: Delete the cloned previous version of the project?")
 	if shouldUndo {
 		deleteAllFiles(prevProjPath)
 		color.Style{color.Green}.Print("\nFinished deleting\n")
@@ -618,8 +618,8 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 	}
 }
 
-func askBooleanQuestion(question string) bool {
-	boolAnswer := askQuestionToUser(question + "\nType yes or no: ")
+func askBooleanQuestion(isImportant bool, question string) bool {
+	boolAnswer := askQuestionToUser(isImportant, question+"\nType yes or no: ")
 	boolAnswer = strings.ToLower(boolAnswer) //lower case the response
 	for {                                    //infinite loop to handle user inputs that are not expected
 		if boolAnswer == "yes" || boolAnswer == "no" || boolAnswer == "y" || boolAnswer == "n" { //break if user input expected inputs
@@ -631,7 +631,7 @@ func askBooleanQuestion(question string) bool {
 		color.Style{color.FgRed, color.OpBold}.Print(" or ")
 		color.Style{color.FgRed, color.OpBold, color.OpUnderscore}.Print("no")
 		color.Style{color.FgRed, color.OpBold}.Print(" only")
-		boolAnswer = askQuestionToUser(question + ": ")
+		boolAnswer = askQuestionToUser(isImportant, question+": ")
 		boolAnswer = strings.ToLower(boolAnswer) //lower case the response
 	}
 	if boolAnswer == "yes" || boolAnswer == "y" {
@@ -641,9 +641,13 @@ func askBooleanQuestion(question string) bool {
 }
 
 //given a question, ask and wait for user's CLI input
-func askQuestionToUser(question string) string {
+func askQuestionToUser(isImportant bool, question string) string {
 	print("\n")
-	color.Style{color.Cyan, color.OpBold}.Print(question)
+	if isImportant {
+		color.Style{color.Cyan, color.OpBold}.Print(question)
+	} else {
+		color.Style{color.Cyan}.Print(question)
+	}
 	input := bufio.NewScanner(os.Stdin)
 	input.Scan()
 	return input.Text()
