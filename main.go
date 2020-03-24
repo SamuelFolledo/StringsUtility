@@ -473,6 +473,7 @@ func translateProject(project Project) Project {
 			} else { //line has no strings
 				continue
 			}
+			//ALSO Check why .strings file are not getting undo
 			// for _, language := range project.Languages { //save cost, check if other languages supported has the same key
 			// 	if language.Name == lang.Name { //if same language...
 			// 		continue
