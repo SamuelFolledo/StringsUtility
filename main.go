@@ -240,7 +240,6 @@ func isValidString(str string) bool {
 //writes constant variable to our Constants file it doesn't exist yet
 func updateConstantsFile(constant ConstantVariable, constantPath string) {
 	if constantFileContents := readFile(constantPath); !strings.Contains(constantFileContents, constant.Name) { //if constant variable doesn't exist in our Constants file, write it
-		fmt.Println("Constant contains===", constant.Name, " = ", constant.Value, " changing to ", constant.Variable)
 		writeToFile(constantPath, "\n"+constant.Variable) //append the constant variable
 	}
 }
