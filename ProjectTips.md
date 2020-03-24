@@ -10,7 +10,7 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 - [ ] Create a ```Localizable.strings``` file. In your project, New File -> String File -> Name it ```Localizable``` __exactly__
     <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/localizableFile.png" width="369" height="265">
 
-- [ ] To support multiple languages, create more ```Localizable.strings``` file in languages you want to support
+- [ ] To support more languages, go to Project -> Info -> Localizations -> ```+``` like the demo below
 <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="640" height="320">
 
 #### PART 2: String Translation
