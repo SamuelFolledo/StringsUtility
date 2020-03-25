@@ -169,7 +169,7 @@ func handleSwiftFile(path string, project Project) Project {
 	var fileContents = readFile(path)          //get the contents of
 	lines := contentToLinesArray(fileContents) //turns fileContents to array of strings
 	for _, line := range lines {               //loop through each lines
-		var strArray = getStringsFromLine(line)
+		var strArray = getStringsFromLine(line, false)
 		var constantArray = []ConstantVariable{}
 		for _, str := range strArray {
 			var constantVariable = stringToConstantVariable(str)
@@ -187,7 +187,7 @@ func handleSwiftFile(path string, project Project) Project {
 }
 
 //takes a line with strings and returns an array of strings
-func getStringsFromLine(line string) (strArray []string) {
+func getStringsFromLine(line string, shouldTranslate bool) (strArray []string) {
 	if i := strings.Index(line, "\""); i != -1 { //if line has "
 		if strings.Contains(line, "\"\"\"") { //if line contains """ then it's a multi line strings which is currently not supported
 			return
@@ -202,8 +202,14 @@ func getStringsFromLine(line string) (strArray []string) {
 					foundFirstQuote = false
 					endIndex = i
 					var lineString = line[startIndex : endIndex+1] //line's string is in line's index from startIndex to endIndex+1
-					if isValidString(lineString) {                 //append if it's a valid string
-						strArray = append(strArray, lineString)
+					if shouldTranslate {                           //if for translating, check if string is translatable
+						if isTranslatableString(lineString) {
+							strArray = append(strArray, lineString)
+						}
+					} else { //if not for translating, check if string is valid
+						if isValidString(lineString) { //append if it's a valid string
+							strArray = append(strArray, lineString)
+						}
 					}
 				} else { //if first "... look for the second one
 					startIndex = i
@@ -379,7 +385,7 @@ func localizeConstantStrings(project Project) Project {
 	var linesArray = contentToLinesArray(fileContents)
 	for _, line := range linesArray {
 		if !strings.Contains(line, "NSLocalizedString(\"") { //if line does not contain NSLocalizedString
-			if strArray := getStringsFromLine(line); len(strArray) > 0 { //ensures that the line has a string that is OK to be translated
+			if strArray := getStringsFromLine(line, false); len(strArray) > 0 { //ensures that the line has a string that is OK to be translated
 				if len(strArray) > 1 { //little error handling that will more than likely not get executed
 					unexpectedError("Line " + line + " unexpectedly have multiple strings.")
 				}
@@ -451,7 +457,7 @@ func translateProject(project Project) Project {
 		var fileContents = readFile(path)                  //read the Localizable.strings contents
 		var linesArray = contentToLinesArray(fileContents) //convert contents to array of lines
 		for _, line := range linesArray {                  //loop through each line
-			var strArray = getStringsFromLine(line) //get strings
+			var strArray = getStringsFromLine(line, true) //get strings
 			var text string
 			var translatedText string
 			if length := len(strArray); length == 1 { //no translation
