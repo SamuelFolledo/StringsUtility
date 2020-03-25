@@ -188,13 +188,13 @@ func handleSwiftFile(path string, project Project) Project {
 
 //takes a line with strings and returns an array of strings
 func getStringsFromLine(line string) (strArray []string) {
-	if strings.Contains(line, "\"\"\"") { //if line contains """ then it's a multi line strings which is currently not supported
-		return
-	}
-	var foundFirstQuote bool                     //initialize as false
 	if i := strings.Index(line, "\""); i != -1 { //if line has "
+		if strings.Contains(line, "\"\"\"") { //if line contains """ then it's a multi line strings which is currently not supported
+			return
+		}
 		var startIndex = -1
 		var endIndex = -1
+		var foundFirstQuote bool
 		for i := 0; i < len(line); i++ { //loop through until we reach the end of the line. i:=1 so we ignore the first "
 			switch string(line[i]) {
 			case "\"": //if character is "
@@ -229,6 +229,20 @@ func isValidString(str string) bool {
 		return false
 	}
 	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"} //these strings are not allowed in a string to be put in constant or translated
+	for _, subStr := range invalidSubstrings {
+		if strings.Contains(strings.ToLower(str), subStr) { //if lowerCased(str) contains invalid substring, then str is invalid
+			return false
+		}
+	}
+	return true
+}
+
+//checks if string is a valid string to be put in constant or translated
+func isTranslatableString(str string) bool {
+	if len(strings.TrimSpace(str)) <= 2 { //if there is nothing in string other than "", then it is invalid string
+		return false
+	}
+	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", "gif", "identifier", "json_", "dic_"} //these strings are not allowed in a string to be put in constant or translated
 	for _, subStr := range invalidSubstrings {
 		if strings.Contains(strings.ToLower(str), subStr) { //if lowerCased(str) contains invalid substring, then str is invalid
 			return false
@@ -440,8 +454,7 @@ func translateProject(project Project) Project {
 			var strArray = getStringsFromLine(line) //get strings
 			var text string
 			var translatedText string
-			var length = len(strArray)
-			if length == 1 { //no translation
+			if length := len(strArray); length == 1 { //no translation
 				text = strArray[0]
 				var textToTranslate = text[1 : len(text)-1]                     //removes the first and last character, which are both "
 				translatedText = translateText(lang.GoogleKey, textToTranslate) //translate to Spanish
