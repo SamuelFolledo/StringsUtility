@@ -119,7 +119,7 @@ func main() {
 	promptCommitAnyChanges()
 	//3) Clone project
 	fmt.Print("\n\nFinished cloning "+trimPathBeforeLastSlash(projectPath, false)+". StringsUtility is ready to make changes\n\n"+kCONSTANTDASHES, "\n")
-	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
+	cloneProject(projectPath)
 	//4 Initialize project
 	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
 	project = setupConstantFile(projectPath, project)
@@ -255,6 +255,16 @@ func isTranslatableString(str string) bool {
 		}
 	}
 	return true
+}
+
+//Clone project at the same directory as the projectPath with different name. If a clone exist, delete it and then clone
+func cloneProject(projectPath string) {
+	var projectLocation = trimPathAfterLastSlash(projectPath)
+	var isFound, _ = searchForFilePath(projectLocation, projectPath+"_previous")
+	if isFound { //if clonedProject already exist, delete it and create a new clone
+		deleteAllFiles(projectPath + "_previous")
+	}
+	copy.CopyDir(projectPath, projectPath+"_previous") //clones project in the same place where the project exist"
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
@@ -413,8 +423,8 @@ func updateLocalizableStrings(project Project, str string) Project {
 	return project
 }
 
-func searchForFilePath(counter int, path, fileNameToSearch string, isExactName bool) (returnedCounter int, isFound bool, filePath string) {
-	returnedCounter = counter
+//Recursively search path for file or directory
+func searchForFilePath(path, fileNameToSearch string) (isFound bool, filePath string) {
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
@@ -425,23 +435,19 @@ func searchForFilePath(counter int, path, fileNameToSearch string, isExactName b
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
-			var prevPath = path
-			path = path + "/" + fileName                                                                                 //update directory path by adding /fileName
-			returnedCounter, isFound, filePath = searchForFilePath(returnedCounter, path, fileNameToSearch, isExactName) //recursively call this function again
-			path = prevPath                                                                                              //if not found, go to next directory, but update our path
-		}
-		filePath = path + "/" + fileName //path of file
-		if isExactName {                 //if we want the exact fileName...
-			if fileName == fileNameToSearch {
-				isFound = true
-				returnedCounter += 1
-			}
-		} else { //if we want fileName to only contain
 			if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
 				isFound = true
-				returnedCounter += 1
-				// return
+				return
 			}
+			var prevPath = path
+			path = path + "/" + fileName                                  //update directory path by adding /fileName
+			isFound, filePath = searchForFilePath(path, fileNameToSearch) //recursively call this function again
+			path = prevPath                                               //if not found, go to next directory, but update our path
+		}
+		filePath = path + "/" + fileName                  //path of file
+		if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+			isFound = true
+			return
 		}
 	}
 	return
@@ -465,7 +471,7 @@ func translateProject(project Project) Project {
 				var textToTranslate = text[1 : len(text)-1]                     //removes the first and last character, which are both "
 				translatedText = translateText(lang.GoogleKey, textToTranslate) //translate to Spanish
 				print("Translated text: ", textToTranslate, " in ", lang.Name, " is ", translatedText, "\n")
-				var newLine = text + " = \"" + translatedText + "\";"
+				var newLine = text + " = \"" + translatedText + "\";"          //line that goes to Localizable.strings
 				fileContents = strings.Replace(fileContents, line, newLine, 1) //update fileContent's old line with new line
 			} else if length == 2 { //text has translation
 				text = strArray[0]
@@ -473,15 +479,6 @@ func translateProject(project Project) Project {
 			} else { //line has no strings
 				continue
 			}
-			//ALSO Check why .strings file are not getting undo
-			// for _, language := range project.Languages { //save cost, check if other languages supported has the same key
-			// 	if language.Name == lang.Name { //if same language...
-			// 		continue
-			// 	}
-			// 	if language.GoogleKey == lang.GoogleKey { //if diff language, but same key... populate with the same stuff
-			// 		fmt.Println(language.Name, " and ", lang.Name, " has the same key")
-			// 	}
-			// }
 		}
 		replaceFile(path, fileContents)
 	}
