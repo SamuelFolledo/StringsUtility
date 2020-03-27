@@ -259,15 +259,16 @@ func isTranslatableString(str string) bool {
 
 //Clone project at the same directory as the projectPath with different name. If a clone exist, delete it and then clone
 func cloneProject(projectPath string) {
-	var projectLocation = trimPathAfterLastSlash(projectPath)
-	var prevProjectName = trimPathBeforeLastSlash(projectPath, true) + "_previous"
-	var isFound, _ = searchForFilePath(projectLocation, projectLocation+prevProjectName)
+	var projectLocation = trimPathAfterLastSlash(projectPath) //get project location
+	var prevProjectPath = projectPath + "_previous"
+	var isFound, _ = searchForFilePath(projectLocation, trimPathBeforeLastSlash(prevProjectPath, false)) //look for a prevProject from project locaation where the project and prevProject should be store
+	println("GOT: ", prevProjectPath)
 	if isFound { //if clonedProject already exist, delete it and create a new clone
-		print("Deleting ", prevProjectName, ". ")
-		deleteAllFiles(projectLocation + prevProjectName)
+		print("Deleting ", trimPathBeforeLastSlash(prevProjectPath, false), ". ")
+		deleteAllFiles(prevProjectPath)
 	}
-	print("Creating ", prevProjectName, ".\n")
-	copy.CopyDir(projectPath, projectLocation+prevProjectName) //clones project in the same place where the project exist"
+	print("Creating ", trimPathBeforeLastSlash(prevProjectPath, false), ".\n")
+	copy.CopyDir(projectPath, prevProjectPath) //clones project in the same place where the project exist"
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
