@@ -45,47 +45,47 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 
 <a name="languagesSupported"></a>
 ## Languages Currently Supported
-| Language                                                   	| Xcode Key    	| Google Key  	|
-|------------------------------------------------------------	| --------------| -------------	|
-| English                                                    	| en           	| en          	|
-| English (Australia)                                        	| en-AU        	| en          	|
-| English (India)                                            	| en-IN        	| en          	|
-|  English (United Kingdom)                                  	| en-GB        	| en-GB       	|
-| Filipino                                                   	| fil          	| tl          	|
-| Filipino (Philippines)                                     	| fil-PH       	| tl          	|
-| Spanish                                                    	| es           	| es          	|
-| Spanish (Latin-America)                                    	| es-419.lproj 	| es          	|
-| French                                                     	| fr           	| fr          	|
-| French (Canada)                                            	| fr-CA        	| fr          	|
-| Chinese, Simplified [Mandarin @ Mainland China, Singapore] 	| zh-Hans      	| zh-CN *or* zh |
-| Chinese, Traditional [Mandarin @ Taiwan]                   	| zh-Hant      	| zh-TW       	|
-| Chinese (Hong Kong) [Cantonese @ Hong Kong]                	| zh-HK        	| zh-CN *or* zh |
-| Japanese                                                   	| ja           	| ja          	|
-| Germany                                                    	| de           	| de          	|
-| Russian                                                    	| ru           	| ru          	|
-| Portugese (Portugal)                                       	| pt-PT        	| pt-PT       	|
-| Portugese (Brazil)                                         	| pt-BR        	| pt-BR       	|
-| Italian                                                    	| it           	| it          	|
-| Korean                                                     	| ko           	| ko          	|
-| Arabic                                                     	| ar           	| ar          	|
-| Turkish                                                    	| tr           	| tr          	|
-| Thailand                                                   	| th           	| th          	|
-| Dutch                                                      	| nl           	| nl          	|
-| Swedish                                                    	| sv           	| sv          	|
-| Danish                                                     	| da           	| da          	|
-| Vietnamese                                                 	| vi           	| vi          	|
-| Norgwegian                                                 	| nb           	| nb          	|
-| Polish                                                     	| pl           	| pl          	|
-| Finnish                                                    	| fi           	| fi          	|
-| Indonesian                                                 	| id           	| id          	|
-| Hebrew                                                     	| he           	| he or iw    	|
-| Greek                                                      	| el           	| el          	|
-| Romanian                                                   	| ro           	| ro          	|
-| Hungarian                                                  	| hu           	| hu          	|
-| Czech                                                      	| cs           	| cs          	|
-| Catalan                                                    	| ca           	| ca          	|
-| Slovak                                                     	| sk           	| sk          	|
-| Ukranian                                                   	| uk           	| uk          	|
-| Croatian                                                   	| hr           	| hr          	|
-| Malay                                                      	| ms           	| ms          	|
-| Hindi                                                      	| hi           	| hi          	|
+| Language                                                   	| Xcode```.lproj``` Key 	| Google Key  	|
+|------------------------------------------------------------	|-----------------------	|-------------	|
+| English                                                    	| en.lproj              	| en          	|
+| English (Australia)                                        	| en-AU.lproj           	| en          	|
+| English (India)                                            	| en-IN.lproj           	| en          	|
+| English (United Kingdom)                                   	| en-GB.lproj           	| en-GB       	|
+| Filipino                                                   	| fil.lproj             	| tl          	|
+| Filipino (Philippines)                                     	| fil-PH.lproj          	| tl          	|
+| Spanish                                                    	| es.lproj              	| es          	|
+| Spanish (Latin-America)                                    	| es-419.lproj          	| es          	|
+| French                                                     	| fr.lproj              	| fr          	|
+| French (Canada)                                            	| fr-CA.lproj           	| fr          	|
+| Chinese, Simplified [Mandarin @ Mainland China, Singapore] 	| zh-Hans.lproj         	| zh-CN or zh 	|
+| Chinese, Traditional [Mandarin @ Taiwan]                   	| zh-Hant.lproj         	| zh-TW       	|
+| Chinese (Hong Kong) [Cantonese @ Hong Kong]                	| zh-HK.lproj           	| zh-CN or zh 	|
+| Japanese                                                   	| ja.lproj              	| ja          	|
+| Germany                                                    	| de.lproj              	| de          	|
+| Russian                                                    	| ru.lproj              	| ru          	|
+| Portugese (Portugal)                                       	| pt-PT.lproj           	| pt-PT       	|
+| Portugese (Brazil)                                         	| pt-BR.lproj           	| pt-BR       	|
+| Italian                                                    	| it.lproj              	| it          	|
+| Korean                                                     	| ko.lproj              	| ko          	|
+| Arabic                                                     	| ar.lproj              	| ar          	|
+| Turkish                                                    	| tr.lproj              	| tr          	|
+| Thailand                                                   	| th.lproj              	| th          	|
+| Dutch                                                      	| nl.lproj              	| nl          	|
+| Swedish                                                    	| sv.lproj              	| sv          	|
+| Danish                                                     	| da.lproj              	| da          	|
+| Vietnamese                                                 	| vi.lproj              	| vi          	|
+| Norgwegian                                                 	| nb.lproj              	| nb          	|
+| Polish                                                     	| pl.lproj              	| pl          	|
+| Finnish                                                    	| fi.lproj              	| fi          	|
+| Indonesian                                                 	| id.lproj              	| id          	|
+| Hebrew                                                     	| he.lproj              	| he or iw    	|
+| Greek                                                      	| el.lproj              	| el          	|
+| Romanian                                                   	| ro.lproj              	| ro          	|
+| Hungarian                                                  	| hu.lproj              	| hu          	|
+| Czech                                                      	| cs.lproj              	| cs          	|
+| Catalan                                                    	| ca.lproj              	| ca          	|
+| Slovak                                                     	| sk.lproj              	| sk          	|
+| Ukranian                                                   	| uk.lproj              	| uk          	|
+| Croatian                                                   	| hr.lproj              	| hr          	|
+| Malay                                                      	| ms.lproj              	| ms          	|
+| Hindi                                                      	| hi.lproj              	| hi          	|
