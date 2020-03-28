@@ -29,7 +29,7 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/mediumImages/createStrings.png" width="900" height="327">
 
 - [ ] To support more languages, go to Project -> Info -> Localizations -> ```+``` like the demo below
-<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="478" height="238">
+<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="900" height="591">
 
 <a name="feature3"></a>
 ### FEATURE 3: String Translation
