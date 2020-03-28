@@ -26,10 +26,14 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 <a name="feature2"></a>
 ### FEATURE 2: Strings Localization
 - [ ] Create a ```Localizable.strings``` file. In your project, New File -> String File -> Name it ```Localizable``` __exactly__
-    <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/mediumImages/createStrings.png" width="750" height="273">
+    <p align="center">
+        <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/mediumImages/createStrings.png" width="750" height="273">
+    </p>
 
 - [ ] To support more languages, go to Project -> Info -> Localizations -> ```+``` like the demo below
-<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="750" height="493">
+<p align="center">
+  <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="750" height="493">
+</p>
 
 <a name="feature3"></a>
 ### FEATURE 3: String Translation
