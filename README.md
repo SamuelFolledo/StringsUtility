@@ -55,10 +55,10 @@ Swift utility written in [Go](https://golang.org/) which automates boring [strin
   ```
 
 #### Setup Google Cloud Translator: [Basic Setup Instruction](https://cloud.google.com/translate/docs/basic/setup-basic)
--  Create or select a project
--  Enable the Cloud Translation API for this project
+-  [Set up a Cloud Console project](https://cloud.google.com/translate/docs/basic/setup-basic)
+-  Enable the Cloud Translation API for this project //optional
 -  Download a private key as JSON
--  Go to [Project's Console](https://console.cloud.google.com/)
+-  Go to [Project's Console](https://console.cloud.google.com/) //optional
 -  While inside StringsUtility, run in terminal
   ```
   $ go get -u cloud.google.com/go/translate
