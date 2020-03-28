@@ -27,10 +27,11 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     - [ ] ```go get -u cloud.google.com/go/translate```
     - [ ] ```export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"```
 
+
 ## Languages Currently Supported
 
 | Language                                                   	| Xcode Key    	| Google Key  	|
-|:----------------------------------------------------------	:|: --------------	:|: -------------	:|
+|------------------------------------------------------------	| --------------| -------------	|
 | English                                                    	| en           	| en          	|
 | English (Australia)                                        	| en-AU        	| en          	|
 | English (India)                                            	| en-IN        	| en          	|
