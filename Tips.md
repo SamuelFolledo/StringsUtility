@@ -12,7 +12,7 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 
 <a name="tips"></a>
 ## Tips:
-- Currently does not support multi-line strings
+- StringsUtility currently does not support multi-line strings ```""" """``` and strings from ```.storyboard``` and ```.xib``` files
 - To avoid common errors, strings which contains the following will substrings not be put to the constant file or translated. Edit files accordingly 
 ```"/", "\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"```
     - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
@@ -36,11 +36,11 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 - [ ] Have [Google Cloud Translation API](https://console.cloud.google.com/apis/library/translate.googleapis.com?q=translation&project=go-makesite&folder&organizationId) setup
 
 <a name="commonErrors"></a>
-## Common Errors
+## Common Error Fixes
 - ```dialing: google: could not find default credentials.```   
     - __Make sure you have done the following:__
     - [ ] ```go get -u cloud.google.com/go/translate```
-    - [ ] ```export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"```
+    - [ ] ```export GOOGLE_APPLICATION_CREDENTIALS=[PATH]```
 
 
 <a name="languagesSupported"></a>
