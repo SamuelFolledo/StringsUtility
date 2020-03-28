@@ -35,35 +35,35 @@ Swift utility written in [Go](https://golang.org/) which automates boring [strin
 
 ## How to Use?
 #### Download StringsUtility
-- [ ] clone the repo
+-  clone the repo
   ```
   $ git clone https://github.com/SamuelFolledo/StringsUtility
   ```
-- [ ] go to the project
+-  go to the project
   ```
   $ cd StringsUtility
   ```
 
 #### [Install Golang](https://sourabhbajaj.com/mac-setup/Go/README.html) with Homebrew:
-- [ ] Make sure HomeBrew is updated
+-  Make sure HomeBrew is updated
   ```
   $ brew update
   ```  
-- [ ] Install Go
+-  Install Go
   ```
   $ brew install golang
   ```
 
 #### Setup Google Cloud Translator: [Basic Setup Instruction](https://cloud.google.com/translate/docs/basic/setup-basic)
-- [ ] Create or select a project
-- [ ] Enable the Cloud Translation API for this project
-- [ ] Download a private key as JSON
-- [ ] Go to [Project's Console](https://console.cloud.google.com/)
-- [ ] While inside StringsUtility, run in terminal
+-  Create or select a project
+-  Enable the Cloud Translation API for this project
+-  Download a private key as JSON
+-  Go to [Project's Console](https://console.cloud.google.com/)
+-  While inside StringsUtility, run in terminal
   ```
   $ go get -u cloud.google.com/go/translate
   ```
-- [ ] __Important:__ Run this command __once__ each time the project starts to set the environment variable. Replace the ```[PATH]``` to the path of the ```.json``` file downloaded from setup 2 step 3. [Instructions](https://cloud.google.com/docs/authentication/production) for more info or for Windows setup
+-  __Important:__ Run this command __once__ each time the project starts to set the environment variable. Replace the ```[PATH]``` to the path of the ```.json``` file downloaded from setup 2 step 3. [Instructions](https://cloud.google.com/docs/authentication/production) for more info or for Windows setup
     ```
     export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"
     ```
@@ -84,7 +84,7 @@ For further details, tips, recommendations go to [Tips and Requirements](Tips.md
 
 
 ### Links
-- [MakeSchool's](makeschool.com)'s [BEW2.5: Patterns & Practices in Strongly Typed Languages](https://make-school-courses.github.io/BEW-2.5-Strongly-Typed-Languages/#/) - the only university that teaches Go
+- [MakeSchool](makeschool.com)'s [BEW2.5: Patterns & Practices in Strongly Typed Languages](https://make-school-courses.github.io/BEW-2.5-Strongly-Typed-Languages/#/) - the only university that teaches Go
 - [MakeUtility Requirements](https://github.com/Make-School-Courses/BEW-2.5-Strongly-Typed-Languages/blob/master/Project/MakeUtility.md)
 - [How to localized your iOS app](https://github.com/Make-School-Courses/BEW-2.5-Strongly-Typed-Languages/blob/master/Project/MakeUtility.md)
 - [Make School Spring Intensive 1.3](https://github.com/Make-School-Courses/INT-1.3-AND-INT-2.3-Spring-Intensive)
