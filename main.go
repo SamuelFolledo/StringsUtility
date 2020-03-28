@@ -76,7 +76,7 @@ var supportedLanguages = []Language{
 	Language{Name: "French", LProj: "fr.lproj", GoogleKey: "fr"},
 	Language{Name: "French (Canada)", LProj: "fr-CA.lproj", GoogleKey: "fr"},
 	Language{Name: "Chinese, Simplified", LProj: "zh-Hans.lproj", GoogleKey: "zh-CN"},
-	Language{Name: "Chinese, Traditional", LProj: "zh-Hant.lproj", GoogleKey: "zh-CN"},
+	Language{Name: "Chinese, Traditional", LProj: "zh-Hant.lproj", GoogleKey: "zh-TW"},
 	Language{Name: "Chinese (Hong Kong)", LProj: "zh-HK.lproj", GoogleKey: "zh-CN"},
 	Language{Name: "Japanese", LProj: "ja.lproj", GoogleKey: "ja"},
 	Language{Name: "Germany", LProj: "de.lproj", GoogleKey: "de"},
@@ -262,8 +262,7 @@ func cloneProject(projectPath string) {
 	var projectLocation = trimPathAfterLastSlash(projectPath) //get project location
 	var prevProjectPath = projectPath + "_previous"
 	var isFound, _ = searchForFilePath(projectLocation, trimPathBeforeLastSlash(prevProjectPath, false)) //look for a prevProject from project locaation where the project and prevProject should be store
-	println("GOT: ", prevProjectPath)
-	if isFound { //if clonedProject already exist, delete it and create a new clone
+	if isFound {                                                                                         //if clonedProject already exist, delete it and create a new clone
 		print("Deleting ", trimPathBeforeLastSlash(prevProjectPath, false), ". ")
 		deleteAllFiles(prevProjectPath)
 	}

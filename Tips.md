@@ -27,3 +27,4 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     - [ ] ```go get -u cloud.google.com/go/translate```
     - [ ] ```export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"```
 
+## Languages Supported  
