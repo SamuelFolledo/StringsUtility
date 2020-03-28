@@ -1,16 +1,29 @@
 # StringsUtility Project Recommendations
 Project tips in order to make StringsUtility as effective and error-free as possible.
 
+## Table Of Contents:
+1. [Tips](#tips)
+2. [Requirements](#requirements)
+    - [Feature 1](#feature1)
+    - [Feature 2](#feature2)
+    - [Feature 3](#feature3)
+3. [Common Errors](#commonErrors)
+4. [Languages Supported](#languagesSupported)
+
+<a name="tips"></a>
 ## Tips:
 - Currently does not support multi-line strings
 - To avoid common errors, strings which contains the following will substrings not be put to the constant file or translated. Edit files accordingly 
 ```"/", "\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"```
     - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
 
+<a name="requirements"></a>
 ## Requirements
+<a name="feature1"></a>
 ### FEATURE 1: Moving Strings to Constant file
 - [ ] Have at least __1 constants file__ (e.g. ```Constants.swift```) in your project for the strings to get stored into.
 
+<a name="feature2"></a>
 ### FEATURE 2: Strings Localization
 - [ ] Create a ```Localizable.strings``` file. In your project, New File -> String File -> Name it ```Localizable``` __exactly__
     <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/localizableFile.png" width="369" height="265">
@@ -18,9 +31,11 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 - [ ] To support more languages, go to Project -> Info -> Localizations -> ```+``` like the demo below
 <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="478" height="238">
 
+<a name="feature3"></a>
 ### FEATURE 3: String Translation
 - [ ] Have [Google Cloud Translation API](https://console.cloud.google.com/apis/library/translate.googleapis.com?q=translation&project=go-makesite&folder&organizationId) setup
 
+<a name="commonErrors"></a>
 ## Common Errors
 - ```dialing: google: could not find default credentials.```   
     - __Make sure you have done the following:__
@@ -28,8 +43,8 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     - [ ] ```export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"```
 
 
+<a name="languagesSupported"></a>
 ## Languages Currently Supported
-
 | Language                                                   	| Xcode Key    	| Google Key  	|
 |------------------------------------------------------------	| --------------| -------------	|
 | English                                                    	| en           	| en          	|
