@@ -106,7 +106,7 @@ var supportedLanguages = []Language{
 	Language{Name: "Ukranian", LProj: "uk.lproj", GoogleKey: "uk"},
 	Language{Name: "Croatian", LProj: "hr.lproj", GoogleKey: "hr"},
 	Language{Name: "Malay", LProj: "ms.lproj", GoogleKey: "ms"},
-	Language{Name: "Hindi", LProj: "hi.lproj", GoogleKey: ""},
+	Language{Name: "Hindi", LProj: "hi.lproj", GoogleKey: "hi"},
 }
 
 func main() {
