@@ -96,7 +96,7 @@ var supportedLanguages = []Language{
 	Language{Name: "Polish", LProj: "pl.lproj", GoogleKey: "pl"},
 	Language{Name: "Finnish", LProj: "fi.lproj", GoogleKey: "fi"},
 	Language{Name: "Indonesian", LProj: "id.lproj", GoogleKey: "id"},
-	Language{Name: "Hebrew", LProj: "he.lproj", GoogleKey: "iw"},
+	Language{Name: "Hebrew", LProj: "he.lproj", GoogleKey: "he"},
 	Language{Name: "Greek", LProj: "el.lproj", GoogleKey: "el"},
 	Language{Name: "Romanian", LProj: "ro.lproj", GoogleKey: "ro"},
 	Language{Name: "Hungarian", LProj: "hu.lproj", GoogleKey: "hu"},
