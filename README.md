@@ -16,9 +16,9 @@
 </p>
 
 Swift utility written in [Go](https://golang.org/) which automates boring [strings](https://developer.apple.com/documentation/swift/string) tasks like:
-- <u>__Feature 1: Constantify Strings__</u> Creating global constant variables from all .swift files to a constant file
-- <u>__Feature 2: Localize Strings__</u> Transform all valid translatable strings as [NSLocalizedString](https://developer.apple.com/documentation/foundation/nslocalizedstring) and copies them to all ```Localizable.strings``` file and avoiding duplicating strings for you.
-- <u>__Feature 3: Translate Strings__</u> Uses [Google Cloud Translator API](https://cloud.google.com/translate/docs) to automatically translate strings in all ```Localizable.strings```, allowing all iOS, MacOS, etc apps support multiple languages in a matter of seconds.
+- <ins>__Feature 1: Constantify Strings__</ins> Creating global constant variables from all .swift files to a constant file
+- <ins>__Feature 2: Localize Strings__</ins> Transform all valid translatable strings as [NSLocalizedString](https://developer.apple.com/documentation/foundation/nslocalizedstring) and copies them to all ```Localizable.strings``` file and avoiding duplicating strings for you.
+- <ins>__Feature 3: Translate Strings__</ins> Uses [Google Cloud Translator API](https://cloud.google.com/translate/docs) to automatically translate strings in all ```Localizable.strings```, allowing all iOS, MacOS, etc apps support multiple languages in a matter of seconds.
 
 ## Why Use?
 - Avoid unintended typos
