@@ -15,16 +15,16 @@
   </a>
 </p>
 
-Swift utility written in [Go](https://golang.org/) that does the following:
-- __Feature 1:__ Moves all strings from a .swift files to a constant file 
-- __Feature 2:__ Moves all valid translatable strings to a Localizable.strings file and 
-- __Feature 3:__ Use [Google Cloud Translator API](https://cloud.google.com/translate/docs) to automatically translate strings in all ```Localizable.strings```, allowing all iOS, MacOS, etc apps support multiple languages in a matter of seconds
+Swift utility written in [Go](https://golang.org/) which automates boring [strings](https://developer.apple.com/documentation/swift/string) tasks like:
+- __Feature 1: Constantify Strings__ Creating global constant variables from all .swift files to a constant file
+- __Feature 2: Localize Strings__ Transform all valid translatable strings as [NSLocalizedString](https://developer.apple.com/documentation/foundation/nslocalizedstring) and copies them to all ```Localizable.strings``` file and avoiding duplicating strings for you.
+- __Feature 3: Translate Strings__ Uses [Google Cloud Translator API](https://cloud.google.com/translate/docs) to automatically translate strings in all ```Localizable.strings```, allowing all iOS, MacOS, etc apps support multiple languages in a matter of seconds.
 
 ## Why Use?
 - Avoid unintended typos
 - Have strings autocompleted
-- Auto generate strings ```Localizable.strings```
 - Easily manage all your strings in one file
+- Auto generate strings ```Localizable.strings``` and avoid duplicate strings
 - Automatically translate all strings in ```Localizable.strings```
 
 ## [Tips](Tips.md):
@@ -32,9 +32,6 @@ Swift utility written in [Go](https://golang.org/) that does the following:
 - To avoid common errors, strings which contains the following will substrings not be put to the constant file or translated. Edit files accordingly 
 ```"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"```
     - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
-
-## Upcoming Features
-- searches and translates strings from .xib and .storyboard files
 
 ## How to Use?
 #### Download StringsUtility

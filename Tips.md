@@ -18,7 +18,7 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
 
 <a name="requirements"></a>
-## Requirements
+## Requirements Checklists
 <a name="feature1"></a>
 ### FEATURE 1: Moving Strings to Constant file
 - [ ] Have at least __1 constants file__ (e.g. ```Constants.swift```) in your project for the strings to get stored into.
@@ -30,7 +30,7 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/pics/mediumImages/createStrings.png" width="750" height="273">
 </p>
 
-- [ ] To support more languages, go to Project -> Info -> Localizations -> ```+``` like the demo below
+- [ ] To support more languages, go to Project -> Info -> Localizations -> ```+``` and add all the languages you want to support like the demo below
 <p align="center">
   <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/multipleLocalizable.gif" width="750" height="493">
 </p>
