@@ -42,9 +42,9 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 | Spanish (Latin-America)                                    	| es-419.lproj 	| es          	|
 | French                                                     	| fr           	| fr          	|
 | French (Canada)                                            	| fr-CA        	| fr          	|
-| Chinese, Simplified [Mandarin @ Mainland China, Singapore] 	| zh-Hans      	| zh-CN or zh 	|
+| Chinese, Simplified [Mandarin @ Mainland China, Singapore] 	| zh-Hans      	| zh-CN *or* zh |
 | Chinese, Traditional [Mandarin @ Taiwan]                   	| zh-Hant      	| zh-TW       	|
-| Chinese (Hong Kong) [Cantonese @ Hong Kong]                	| zh-HK        	| zh-CN or zh 	|
+| Chinese (Hong Kong) [Cantonese @ Hong Kong]                	| zh-HK        	| zh-CN *or* zh |
 | Japanese                                                   	| ja           	| ja          	|
 | Germany                                                    	| de           	| de          	|
 | Russian                                                    	| ru           	| ru          	|
