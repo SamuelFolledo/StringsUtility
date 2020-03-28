@@ -27,4 +27,49 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     - [ ] ```go get -u cloud.google.com/go/translate```
     - [ ] ```export GOOGLE_APPLICATION_CREDENTIALS="[PATH]"```
 
-## Languages Supported  
+## Languages Currently Supported
+
+| Language                                                   	| Xcode Key    	| Google Key  	|
+|:----------------------------------------------------------	:|: --------------	:|: -------------	:|
+| English                                                    	| en           	| en          	|
+| English (Australia)                                        	| en-AU        	| en          	|
+| English (India)                                            	| en-IN        	| en          	|
+|  English (United Kingdom)                                  	| en-GB        	| en-GB       	|
+| Filipino                                                   	| fil          	| tl          	|
+| Filipino (Philippines)                                     	| fil-PH       	| tl          	|
+| Spanish                                                    	| es           	| es          	|
+| Spanish (Latin-America)                                    	| es-419.lproj 	| es          	|
+| French                                                     	| fr           	| fr          	|
+| French (Canada)                                            	| fr-CA        	| fr          	|
+| Chinese, Simplified [Mandarin @ Mainland China, Singapore] 	| zh-Hans      	| zh-CN or zh 	|
+| Chinese, Traditional [Mandarin @ Taiwan]                   	| zh-Hant      	| zh-TW       	|
+| Chinese (Hong Kong) [Cantonese @ Hong Kong]                	| zh-HK        	| zh-CN or zh 	|
+| Japanese                                                   	| ja           	| ja          	|
+| Germany                                                    	| de           	| de          	|
+| Russian                                                    	| ru           	| ru          	|
+| Portugese (Portugal)                                       	| pt-PT        	| pt-PT       	|
+| Portugese (Brazil)                                         	| pt-BR        	| pt-BR       	|
+| Italian                                                    	| it           	| it          	|
+| Korean                                                     	| ko           	| ko          	|
+| Arabic                                                     	| ar           	| ar          	|
+| Turkish                                                    	| tr           	| tr          	|
+| Thailand                                                   	| th           	| th          	|
+| Dutch                                                      	| nl           	| nl          	|
+| Swedish                                                    	| sv           	| sv          	|
+| Danish                                                     	| da           	| da          	|
+| Vietnamese                                                 	| vi           	| vi          	|
+| Norgwegian                                                 	| nb           	| nb          	|
+| Polish                                                     	| pl           	| pl          	|
+| Finnish                                                    	| fi           	| fi          	|
+| Indonesian                                                 	| id           	| id          	|
+| Hebrew                                                     	| he           	| he or iw    	|
+| Greek                                                      	| el           	| el          	|
+| Romanian                                                   	| ro           	| ro          	|
+| Hungarian                                                  	| hu           	| hu          	|
+| Czech                                                      	| cs           	| cs          	|
+| Catalan                                                    	| ca           	| ca          	|
+| Slovak                                                     	| sk           	| sk          	|
+| Ukranian                                                   	| uk           	| uk          	|
+| Croatian                                                   	| hr           	| hr          	|
+| Malay                                                      	| ms           	| ms          	|
+| Hindi                                                      	| hi           	| hi          	|
