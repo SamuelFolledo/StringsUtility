@@ -134,7 +134,9 @@ func main() {
 	//9) Prompt to undo by copying contents from the cloned project
 	promptToUndo(projectPath+"_previous", projectPath)
 	//10) Prompt to delete the previous project
-	// promptToDeletePrevProject(projectPath + "_previous") //uncomment if you want to be prompted to delete previous project
+	promptToDeletePrevProject(projectPath + "_previous") //uncomment if you want to be prompted to delete previous project
+	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
+	color.Bold.Print("\n\nThank you for using StringsUtility by Samuel P. Folledo.\n")
 }
 
 //Loop through each files and look for each strings in each lines
@@ -630,14 +632,19 @@ func promptToUndo(srcPath, destPath string) {
 
 //takes a previous project's path and deletes it if user wants to
 func promptToDeletePrevProject(prevProjPath string) {
-	var shouldUndo = askBooleanQuestion(false, "QUESTION: Delete the cloned previous version of the project?")
-	if shouldUndo {
+	// var shouldUndo = askBooleanQuestion(false, "QUESTION: Delete the cloned previous version of the project?")
+	// if shouldUndo {
+	// 	deleteAllFiles(prevProjPath)
+	// 	color.Style{color.Green}.Print("\nFinished deleting\n")
+	// }
+	var projectLocation = trimPathAfterLastSlash(prevProjPath)                                        //get project location
+	var isFound, _ = searchForFilePath(projectLocation, trimPathBeforeLastSlash(prevProjPath, false)) //look for a prevProject from project locaation where the project and prevProject should be store
+	// print("\n")
+	if isFound { //if clonedProject already exist, delete it and create a new clone
+		// color.Style{color.Red}.Print("Deleting ", trimPathBeforeLastSlash(prevProjPath, false), "... ")
 		deleteAllFiles(prevProjPath)
-		color.Style{color.Green}.Print("\nFinished deleting\n")
+		// color.Style{color.Red, color.Bold}.Print("Deleted. ")
 	}
-	fmt.Print("\n" + kCONSTANTDASHES + "\n")
-	fmt.Print("\nFor feedbacks and issues:\n• create an issue at https://github.com/SamuelFolledo/StringsUtility/issues/new\n• or email: samuelfolledo@gmail.com")
-	color.Bold.Print("\n\nThank you for using StringsUtility by Samuel P. Folledo.\n")
 }
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
