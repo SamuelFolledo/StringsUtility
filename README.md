@@ -63,7 +63,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
   ```
   $ go get -u cloud.google.com/go/translate
   ```
--  __Important:__ Run this command __once__ each time the project starts to set the environment variable. Replace the ```[PATH]``` to the path of the ```.json``` file downloaded from setup 2 step 3. [Instructions](https://cloud.google.com/docs/authentication/production) for more info or for Windows setup
+-  __Important:__ Run this command __once__ each fresh terminal. Replace the ```[PATH]``` to the path of the ```.json``` file downloaded from setup 2 step 3. [Instructions](https://cloud.google.com/docs/authentication/production) for more info or for Windows setup
     ```
     export GOOGLE_APPLICATION_CREDENTIALS=[PATH]
     ```
@@ -75,13 +75,13 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
 For further details, tips, recommendations go to [Tips and Requirements](Tips.md)
 
 ### Run StringsUtility
-- run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
+- run the program locally replacing ```[PATH_TO_YOUR_PROJECT]``` with your project directory
   ```
   $ go build && go run main.go -dir=[PATH_TO_YOUR_PROJECT]
   ``` 
   For example:
   ```
-  go build && go run main.go -dir=**/Users/macbookpro15/Desktop/StringsUtilityTester**
+  go build && go run main.go -dir=/Users/macbookpro15/Desktop/StringsUtilityTester
   ```
 
 ### Links
