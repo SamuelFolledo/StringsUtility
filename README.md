@@ -81,7 +81,7 @@ For further details, tips, recommendations go to [Tips and Requirements](Tips.md
   ``` 
   For example:
   ```
-  go build && go run main.go -dir=**/Users/macbookpro15/Desktop/StringsUtilityTester **
+  go build && go run main.go -dir=**/Users/macbookpro15/Desktop/StringsUtilityTester**
   ```
 
 ### Links
