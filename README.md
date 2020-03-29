@@ -27,8 +27,8 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
 - Auto generate strings ```Localizable.strings``` and avoid duplicate strings
 - Automatically translate all strings in ```Localizable.strings```
 
-## Demo
-<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/StringsUtilityLiveDemo.gif" width="900" height="506">
+## Live Demo
+<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/StringsUtilityLiveDemo.gif" width="750" height="422">
 
 ## [Tips and Requirements](Tips.md):
 - Currently does not support multi line strings
