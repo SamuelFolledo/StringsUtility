@@ -243,12 +243,12 @@ func isValidString(str string) bool {
 	return true
 }
 
-//checks if string is a valid string to be put in constant or translated
+//checks if string is a valid string to be translated
 func isTranslatableString(str string) bool {
 	if len(strings.TrimSpace(str)) <= 2 { //if there is nothing in string other than "", then it is invalid string
 		return false
 	}
-	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", "gif", "identifier", "json_", "dic_"} //these strings are not allowed in a string to be put in constant or translated
+	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", ".swift", ".xib", ".storyboard", "jpg", "jpeg", "png", "mp4", "mp3", "wav", "mov", "gif", "identifier", "_"} //these strings are not allowed in a string to be put in constant or translated
 	for _, subStr := range invalidSubstrings {
 		if strings.Contains(strings.ToLower(str), subStr) { //if lowerCased(str) contains invalid substring, then str is invalid
 			return false
