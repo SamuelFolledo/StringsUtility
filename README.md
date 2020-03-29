@@ -34,7 +34,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [strin
     - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
 
 ## How to Use?
-#### Download StringsUtility
+### Download StringsUtility
 -  clone the repo
   ```
   $ git clone https://github.com/SamuelFolledo/StringsUtility
@@ -44,7 +44,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [strin
   $ cd StringsUtility
   ```
 
-#### [Install Golang](https://sourabhbajaj.com/mac-setup/Go/README.html) with Homebrew:
+### [Install Golang](https://sourabhbajaj.com/mac-setup/Go/README.html) with Homebrew:
 -  Make sure HomeBrew is updated
   ```
   $ brew update
@@ -54,7 +54,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [strin
   $ brew install golang
   ```
 
-#### Setup Google Cloud Translator: [Basic Setup Instruction](https://cloud.google.com/translate/docs/basic/setup-basic)
+### Setup Google Cloud Translator: [Basic Setup Instruction](https://cloud.google.com/translate/docs/basic/setup-basic)
 -  [Set up a Cloud Console project](https://cloud.google.com/translate/docs/basic/setup-basic)
 -  Enable the Cloud Translation API for this project //optional
 -  Download a private key as JSON
@@ -74,7 +74,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [strin
 
 For further details, tips, recommendations go to [Tips and Requirements](Tips.md)
 
-#### Run StringsUtility
+### Run StringsUtility
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
   ```
   $ go build && go run main.go -dir=PATH_TO_YOUR_PROJECT
