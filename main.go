@@ -115,12 +115,10 @@ func main() {
 	fmt.Print("\n" + kCONSTANTDASHES)
 	color.Bold.Print("\n\n\nThank you for using Strings Utility. Our priority is to not cause any error to your project. If you see any errors, please send me an email at samuelfolledo@gmail.com or create an issue at github.com/SamuelFolledo/StringsUtility\n\n\n")
 	fmt.Print(kCONSTANTDASHES, "\n")
-	//2) Prompt fresh commit
+	//2) Prompt to commit before StringsUtility apply any changes
 	promptCommitAnyChanges()
 	//3) Clone project
 	cloneProject(projectPath)
-	color.Style{color.Green}.Print("Finished cloning " + trimPathBeforeLastSlash(projectPath, false) + ". StringsUtility is ready to make changes.")
-	fmt.Print("\n\n"+kCONSTANTDASHES, "\n")
 	// fmt.Print("Finished cloning "+trimPathBeforeLastSlash(projectPath, false)+". StringsUtility is ready to make changes.\n\n"+kCONSTANTDASHES, "\n")
 	//4 Initialize project
 	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
@@ -266,11 +264,16 @@ func cloneProject(projectPath string) {
 	var isFound, _ = searchForFilePath(projectLocation, trimPathBeforeLastSlash(prevProjectPath, false)) //look for a prevProject from project locaation where the project and prevProject should be store
 	print("\n")
 	if isFound { //if clonedProject already exist, delete it and create a new clone
-		print("Deleting ", trimPathBeforeLastSlash(prevProjectPath, false), ". ")
+		color.Style{color.Red}.Print("Deleting ", trimPathBeforeLastSlash(prevProjectPath, false), "... ")
 		deleteAllFiles(prevProjectPath)
+		color.Style{color.Red, color.Bold}.Print("Deleted. ")
+
 	}
-	print("Creating ", trimPathBeforeLastSlash(prevProjectPath, false), ".\n")
+	print("Cloning ", trimPathBeforeLastSlash(projectPath, false), ".\n")
 	copy.CopyDir(projectPath, prevProjectPath) //clones project in the same place where the project exist"
+	color.Style{color.Green}.Print(trimPathBeforeLastSlash(prevProjectPath, false) + " created at " + projectLocation + ". ")
+	color.Style{color.Bold}.Print("StringsUtility is now ready to make changes.")
+	fmt.Print("\n\n"+kCONSTANTDASHES, "\n")
 }
 
 //writes constant variable to our Constants file it doesn't exist yet
@@ -282,8 +285,8 @@ func updateConstantsFile(constant ConstantVariable, constantPath string) {
 
 //search for Constant file, if it doesn't exist, create a new one
 func setupConstantFile(path string, project Project) Project {
-	//1. Make sure we have a Constant file
-	var isFound, filePath = searchForSwiftFile(path, "Constant", false) //search for any files containing Constant
+	//Make sure we have a Constant file
+	var isFound, filePath = searchForFile(path, "Constant", false) //search for any files containing Constant
 	var constantFile = File{}
 	if isFound { //if a Constant file originally exist...
 		constantFile.Name = trimPathBeforeLastSlash(filePath, false) //get file name from path
@@ -300,10 +303,9 @@ func setupConstantFile(path string, project Project) Project {
 func createNewConstantFile(path string) (constant File) {
 	var fileNameToSearch = "AppDelegate.swift"
 	constant.Name = "Constants.swift"
-	var isFound, filePath = searchForSwiftFile(path, fileNameToSearch, true) //get AppDelegate's path
-	if isFound {                                                             //if AppDelegate is found, create our Constants.swift in this directory
+	var isFound, filePath = searchForFile(path, fileNameToSearch, true) //get AppDelegate's path
+	if isFound {                                                        //if AppDelegate is found, create our Constants.swift in this directory
 		var trimmedPath = trimPathAfterLastSlash(filePath)
-		// print(filePath, " trimmed is=", trimmedPath)
 		constant.Path = trimmedPath + "/" + constant.Name                                               //remove AppDelegate.swift from the path which will be used to write our Constant file into
 		writeToFile(constant.Path, "//Thank you for using Samuel Folledo's Go Utility\n\nimport UIKit") //NOTE: writing to xcode project doesn't automatically add the Constant.swift file to the project
 	} else {
@@ -313,7 +315,7 @@ func createNewConstantFile(path string) (constant File) {
 }
 
 //Search a path until it finds a path that contains a fileName we are searching for. isExactName will determine if fileName must exactly match or must contain only
-func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFound bool, filePath string) {
+func searchForFile(path, fileNameToSearch string, isExactName bool) (isFound bool, filePath string) {
 	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
@@ -325,9 +327,49 @@ func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFoun
 				continue
 			}
 			var prevPath = path
-			path = path + "/" + fileName                                                //update directory path by adding /fileName
-			isFound, filePath = searchForSwiftFile(path, fileNameToSearch, isExactName) //recursively call this function again
-			if isFound {                                                                //if we found it then keep returning
+			path = path + "/" + fileName                                           //update directory path by adding /fileName
+			isFound, filePath = searchForFile(path, fileNameToSearch, isExactName) //recursively call this function again
+			if isFound {                                                           //if we found it then keep returning
+				return
+			}
+			path = prevPath //if not found, go to next directory, but update our path
+		}
+		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
+		if fileExtension == ".swift" || fileExtension == ".strings" { //if file is a .swift file
+			// fmt.Println("Searching for: ", fileNameToSearch, " === ", fileName)
+			filePath = path + "/" + fileName //path of file
+			if isExactName {                 //if we want the exact fileName...
+				if fileName == fileNameToSearch {
+					isFound = true
+					return
+				}
+			} else { //if we want fileName to only contain
+				if strings.Contains(fileName, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+					isFound = true
+					return
+				}
+			}
+		}
+	}
+	return
+}
+
+//returns
+func searchForPath(path, filePathToSearch string) (isFound bool, filePath string) {
+	files, err := ioutil.ReadDir(path) //ReadDir returns a slice of FileInfo structs
+	if isError(err) {
+		return
+	}
+	for _, file := range files { //loop through each files and directories
+		var fileName = file.Name()
+		if file.IsDir() { //skip if file is directory
+			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
+				continue
+			}
+			var prevPath = path
+			path = path + "/" + fileName                              //update directory path by adding /fileName
+			isFound, filePath = searchForPath(path, filePathToSearch) //recursively call this function again
+			if isFound {                                              //if we found it then keep returning
 				return
 			}
 			path = prevPath //if not found, go to next directory, but update our path
@@ -335,18 +377,10 @@ func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFoun
 		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
 		if fileExtension == ".swift" || fileExtension == ".strings" { //if file is a .swift file
 			filePath = path + "/" + fileName //path of file
-			if isExactName {                 //if we want the exact fileName...
-				if fileName == fileNameToSearch {
-					// fmt.Println("Searched and EXACTLY found ", fileNameToSearch, " at ", filePath)
-					isFound = true
-					return
-				}
-			} else { //if we want fileName to only contain
-				if strings.Contains(fileName, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
-					// fmt.Println("Searched and found ", fileNameToSearch, " CONTAINS at ", filePath)
-					isFound = true
-					return
-				}
+			fmt.Println("Searching for: ", filePathToSearch, " === ", filePath)
+			if filePath == filePathToSearch {
+				isFound = true
+				return
 			}
 		}
 	}
@@ -441,14 +475,18 @@ func searchForFilePath(path, fileNameToSearch string) (isFound bool, filePath st
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
 				continue
 			}
-			if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
-				isFound = true
-				return
-			}
+			// if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+			// 	isFound = true
+			// 	return
+			// }
 			var prevPath = path
 			path = path + "/" + fileName                                  //update directory path by adding /fileName
 			isFound, filePath = searchForFilePath(path, fileNameToSearch) //recursively call this function again
-			path = prevPath                                               //if not found, go to next directory, but update our path
+			if strings.Contains(filePath, fileNameToSearch) {             //if fileName contains name of file we are looking for... it means we found our file's path
+				isFound = true
+				return
+			}
+			path = prevPath //if not found, go to next directory, but update our path
 		}
 		filePath = path + "/" + fileName                  //path of file
 		if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
@@ -622,14 +660,15 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 		} else { //for each .swift and .strings file in previous project
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
 			if fileExtension == ".swift" || fileExtension == ".strings" { //only undo .swift and .strings files
-				prevProjPath = prevProjPath + "/" + fileName
-				var isFound, filePath = searchForSwiftFile(projPath, fileName, true) //search project for file with the same name as .swift file from previour version
-				if isFound {                                                         //if found... read both file's content
-					var prevContents = readFile(prevProjPath)
-					var currentContents = readFile(filePath)
-					if prevContents != currentContents { //if contents are not the same, replace project's file contents with the previous project's contents
+				var prevProjPathToSearch = trimPathBeforeLastSlash(prevProjPath, false) + "/" + fileName //get the path of a language file e.g. "en.lproj/Localize.strings"
+				prevProjPath = prevProjPath + "/" + fileName                                             //update the prevProjPath like always
+				var isFound, filePath = searchForFilePath(projPath, prevProjPathToSearch)                //search project for file with the same name as .swift file from previour version
+				if isFound {                                                                             //if found... read both file's content
+					var prevProjContents = readFile(prevProjPath)
+					var currentProjContents = readFile(filePath)
+					if prevProjContents != currentProjContents { //if contents are not the same, replace project's file contents with the previous project's contents
 						// fmt.Println("\nCopying contents of " + prevProjPath + " to " + filePath)
-						replaceFile(filePath, prevContents)
+						replaceFile(filePath, prevProjContents)
 					}
 				} else {
 					fmt.Print("Error: Failed to find ", fileName, " during undo. Please remove all changes using version control instead.\n")
