@@ -25,7 +25,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
   <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/StringsUtilityLiveDemo.gif" width="900" height="506">
 </p>
 
-## Why Use?
+### Why Use?
 - Avoid unintended typos
 - Have strings autocompleted
 - Easily manage all your strings in one file
