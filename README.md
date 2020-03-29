@@ -28,7 +28,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
 - Automatically translate all strings in ```Localizable.strings```
 
 ## Demo
-https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/StringsUtilityLiveDemo.gif
+<img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/StringsUtilityLiveDemo.gif" width="900" height="506">
 
 ## [Tips and Requirements](Tips.md):
 - Currently does not support multi line strings
