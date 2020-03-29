@@ -203,7 +203,7 @@ func getStringsFromLine(line string, shouldTranslate bool) (strArray []string) {
 					endIndex = i
 					var lineString = line[startIndex : endIndex+1] //line's string is in line's index from startIndex to endIndex+1
 					if shouldTranslate {                           //if for translating, check if string is translatable
-						if isTranslatableString(lineString) {
+						if isTranslatableString(lineString) { //append if translatable string
 							strArray = append(strArray, lineString)
 						}
 					} else { //if not for translating, check if string is valid
