@@ -118,8 +118,10 @@ func main() {
 	//2) Prompt fresh commit
 	promptCommitAnyChanges()
 	//3) Clone project
-	fmt.Print("\n\nFinished cloning "+trimPathBeforeLastSlash(projectPath, false)+". StringsUtility is ready to make changes\n\n"+kCONSTANTDASHES, "\n")
 	cloneProject(projectPath)
+	color.Style{color.Green}.Print("Finished cloning " + trimPathBeforeLastSlash(projectPath, false) + ". StringsUtility is ready to make changes.")
+	fmt.Print("\n\n"+kCONSTANTDASHES, "\n")
+	// fmt.Print("Finished cloning "+trimPathBeforeLastSlash(projectPath, false)+". StringsUtility is ready to make changes.\n\n"+kCONSTANTDASHES, "\n")
 	//4 Initialize project
 	var project = Project{Name: trimPathBeforeLastSlash(projectPath, true), Path: projectPath}
 	project = setupConstantFile(projectPath, project)
@@ -262,7 +264,8 @@ func cloneProject(projectPath string) {
 	var projectLocation = trimPathAfterLastSlash(projectPath) //get project location
 	var prevProjectPath = projectPath + "_previous"
 	var isFound, _ = searchForFilePath(projectLocation, trimPathBeforeLastSlash(prevProjectPath, false)) //look for a prevProject from project locaation where the project and prevProject should be store
-	if isFound {                                                                                         //if clonedProject already exist, delete it and create a new clone
+	print("\n")
+	if isFound { //if clonedProject already exist, delete it and create a new clone
 		print("Deleting ", trimPathBeforeLastSlash(prevProjectPath, false), ". ")
 		deleteAllFiles(prevProjectPath)
 	}
