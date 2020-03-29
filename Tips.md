@@ -11,11 +11,16 @@ Project tips in order to make StringsUtility as effective and error-free as poss
 4. [Supported Languages](#languagesSupported)
 
 <a name="tips"></a>
-## Tips:
+## Tips and Standards:
 - Currently does not support multi line strings
-- To avoid unnecessary translation, strings which contains substrings like file extensions, keywords, and symbols will not be translated. Edit files accordingly 
-    ```"/", "\\", "{", "}", "_", "#", "%", ".swift", ".xib", ".storyboard", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", ".gif", "http", "https", ".com", "identifier"```
-
+- To avoid unnecessary translation, strings which contains substrings like file extensions, keywords, and symbols **will not be translated**. Edit strings and files to follow these standards.
+  ```
+  "/", "\\", "{", "}", "_", "#", "%", ".swift", ".xib", ".storyboard", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", ".gif", "http", "https", ".com", "identifier"
+  ```
+- Strings like url, identifiers, and more which contains substrings like the following **will not be constantify**.
+  ```
+  "/", "\\", "{", "}", "http", "https", ".com", "#", "%", "identifier"
+  ```
 
 <a name="requirements"></a>
 ## Requirements Checklists
