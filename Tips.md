@@ -8,14 +8,14 @@ Project tips in order to make StringsUtility as effective and error-free as poss
     - [Feature 2](#feature2)
     - [Feature 3](#feature3)
 3. [Common Errors](#commonErrors)
-4. [Languages Supported](#languagesSupported)
+4. [Supported Languages](#languagesSupported)
 
 <a name="tips"></a>
 ## Tips:
-- StringsUtility currently does not support multi-line strings ```""" """``` and strings from ```.storyboard``` and ```.xib``` files
-- To avoid common errors, strings which contains the following will substrings not be put to the constant file or translated. Edit files accordingly 
-```"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", "gif", "identifier", "json_", "dic_"```
-    - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
+- Currently does not support multi line strings
+- To avoid unnecessary translation, strings which contains substrings like file extensions, keywords, and symbols will not be translated. Edit files accordingly 
+    ```"/", "\\", "{", "}", "_", "#", "%", ".swift", ".xib", ".storyboard", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", ".gif", "http", "https", ".com", "identifier"```
+
 
 <a name="requirements"></a>
 ## Requirements Checklists

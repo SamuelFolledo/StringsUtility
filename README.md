@@ -29,11 +29,16 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
 
 ## Demo
 
-## [Tips](Tips.md):
+## [Tips and Requirements](Tips.md):
 - Currently does not support multi line strings
-- To avoid unnecessary, strings which contains the following will substrings not be translated. Edit files accordingly 
-```"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"```
-    - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
+- To avoid unnecessary translation, strings which contains substrings like file extensions, keywords, and symbols **will not be translated**. Edit strings and files to follow these standards.
+  ```
+  "/", "\\", "{", "}", "_", "#", "%", ".swift", ".xib", ".storyboard", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", ".gif", "http", "https", ".com", "identifier"
+  ```
+- Strings like url, identifiers, and more which contains substrings like the following **will not be constantify**.
+  ```
+  "/", "\\", "{", "}", "http", "https", ".com", "#", "%", "identifier"
+  ```
 
 ## How to Use?
 ### Download StringsUtility
