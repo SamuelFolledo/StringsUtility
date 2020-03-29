@@ -96,8 +96,8 @@ For further details, tips, recommendations go to [Tips and Requirements](Tips.md
 - [MakeUtility Requirements](https://github.com/Make-School-Courses/BEW-2.5-Strongly-Typed-Languages/blob/master/Project/MakeUtility.md)
 - My article: [5 Steps to Localizing your Swift Apps](https://medium.com/@samuelfolledo/5-steps-to-localizing-your-swift-apps-36c76e9700f7)
 - Added feature 2 and 3 during [Make School's Spring Intensive 1.3](https://github.com/Make-School-Courses/INT-1.3-AND-INT-2.3-Spring-Intensive)
+- Follow me at [LinkedIn](https://www.linkedin.com/in/samuel-folledo/), [GitHub](https://github.com/SamuelFolledo) and [Portfolio](https://www.makeschool.com/portfolio/SamuelFolledo)
 
-To have a customized version for your company standards, feel free to email me at <samuelfolledo@gmail.com>
-Follow me at [LinkedIn](https://www.linkedin.com/in/samuel-folledo/), [GitHub](https://github.com/SamuelFolledo) and [Portfolio](https://www.makeschool.com/portfolio/SamuelFolledo)
+##### To have a customized version for your company standards, feel free to email me at <samuelfolledo@gmail.com>
 
 Lincense under [MIT License](LICENSE)
