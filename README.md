@@ -47,7 +47,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
   $ brew install golang
   ```
 
-### [Setup Google Cloud Translator](https://cloud.google.com/translate/docs/basic/setup-basic): *For Feature 3 only*
+### [Setup Google Cloud Translator](https://cloud.google.com/translate/docs/basic/setup-basic): *Required for feature 3 only*
 -  [Set up a Cloud Console project](https://cloud.google.com/translate/docs/basic/setup-basic)
 -  Download a private key as JSON
 -  While inside StringsUtility directory, run in terminal once
