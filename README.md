@@ -16,9 +16,9 @@
 </p>
 
 Swift utility written in [Go](https://golang.org/) which automates boring [Swift strings](https://developer.apple.com/documentation/swift/string) tasks like:
-- <ins>__Feature 1: Constantify Strings__</ins> Creates global constant variables from all .swift files to a constant file
-- <ins>__Feature 2: Localize Strings__</ins> Transform all valid translatable strings as [NSLocalizedString](https://developer.apple.com/documentation/foundation/nslocalizedstring) and copies them to all ```Localizable.strings``` file and avoiding duplicating strings for you.
-- <ins>__Feature 3: Translate Strings__</ins> Uses [Google Cloud Translator API](https://cloud.google.com/translate/docs) to automatically translate strings in all ```Localizable.strings```, allowing all iOS, MacOS, etc apps support multiple languages in a matter of seconds.
+- <ins>**[Feature 1: Constantify Strings]()**</ins> Creates global constant variables from all .swift files to a constant file
+- <ins>**[Feature 2: Localize Strings]()**</ins> Transform all valid translatable strings as [NSLocalizedString](https://developer.apple.com/documentation/foundation/nslocalizedstring) and copies them to all ```Localizable.strings``` file and avoiding duplicating strings for you.
+- <ins>**[Feature 3: Translate Strings]()**</ins> Uses [Google Cloud Translator API](https://cloud.google.com/translate/docs) to automatically translate strings in all ```Localizable.strings```, allowing all iOS, MacOS, etc apps support multiple languages in a matter of seconds.
 
 ## Live Demo
 <p align="center">
@@ -54,7 +54,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
   ```
   $ go get -u cloud.google.com/go/translate
   ```
--  __Important:__ Run this command __once__ each fresh terminal. Replace the ```[PATH]``` to the path of the ```.json``` file downloaded from setup 2 step 3. [Instructions](https://cloud.google.com/docs/authentication/production) for more info or for Windows setup
+-  **Important:** Run this command **once** each fresh terminal. Replace the ```[PATH]``` to the path of the ```.json``` file downloaded from setup 2 step 3. [Instructions](https://cloud.google.com/docs/authentication/production) for more info or for Windows setup
     ```
     export GOOGLE_APPLICATION_CREDENTIALS=[PATH]
     ```
