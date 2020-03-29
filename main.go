@@ -134,7 +134,7 @@ func main() {
 	//9) Prompt to undo by copying contents from the cloned project
 	promptToUndo(projectPath+"_previous", projectPath)
 	//10) Prompt to delete the previous project
-	promptToDeletePrevProject(projectPath + "_previous")
+	// promptToDeletePrevProject(projectPath + "_previous") //uncomment if you want to be prompted to delete previous project
 }
 
 //Loop through each files and look for each strings in each lines
@@ -330,7 +330,7 @@ func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFoun
 			path = prevPath //if not found, go to next directory, but update our path
 		}
 		var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
-		if fileExtension == ".swift" {                                //if file is a .swift file
+		if fileExtension == ".swift" || fileExtension == ".strings" { //if file is a .swift file
 			filePath = path + "/" + fileName //path of file
 			if isExactName {                 //if we want the exact fileName...
 				if fileName == fileNameToSearch {
@@ -339,7 +339,7 @@ func searchForSwiftFile(path, fileNameToSearch string, isExactName bool) (isFoun
 					return
 				}
 			} else { //if we want fileName to only contain
-				if strings.Contains(filePath, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
+				if strings.Contains(fileName, fileNameToSearch) { //if fileName contains name of file we are looking for... it means we found our file's path
 					// fmt.Println("Searched and found ", fileNameToSearch, " CONTAINS at ", filePath)
 					isFound = true
 					return
@@ -601,13 +601,13 @@ func promptToDeletePrevProject(prevProjPath string) {
 
 //////////////////////////////////////////////////// MARK: HELPER METHODS ////////////////////////////////////////////////////
 
-//undo changes from project by writing file contents from previous version of the project stored when the program runs
+//undo changes from .swift and .strings files by writing file contents from previous version of the project stored at the beginning
 func undoUtilityChanges(prevProjPath, projPath string) {
 	files, err := ioutil.ReadDir(prevProjPath) //ReadDir returns a slice of FileInfo structs
 	if isError(err) {
 		return
 	}
-	for _, file := range files { //loop through each files and directories
+	for _, file := range files { //loop through each files and directories from previous project
 		var fileName = file.Name()
 		if file.IsDir() { //if directory...
 			if fileName == "Pods" || fileName == ".git" { //ignore Pods and .git directories
@@ -616,9 +616,9 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 			prevProjPath = prevProjPath + "/" + fileName        //update directory path by adding /fileName
 			undoUtilityChanges(prevProjPath, projPath)          //recursively call this function again
 			prevProjPath = trimPathAfterLastSlash(prevProjPath) //reset path by removing the / + fileName
-		} else { //if file...
+		} else { //for each .swift and .strings file in previous project
 			var fileExtension = filepath.Ext(strings.TrimSpace(fileName)) //gets the file extension from file name
-			if fileExtension == ".swift" {                                //if we find a Swift file that's not the constants file... look for strings
+			if fileExtension == ".swift" || fileExtension == ".strings" { //only undo .swift and .strings files
 				prevProjPath = prevProjPath + "/" + fileName
 				var isFound, filePath = searchForSwiftFile(projPath, fileName, true) //search project for file with the same name as .swift file from previour version
 				if isFound {                                                         //if found... read both file's content
@@ -629,7 +629,7 @@ func undoUtilityChanges(prevProjPath, projPath string) {
 						replaceFile(filePath, prevContents)
 					}
 				} else {
-					fmt.Print("Error: Failed to find ", fileName, " during undo. Please remove all changes using version control")
+					fmt.Print("Error: Failed to find ", fileName, " during undo. Please remove all changes using version control instead.\n")
 				}
 				prevProjPath = trimPathAfterLastSlash(prevProjPath) //reset path by removing the / + fileName
 			}
