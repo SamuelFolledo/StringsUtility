@@ -229,12 +229,12 @@ func getStringsFromLine(line string, shouldTranslate bool) (strArray []string) {
 	return
 }
 
-//checks if string is a valid string to be put in constant or translated
+//checks if string is a valid string to be put in constant file
 func isValidString(str string) bool {
 	if len(strings.TrimSpace(str)) <= 2 { //if there is nothing in string other than "", then it is invalid string
 		return false
 	}
-	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"} //these strings are not allowed in a string to be put in constant or translated
+	var invalidSubstrings = []string{"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "identifier"} //these strings are not allowed in a string to be put in constant or translated
 	for _, subStr := range invalidSubstrings {
 		if strings.Contains(strings.ToLower(str), subStr) { //if lowerCased(str) contains invalid substring, then str is invalid
 			return false
