@@ -27,9 +27,11 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
 - Auto generate strings ```Localizable.strings``` and avoid duplicate strings
 - Automatically translate all strings in ```Localizable.strings```
 
+## Demo
+
 ## [Tips](Tips.md):
 - Currently does not support multi line strings
-- To avoid common errors, strings which contains the following will substrings not be put to the constant file or translated. Edit files accordingly 
+- To avoid unnecessary, strings which contains the following will substrings not be translated. Edit files accordingly 
 ```"/", "\\", "{", "}", "http", "https", ".com", "#", "%", "img_", "vid_", "gif_", ".jpg", ".png", ".mp4", ".mp3", ".mov", "gif", "identifier"```
     - Image named like ```UIImage(named: "heart")``` will have translate "heart" unintentionally, so consider editing the image name so it can work like this ```UIImage(named: "IMG_heart")```
 
@@ -69,11 +71,12 @@ For further details, tips, recommendations go to [Tips and Requirements](Tips.md
 ### Run StringsUtility
 - run the program locally replacing PATH_TO_YOUR_PROJECT with your project directory
   ```
-  $ go build && go run main.go -dir=PATH_TO_YOUR_PROJECT
+  $ go build && go run main.go -dir=[PATH_TO_YOUR_PROJECT]
   ``` 
-
-## Demo
-
+  For example:
+  ```
+  go build && go run main.go -dir=/Users/macbookpro15/Desktop/StringsUtilityTester 
+  ```
 
 ### Links
 - My final project for [MakeSchool](makeschool.com)'s [BEW2.5: Patterns & Practices in Strongly Typed Languages](https://make-school-courses.github.io/BEW-2.5-Strongly-Typed-Languages/#/) - the only university that teaches Go
