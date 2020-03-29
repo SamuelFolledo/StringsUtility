@@ -22,7 +22,7 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
 
 ## Live Demo
 <p align="center">
-  <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/StringsUtilityLiveDemo.gif" width="750" height="422">
+  <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/StringsUtilityLiveDemo.gif" width="900" height="506">
 </p>
 
 ## Why Use?
