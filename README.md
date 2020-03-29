@@ -32,17 +32,6 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
 - Auto generate strings ```Localizable.strings``` and avoid duplicate strings
 - Automatically translate all strings in ```Localizable.strings```
 
-## [Tips and Requirements](Tips.md):
-- Currently does not support multi line strings
-- To avoid unnecessary translation, strings which contains substrings like file extensions, keywords, and symbols **will not be translated**. Edit strings and files to follow these standards.
-  ```
-  "/", "\\", "{", "}", "_", "#", "%", ".swift", ".xib", ".storyboard", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", ".gif", "http", "https", ".com", "identifier"
-  ```
-- Strings like url, identifiers, and more which contains substrings like the following **will not be constantify**.
-  ```
-  "/", "\\", "{", "}", "http", "https", ".com", "#", "%", "identifier"
-  ```
-
 ## How to Use?
 ### Download StringsUtility
 -  clone the repo
@@ -85,6 +74,22 @@ For further details, tips, recommendations go to [Tips and Requirements](Tips.md
   ```
   go build && go run main.go -dir=/Users/macbookpro15/Desktop/StringsUtilityTester
   ```
+
+-----
+
+## [Tips and Requirements](Tips.md):
+- Currently does not support multi line strings
+- To avoid unnecessary translation, strings which contains substrings like file extensions, keywords, and symbols **will not be translated**. Edit strings and files to follow these standards.
+  ```
+  "/", "\\", "{", "}", "_", "#", "%", ".swift", ".xib", ".storyboard", ".jpg", ".jpeg", ".png", ".mp4", ".mp3", ".wav", ".mov", ".gif", "http", "https", ".com", "identifier"
+  ```
+- Strings like url, identifiers, and more which contains substrings like the following **will not be constantify**.
+  ```
+  "/", "\\", "{", "}", "http", "https", ".com", "#", "%", "identifier"
+  ```
+- [Suported Languages](https://github.com/SamuelFolledo/StringsUtility/blob/master/Tips.md#languages-currently-supported)
+*For more tips and requirements click [here](https://github.com/SamuelFolledo/StringsUtility/blob/master/Tips.md#tips)*
+
 
 ### Links
 - My final project for [MakeSchool](makeschool.com)'s [BEW2.5: Patterns & Practices in Strongly Typed Languages](https://make-school-courses.github.io/BEW-2.5-Strongly-Typed-Languages/#/) - the only university that teaches Go
