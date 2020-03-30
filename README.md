@@ -94,6 +94,7 @@ For further details, tips, recommendations go to [Tips and Requirements](Tips.md
   "/", "\\", "{", "}", "http", "https", ".com", "#", "%", "identifier"
   ```
 - [Suported Languages](https://github.com/SamuelFolledo/StringsUtility/blob/master/Tips.md#languages-currently-supported)
+
 *For more tips and requirements click [here](https://github.com/SamuelFolledo/StringsUtility/blob/master/Tips.md#tips)*
 
 
