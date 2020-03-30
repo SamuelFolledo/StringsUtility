@@ -20,10 +20,13 @@ Swift utility written in [Go](https://golang.org/) which automates boring [Swift
 - <ins>**Feature 2: Localize Strings**</ins> Transform all valid translatable strings as [NSLocalizedString](https://developer.apple.com/documentation/foundation/nslocalizedstring) and copies them to all ```Localizable.strings``` file and avoiding duplicating strings for you.
 - <ins>**Feature 3: Translate Strings**</ins> Uses [Google Cloud Translator API](https://cloud.google.com/translate/docs) to automatically translate strings in all ```Localizable.strings```, allowing all iOS, MacOS, etc apps support multiple languages in a matter of seconds.
 
-## Live Demo
 <p align="center">
     <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/logo/StringsUtilityMinLogo.png" width="450" height="327"
     >
+</p>
+
+## Live Demo
+<p align="center">
     <img src="https://github.com/SamuelFolledo/StringsUtility/blob/master/static/gifs/StringsUtilityLiveDemo.gif" width="900" height="506"
     >
 </p>
