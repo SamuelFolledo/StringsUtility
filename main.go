@@ -256,6 +256,12 @@ func isTranslatableString(str string) bool {
 			return false
 		}
 	}
+	var invalidStrings = []string{"Default Configuration", "Main"} //invalid strings
+	for _, invalidStr := range invalidStrings {
+		if strings.Contains(str, invalidStr) { //check if str == invalidStr. Saved for Xcode keys or strings that should not be translated which can be considered as translatable
+			return false
+		}
+	}
 	return true
 }
 
@@ -512,14 +518,14 @@ func translateProject(project Project) Project {
 			var strArray = getStringsFromLine(line, true) //get strings
 			var text string
 			var translatedText string
-			if length := len(strArray); length == 1 { //no translation
+			if length := len(strArray); length == 1 { //string still has no translation
 				text = strArray[0]
 				var textToTranslate = text[1 : len(text)-1]                     //removes the first and last character, which are both "
 				translatedText = translateText(lang.GoogleKey, textToTranslate) //translate to Spanish
 				print("Translated text: ", textToTranslate, " in ", lang.Name, " is ", translatedText, "\n")
 				var newLine = text + " = \"" + translatedText + "\";"          //line that goes to Localizable.strings
 				fileContents = strings.Replace(fileContents, line, newLine, 1) //update fileContent's old line with new line
-			} else if length == 2 { //text has translation
+			} else if length == 2 { //string has translation already
 				text = strArray[0]
 				translatedText = strArray[1]
 			} else { //line has no strings
